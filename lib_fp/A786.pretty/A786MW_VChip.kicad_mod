@@ -1,0 +1,42 @@
+(footprint "A786MW_VChip"
+	(version 20260206)
+	(generator "gen_footprint_a786mw")
+	(layer "F.Cu")
+	(descr "KEMET A786MW477M1VLAV010, hybride polymere cylindrique (V-chip), boitier D10xH16.7mm monte vertical. Cotes confirmees par l'utilisateur (2026-09-29, precision +-0.3mm) : silhouette = cercle D10mm (le can) + carre 10.3x10.3mm (l'implantation totale du composant, coins coupes cote positif) superposes. 2 pastilles 1x3mm, pas 7.6mm centre-centre. Pin1=+ (coins du carre coupes de son cote), Pin2=- (cote oppose, carre plein).")
+	(tags "capacitor polymer hybrid V-chip KEMET A786")
+	(property "Reference" "REF**"
+		(at 0 -7.5 0)
+		(layer "F.SilkS")
+		(effects (font (size 1 1) (thickness 0.15)))
+	)
+	(property "Value" "A786MW_VChip"
+		(at 0 7.5 0)
+		(layer "F.Fab")
+		(effects (font (size 1 1) (thickness 0.15)))
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+
+	(fp_circle (center 0 0) (end 5.0 0)
+		(stroke (width 0.12) (type solid)) (fill no) (layer "F.SilkS"))
+
+	(fp_poly
+		(pts
+			(xy -3.65 -5.15) (xy 3.65 -5.15) (xy 5.15 -3.65)
+			(xy 5.15 5.15) (xy -5.15 5.15) (xy -5.15 -3.65)
+		)
+		(stroke (width 0.12) (type solid))
+		(fill no)
+		(layer "F.SilkS")
+	)
+
+	(fp_circle (center 0 0) (end 5.3 0)
+		(stroke (width 0.05) (type solid)) (fill no) (layer "F.CrtYd"))
+
+	(pad "1" smd roundrect (at 0 -3.8) (size 1.0 3.0) (layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.05)
+		(chamfer_ratio 0.3)
+		(chamfer top_left top_right)
+	)
+	(pad "2" smd rect (at 0 3.8) (size 1.0 3.0) (layers "F.Cu" "F.Paste" "F.Mask"))
+)

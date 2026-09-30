@@ -1,0 +1,152 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "c8449ac7-87b3-4a93-889f-06dd686c5aff")
+	(paper "A4")
+	(lib_symbols)
+	(sheet
+		(at 200 20)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "2c364a36-1706-47ba-a3af-9fe08e477799")
+		(property "Sheetname" "Isolation_Drivers"
+			(at 200 19.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "isolation.kicad_sch"
+			(at 200 70.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "alim-flyback-filament"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 20 20)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "4222d5eb-1966-4c25-91d0-a2dfc8338ee2")
+		(property "Sheetname" "Alimentation"
+			(at 20 19.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "alim.kicad_sch"
+			(at 20 70.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "alim-flyback-filament"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 110 20)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "d1aa561e-ad66-47ab-8ae9-07ed41f103a3")
+		(property "Sheetname" "Flyback"
+			(at 110 19.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "flyback.kicad_sch"
+			(at 110 70.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "alim-flyback-filament"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
