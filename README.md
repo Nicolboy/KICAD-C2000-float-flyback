@@ -26,7 +26,7 @@ sortie) est sourcé avec sa propre fiche datasheet dans
 — page citée, base (absolue / recommandée / typique / calculée), jamais de
 valeur choisie à l'oeil. Ce sourcing a d'ailleurs fait revenir deux fois sur
 le choix de Cin et Cout : le premier calcul prenait le coin 13V/3A (39W)
-comme pire cas, avant d'être recorrigé sur les vrais coins d'usage — deux
+comme pire cas, avant d'être recorrigé sur les vrais cas d'usage — deux
 câblages de filament qui tombent à **la même puissance réelle** (18,9W) et
 divisent par deux la contrainte de courant et d'ondulation retenue au départ.
 Le détail (formules, marges, historique des choix) est dans
