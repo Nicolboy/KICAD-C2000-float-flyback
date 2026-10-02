@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Révision | v0.2 — corners réels, clamp et filtrage tranchés |
-| Établi le | 2026-09-28 |
-| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) |
+| Révision | v0.4 — retour ISO7710+UCC27517 secondaire (marge UVLO), D2→BAT54C |
+| Établi le | 2026-09-28, mis à jour 2026-09-30 |
+| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§12) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§12bis) |
 
 Convention reprise de `composants-datasheets/CLAUDE.md` : `spec` = exigence
 d'entrée · `déduit` = calculé · `?` = à trancher. Toute valeur `déduit` porte
@@ -285,14 +285,16 @@ sur l'autre carte.
 | Rôle | Réf. | Composant | Fiche |
 |---|---|---|---|
 | MOSFET primaire+secondaire | Q1, Q2 | IPD050N10N5 (TO-252/DPAK, 100V, 5mΩ) | `data/carte-flyback/ipd050n10n5.yaml` |
-| Empreinte Q1/Q2 | — | `lib_fp/TO252.pretty/TO252-3_TabPin2.kicad_mod`, custom (3 pastilles, cotes Figure 1 du datasheet IPD050N10N5 fournies par l'utilisateur) — remplace la générique KiCad jugée peu lisible (4 pastilles) |
+| Empreinte Q1/Q2 | — | `lib_fp/TO252.pretty/TO252-3_TabPin2.kicad_mod`, custom (3 pastilles, cotes Figure 1 du datasheet IPD050N10N5 fournies par l'utilisateur) — remplace la générique KiCad jugée peu lisible (4 pastilles). **Pin1(Gate)/Pin3(Source) permutées (2026-10-01)** — voir point ouvert résolu ci-dessous. Modèle 3D (2026-10-01) : d'abord le `.step` fourni avec KiCad (miroir corrigé par `scale -1 1 1`), puis **remplacé** par `composants-datasheets/datasheets/to_252_2.step` (step.parts.com, 3 broches + tab, boîtier compact — fourni par l'utilisateur). Transform identité par défaut, alignement à confirmer dans le visualiseur 3D (pas de rendu possible de mon côté) |
 | Clamp primaire | D1 | SMCJ43A (SMC/DO-214AB) | `data/carte-flyback/smcj43a.yaml` |
 | Rail 8,25V primaire | Reg1 | LM317M (SOT-223) + R1=100Ω/R2=560Ω | `data/carte-flyback/lm317m.yaml` |
 | LDO ISO7710 primaire | Reg2 | MCP1703-3302 (SOT-23A, 3,3V) | `data/carte-flyback/mcp1703.yaml` |
-| LDO ISO7710 secondaire | Reg3 | MCP1703-3302 (SOT-23A, 3,3V) | `data/carte-flyback/mcp1703.yaml` |
+| LDO auxiliaire secondaire | Reg3 | MCP1703-3302 (SOT-23A, 3,3V) — alimente VCC2 de l'ISO7710 secondaire (U4) et VDD1 de l'AMC0311S (U7) | `data/carte-flyback/mcp1703.yaml` |
 | Cin | C1 | A786MW477M1VLAV010 (KEMET, 470µF/35V, 10mΩ) | `data/carte-flyback/a786mw477m1vlav010.yaml` |
 | Cout | C3, C4 | 2× Panasonic 16SVPG330M (330µF/16V, 6,5mΩ) | `data/carte-flyback/16svpg330m.yaml` |
 | Cboot | — | 4,7µF X7R 0805/25V (générique) | non sourcé séparément (§8) |
+| Ampli isolé retour Vout | U7 | AMC0311S (DWV-8, gain 1V/V) — retour Vout isolé vers C2000 (§12) | à sourcer (`composants-datasheets/data/carte-flyback/amc0311s.yaml`, session dédiée) |
+| Diode bootstrap secondaire | D2 | BAT54C (SOT-23, Schottky double cathode commune — un seul canal utilisé, pin2/2e anode en réserve) | à sourcer (remplace BAT54/SOD-123, §12bis) |
 
 ## 10. Points ouverts
 
@@ -306,6 +308,18 @@ sur l'autre carte.
       choisie ; la chute Vf≈0,5V utilisée en §"Alim secondaire" pour le
       calcul de marge du MCP1703 est une hypothèse à confirmer une fois le
       composant sourcé
+- [x] **Pin1(Gate)/Pin3(Source) de l'empreinte TO252-3_TabPin2 étaient
+      permutées** (2026-10-01) — la réserve initiale du fichier
+      d'empreinte (« pin1=haute/pin3=basse, pas confirmé par capture
+      photo ») était fondée. L'utilisateur a fourni un croquis Infineon
+      TO220/DPAK (languette en haut, broches 1-2-3 gauche-à-droite,
+      1=Gate/2+tab=Drain/3=Source). Recalcul géométrique : en tournant la
+      pièce réelle pour amener la languette à gauche (notre disposition),
+      Gate doit tomber en bas-droite et Source en haut-droite — l'inverse
+      de ce qui était posé. Pastilles 1 et 3 permutées (tab/pin2 inchangé).
+      **À confirmer malgré tout sur pièce réelle avant premier reflow**,
+      même règle que pour toute empreinte custom de ce dépôt (R15,
+      `composants-datasheets/CLAUDE.md`).
 - [x] Pertes de conduction Q1/Q2 — résolu par le passage en TO-252
       (IPD050N10N5, 2026-09-28) : Rds_on max 5mΩ contre 77mΩ pour l'ancien
       IRF540S. Pertes recalculées négligeables (~113-198mW, ΔT≈15°C même en
@@ -346,6 +360,20 @@ sur l'autre carte.
 - [ ] Polarité du point de couplage L2 (pin2 vs pin4 du MSD1514, §
       symboles) déduite par symétrie du schéma simplifié du datasheet, pas
       explicitement marquée — à confirmer sur pièce réelle avant simulation.
+- [x] Marge VDD de l'UCC5304 au coin bas — **résolu en revenant à
+      ISO7710+UCC27517 sur le secondaire** (§12bis) : le plancher réel
+      d'usage n'est pas 6,3V mais jusqu'à 5,8V (filament réglable -5 à
+      -10% sur 6,3V nominal), ce qui aurait mis VBOOT sous le seuil UVLO
+      *garanti* (pas juste recommandé) de l'UCC5304 — voir calcul précis
+      §12bis avec les seuils UVLO réels du datasheet (p.8 tbl 6.9).
+- [ ] Valeurs du filtre RC en sortie de l'AMC0311S (R15=100Ω, C24=1nF,
+      §12) — proposées par défaut (fc≈1,6MHz, n'entame pas la bande
+      passante propre de l'ampli ~120kHz), à revoir une fois la spec
+      d'entrée de l'ADC côté C2000 connue.
+- [ ] R11/R12 (résistances de grille en sortie des UCC, 1Ω/0805) — valeur
+      retenue par l'utilisateur directement dans KiCad, pas de calcul de
+      dimensionnement tracé ici (amortissement/EMI, ordre de grandeur
+      courant pour ce type d'application).
 
 ## 11. État du projet KiCad
 
@@ -357,24 +385,172 @@ l'utilisateur (2026-09-28) : une feuille racine (`alim-flyback-filament.kicad_sc
 
 | Feuille | Fichier | Contenu | Composants |
 |---|---|---|---|
-| Alimentation | `alim.kicad_sch` | Connecteurs, Reg1/Reg2/Reg3 (LDO), PWR_FLAG | 17 |
-| Flyback | `flyback.kicad_sch` | Cin, T1, Q1/Q2, clamp D1, bootstrap D2/C8, Cout | 15 |
-| Isolation_Drivers | `isolation.kicad_sch` | UCC27517×2, ISO7710×2, DPC817 | 9 |
+| Alimentation | `alim.kicad_sch` | Connecteurs, Reg1/Reg2/Reg3 (LDO), PWR_FLAG | 17 (initial) |
+| Flyback | `flyback.kicad_sch` | Cin, T1, Q1/Q2, clamp D1, bootstrap D2/C8, Cout | 15 (initial) |
+| Isolation_Drivers | `isolation.kicad_sch` | UCC27517×2, ISO7710×2, DPC817 (initial) | 9 (initial) |
 
 Les étiquettes globales se relient à travers toute la hiérarchie sans rien
 changer au câblage — le découpage est purement organisationnel, suit la
 frontière fonctionnelle (et pour partie la frontière d'isolement primaire/
-secondaire) plutôt que la connectivité. **41 composants au total**, ERC sur
-la hiérarchie complète : **0 erreur, 1 avertissement attendu** (GND2 de U4,
-feuille Isolation_Drivers, relié à `VOUT_N` et non à un net nommé `GND` —
-c'est la référence locale du secondaire flottant, volontairement différente
-de la masse primaire).
+secondaire) plutôt que la connectivité.
 
-PCB généré avec contour de carte (70×55mm, à ajuster) mais **rien n'est
-encore placé** — F8 dans KiCad (« Mettre à jour le PCB depuis le schéma »)
-puis placement et routage sont les étapes manuelles suivantes, comme pour
-les autres cartes de ce workspace.
+**Depuis (2026-09-30), les 3 feuilles sont des fichiers de travail
+hand-edited** (placement, câblage et réorganisation faits à la main dans
+KiCad par l'utilisateur, plus jamais régénérés par script) — voir §12 pour
+le détail des changements les plus récents (UCC5304, AMC0311S, Cpu1).
+Composants redistribués entre feuilles par l'utilisateur au passage :
+`J1→In1`, `J3→Out1`, `J4→Bias1` (renommés), `Reg3/C11/C12/R9/R10` déplacés
+vers Flyback, `J2→Cpu1` déplacé vers Isolation_Drivers, `C1` déplacé vers
+Alimentation — connectivité inchangée (les étiquettes globales ignorent la
+feuille physique), seule l'organisation visuelle a bougé.
+
+PCB généré avec contour de carte (70×55mm, à ajuster) — placement et
+routage sont les étapes manuelles suivantes, comme pour les autres cartes
+de ce workspace.
 
 Fichiers : `alim-flyback-filament.kicad_pro/.kicad_sch/.kicad_pcb`,
 `lib/custom_parts.kicad_sym`, `kicad_gen.py`, `gen_symboles.py`,
-`gen_composants.py`.
+`gen_composants.py` (génération initiale, ne plus rejouer sur les feuilles
+hand-edited).
+
+**Modèles 3D des empreintes custom (2026-10-01)** : les trois empreintes
+custom (Q1/Q2, T1, C1) ont chacune un `.step` référencé dans leur bloc
+`(model ...)`. Source de chaque fichier :
+- Q1/Q2 (`TO252.pretty`) : `composants-datasheets/datasheets/to_252_2.step`
+  (step.parts.com, 3 broches + tab, boîtier compact)
+- T1 (`MSD1514.pretty`) : `composants-datasheets/datasheets/inductors/MSD1514.STEP`
+  (modèle fabricant Coilcraft, téléchargé par l'utilisateur), rotation
+  `(rotate (xyz 270 0 90))` nécessaire pour le redresser
+- C1 (`A786.pretty`) : `composants-datasheets/datasheets/capacitors/A786MW477M1VLAV010.step`
+  (modèle Mouser/SamacSys, téléchargé par l'utilisateur)
+
+Alignement vérifié visuellement dans KiCad par l'utilisateur au fur et à
+mesure — pas de rendu 3D possible côté agent, uniquement validation
+syntaxique (`kicad-cli fp export svg`).
+
+## 12. Secondaire UCC5304 + retour Vout isolé AMC0311S (2026-09-30)
+
+Deux changements demandés par l'utilisateur, ajoutés par édition
+chirurgicale de `isolation.kicad_sch` (suppression/ajout de blocs ciblés,
+jamais de régénération — voir note ci-dessus) :
+
+**1. ISO7710 (U4) + UCC27517 (U2) secondaires → UCC5304 (U6) seul.**
+UCC5304 (`datasheets/isolation/ucc5304.pdf`, p.3 tbl Pin Functions, DWV-8) :
+driver de grille isolé renforcé 4A source/6A sink, une seule puce fait ce
+que faisaient les deux composants combinés (isolation + drive). Brochage :
+IN(1)=PWM_SEC_IN, VCCI(2,3)=RAIL_3V3_PRI, GND(4)=GND, VSS(5,6)=VOUT_N,
+OUT(7)=SEC_GATE_DRV (→ R12 → GATE_Q2, résistance de grille déjà posée par
+l'utilisateur), VDD(8)=VBOOT. Empreinte
+`Package_SO:SOIC-8_7.5x5.85mm_P1.27mm` (standard KiCad — comparaison
+pastille-à-pastille contre le land pattern datasheet p.30 : 1,8×0,6mm,
+pas 1,27mm, correspondance quasi-exacte, pas d'empreinte custom requise).
+
+Le canal secondaire ne recevait déjà pas de signal EN isolé (IN+ de
+l'ancien U2 était câblé sur VBOOT, toujours actif dès le bootstrap monté)
+— remplacer par UCC5304 (une seule broche IN) ne perd donc aucune
+fonction.
+
+**Point ouvert (marge VDD)** : VBOOT ≈ Vout_min − Vf(D2) ≈ 6,3 − 0,3~0,5 ≈
+5,8-6,0V au coin réel le plus bas (§3) — juste à la limite basse
+recommandée de VDD (6V) de l'UCC5304, quoique nettement au-dessus de son
+UVLO réel (5V typ, p.1/p.4). Marge plus courte que l'ancien UCC27517
+(4,5V mini) — à surveiller au banc.
+
+**2. Retour Vout isolé — AMC0311S (U7), nouveau, absent de la spec
+initiale.** AMC0311S (`datasheets/isolation/amc0311s.pdf`, p.3 tbl 5-1,
+DWV-8) : ampli isolé précision, gain fixe 1V/V, entrée linéaire 0-2,25V
+(clipping doux à 2,56V, p.4 tbl 6.3). Reg3 (MCP1703, déjà en place pour
+l'ancien ISO7710 secondaire) est **réutilisé**, pas orphelin : il
+alimentait VCC2 de U4, alimente maintenant VDD1 de U7.
+
+```
+Côté secondaire (field, VOUT_N-référencé) :
+  VDD1=RAIL_3V3_SEC (Reg3)   GND1=VOUT_N   SNSN=VOUT_N (« connect to GND1 »)
+  INP=VOUT_SENSE (point milieu diviseur R13/R14)
+Côté primaire (control, GND-référencé) :
+  VDD2=RAIL_3V3_PRI   GND2=GND   REFIN=GND (« connect to GND2 if unused »)
+  OUT=VOUT_FBACK_RAW (→ filtre R15/C24 → VOUT_FBACK, vers Cpu1)
+```
+
+**Diviseur R13/R14** (sonde VOUT_P/VOUT_N vers INP), + **C23 = 100pF**
+en parallèle de R14 sur demande explicite de l'utilisateur (compense la
+réponse HF du pont) :
+```
+R13 = 51k (haut)   R14 = 10k (bas)   ratio = 10/61 = 0,1639
+Vout=13V (spec max)    → INP=2,13V   (< 2,25V linéaire, marge 0,12V)
+Vout=12,6V (coin réel) → INP=2,07V
+Vout=6,3V  (coin réel) → INP=1,03V
+```
+
+**Filtre RC de sortie** (R15=100Ω série, C24=1nF vers GND, sur demande de
+l'utilisateur) : fc≈1,6MHz — valeurs par défaut, n'entament pas la bande
+passante propre de l'AMC0311S (~120kHz typ), à revoir une fois la spec
+d'entrée ADC du C2000 connue (point ouvert, §10bis).
+
+**Découplage (règle utilisateur, 100nF/0805 par CI)**, appliquée à U6/U7
+uniquement (pas de retrofit sur U1/U3/U5, décision explicite) :
+C25 (RAIL_3V3_PRI-GND, U6 VCCI), C26 (VBOOT-VOUT_N, U6 VDD), C27
+(RAIL_3V3_SEC-VOUT_N, U7 VDD1), C28 (RAIL_3V3_PRI-GND, U7 VDD2).
+
+**3. Cpu1 (ex-J2, connecteur de commande vers le C2000 externe) agrandi de
+4 à 16 broches** (8 signaux + 8 masses en alternance stricte 1:1) — reprend
+le motif déjà en place sur `shield-c2000` (liaison shield↔puissance,
+4 nappes 2×8). Meilleure intégrité de signal sur les fronts PWM isolés et
+le retour analogique (masse dédiée adjacente à chaque signal plutôt
+qu'une masse unique partagée) et marge pour signaux futurs :
+```
+1=PWM_PRI_IN 2=GND 3=EN_PRI_IN 4=GND 5=PWM_SEC_IN 6=GND
+7=VOUT_FBACK 8=GND 9/11/13/15=réserve (no_connect) 10/12/14/16=GND
+```
+Cpu1 (ancienne version 4 broches) n'était en réalité **pas câblé** au
+moment de sa découverte — déplacé/renommé depuis J2 sans que les
+étiquettes suivent le déplacement. Aucune connectivité perdue en le
+remplaçant par la version 16 broches.
+
+Vérification : `kicad-cli sch erc` sur la hiérarchie complète après
+édition — **0 erreur**, 4 avertissements (tous attendus : `lib_symbol_mismatch`
+MSD1514 déjà documenté comme bénin, + `ground_pin_not_ground` sur U6 VSS×2
+et U7 GND1 — même motif déjà accepté pour l'ancien U4, le secondaire
+flottant est référencé à `VOUT_N` et non à un net nommé `GND` par
+conception).
+
+## 12bis. Retour sur UCC5304 — marge UVLO insuffisante pour un filament réglable (2026-09-30)
+
+**UCC5304 abandonné côté secondaire, retour à ISO7710 (U4) + UCC27517
+(U2)** comme avant §12. Cause : l'utilisateur veut pouvoir régler la
+tension filament 5 à 10% en dessous du nominal 6,3V, donc supporter
+Vout≈5,8V **en régime établi**, pas seulement en transitoire.
+
+Seuils UVLO réels de l'UCC5304 (`datasheets/isolation/ucc5304.pdf`, p.8
+tbl 6.9 Electrical Characteristics — pas la valeur unique simplifiée
+« 5V UVLO » de la page de garde) :
+
+| Seuil | Min | Typ | Max |
+|---|---|---|---|
+| VDD UVLO montée (démarrage) | 5,0V | 5,5V | 5,9V |
+| VDD UVLO descente (reste actif) | 4,7V | 5,2V | 5,6V |
+
+À Vout=5,8V : VBOOT ≈ 5,8 − Vf(D2) ≈ 5,4-5,5V (Vf BAT54 à faible courant,
+§8) — **en dessous du seuil de démarrage typique (5,5V) et du seuil de
+maintien pire-cas (5,6V)**. Risque réel de non-démarrage ou de décrochage
+UVLO en régime établi, pas qu'une marge « recommandée » entamée comme au
+coin 6,3V (§12). L'ancien UCC27517 (UVLO ≈4,2V typ, `carte-puissance/
+ucc27517.yaml`) conserve une marge large jusqu'à 5,8V. **U7 (AMC0311S) et
+le retour Vout isolé sont conservés inchangés** — ce point ne concernait
+que le choix du driver secondaire.
+
+**D2 : BAT54 (SOD-123, 2 broches) → BAT54C (SOT-23, Schottky double
+cathode commune)**, décision utilisateur indépendante prise au même
+moment : pin1(A)=VOUT_P, pin3(K commune)=VBOOT, pin2 (2e anode) en
+réserve (`no_connect`). Objectif : grappiller de la marge sur Vf en
+prévision d'un futur ajustement, la référence exacte reste à sourcer
+(`composants-datasheets/data/carte-flyback/`, remplace `bat54.yaml` s'il
+existait déjà une fiche pour l'ancien BAT54 — à vérifier).
+
+Édition chirurgicale : retrait de U6/C25/C26 (+ leurs étiquettes, qui ne
+sont PAS des enfants du bloc symbole dans ce format de fichier et doivent
+être retirées séparément), repose de U4/U2 au brochage d'origine, D2
+remplacé. `kicad-cli sch erc` : **0 erreur**, 3 avertissements — retour
+exact à la même catégorie d'avertissements que la toute première version
+du schéma (MSD1514 + GND2 de U4 + GND1 de U7, ce dernier n'existant pas
+avant l'ajout du retour Vout).

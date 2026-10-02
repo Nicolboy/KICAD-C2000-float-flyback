@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Genere lib/custom_parts.kicad_sym : UCC27517, ISO7710, MSD1514.
+"""Genere lib/custom_parts.kicad_sym : UCC27517, ISO7710, MSD1514, UCC5304,
+AMC0311S.
 
-Aucun des trois n'existe dans les bibliotheques KiCad standard (verifie :
+Aucun des cinq n'existe dans les bibliotheques KiCad standard (verifie :
 Driver_FET.kicad_sym n'a que UCC27511/UCC27524 ; Isolator.kicad_sym n'a pas
-ISO7710 ; Device.kicad_sym n'a pas de transformateur couple 1:1 avec ce
-brochage). Convention de corps reprise des symboles standard les plus
-proches (UCC27511, ISO7721D : simple rectangle IC, pas de triangle
-op-amp — verifie avant construction, cf. conversation).
+ISO7710/UCC5304/AMC0311S ; Device.kicad_sym n'a pas de transformateur
+couple 1:1 avec ce brochage). Convention de corps reprise des symboles
+standard les plus proches (UCC27511, ISO7721D : simple rectangle IC, pas
+de triangle op-amp — verifie avant construction, cf. conversation).
 
 Brochages sources :
   UCC27517 : datasheets/ucc27517.pdf p.4 tbl Pin Functions - UCC27517
@@ -20,6 +21,12 @@ Brochages sources :
              simplifie du datasheet -- pin2 retenu par symetrie avec pin1
              (meme position "haut" dans le dessin) ; A VERIFIER sur piece
              reelle avant de faire confiance a la polarite en simulation.
+  UCC5304  : datasheets/isolation/ucc5304.pdf p.3 tbl "Pin Functions",
+             DWV-8 (SOIC large corps) : 1=IN 2=VCCI 3=VCCI 4=GND (primaire)
+             5=VSS 6=VSS 7=OUT 8=VDD (secondaire isole).
+  AMC0311S : datasheets/isolation/amc0311s.pdf p.3 tbl 5-1, DWV-8 :
+             1=VDD1 2=INP 3=SNSN 4=GND1 (cote field/haute-tension)
+             5=GND2 6=REFIN 7=OUT 8=VDD2 (cote controleur/ADC).
 """
 
 from pathlib import Path
@@ -116,6 +123,72 @@ def iso7710():
         )
         + '\t\t(symbol "ISO7710_0_1"\n' + body + barrier + '\t\t)\n'
         + '\t\t(symbol "ISO7710_1_1"\n' + pins + '\t\t)\n'
+        + '\t)\n'
+    )
+
+
+def ucc5304():
+    body = rect(-7.62, 6.35, 7.62, -6.35)
+    barrier = (
+        '\t\t\t(polyline\n'
+        '\t\t\t\t(pts (xy 0 6.35) (xy 0 -6.35))\n'
+        '\t\t\t\t(stroke (width 0.127) (type dash))\n'
+        '\t\t\t\t(fill (type none))\n'
+        '\t\t\t)\n'
+    )
+    pins = "".join([
+        pin("1", "IN", -10.16, 3.81, 0, "input"),
+        pin("2", "VCCI", -10.16, 1.27, 0, "power_in"),
+        pin("3", "VCCI", -10.16, -1.27, 0, "power_in"),
+        pin("4", "GND", -10.16, -3.81, 0, "power_in"),
+        pin("8", "VDD", 10.16, 3.81, 180, "power_in"),
+        pin("7", "OUT", 10.16, 1.27, 180, "output"),
+        pin("6", "VSS", 10.16, -1.27, 180, "power_in"),
+        pin("5", "VSS", 10.16, -3.81, 180, "power_in"),
+    ])
+    return (
+        header(
+            "UCC5304", "U", "UCC5304",
+            "Package_SO:SOIC-8_7.5x5.85mm_P1.27mm",
+            "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/ucc5304.pdf",
+            "4-A source/6-A sink single-channel reinforced isolated gate driver, DWV-8 (wide SOIC)",
+            "gate driver isolated UCC5304",
+        )
+        + '\t\t(symbol "UCC5304_0_1"\n' + body + barrier + '\t\t)\n'
+        + '\t\t(symbol "UCC5304_1_1"\n' + pins + '\t\t)\n'
+        + '\t)\n'
+    )
+
+
+def amc0311s():
+    body = rect(-7.62, 6.35, 7.62, -6.35)
+    barrier = (
+        '\t\t\t(polyline\n'
+        '\t\t\t\t(pts (xy 0 6.35) (xy 0 -6.35))\n'
+        '\t\t\t\t(stroke (width 0.127) (type dash))\n'
+        '\t\t\t\t(fill (type none))\n'
+        '\t\t\t)\n'
+    )
+    pins = "".join([
+        pin("1", "VDD1", -10.16, 3.81, 0, "power_in"),
+        pin("2", "INP", -10.16, 1.27, 0, "input"),
+        pin("3", "SNSN", -10.16, -1.27, 0, "input"),
+        pin("4", "GND1", -10.16, -3.81, 0, "power_in"),
+        pin("8", "VDD2", 10.16, 3.81, 180, "power_in"),
+        pin("7", "OUT", 10.16, 1.27, 180, "output"),
+        pin("6", "REFIN", 10.16, -1.27, 180, "input"),
+        pin("5", "GND2", 10.16, -3.81, 180, "power_in"),
+    ])
+    return (
+        header(
+            "AMC0311S", "U", "AMC0311S",
+            "Package_SO:SOIC-8_7.5x5.85mm_P1.27mm",
+            "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/amc0311s.pdf",
+            "Precision reinforced isolated amplifier, fixed gain 1V/V, 0-2.25V linear input, DWV-8",
+            "isolated amplifier isoamp AMC0311S",
+        )
+        + '\t\t(symbol "AMC0311S_0_1"\n' + body + barrier + '\t\t)\n'
+        + '\t\t(symbol "AMC0311S_1_1"\n' + pins + '\t\t)\n'
         + '\t)\n'
     )
 
@@ -254,7 +327,7 @@ def mosfet_d2pak():
 
 def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    body = ucc27517() + iso7710() + msd1514() + mosfet_d2pak()
+    body = ucc27517() + iso7710() + msd1514() + mosfet_d2pak() + ucc5304() + amc0311s()
     text = (
         '(kicad_symbol_lib\n'
         '\t(version 20241209)\n'

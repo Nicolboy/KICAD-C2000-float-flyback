@@ -8,6 +8,10 @@ Secondaire entièrement flottant, élevable de 0 à 90V par un pont symétrique
 2×100kΩ (une résistance vers Vout+, une vers Vout-) — pour réduire le stress
 cathode/chauffage sur un préamplificateur à tubes bas bruit.
 
+<p align="center">
+  <img src="doc/kicad-filament.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">
+</p>
+
 ---
 
 ## Le point de conception le plus notable
