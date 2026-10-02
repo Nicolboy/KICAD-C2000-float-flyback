@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Révision | v0.4 — retour ISO7710+UCC27517 secondaire (marge UVLO), D2→BAT54C |
-| Établi le | 2026-09-28, mis à jour 2026-09-30 |
-| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§12) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§12bis) |
+| Révision | v0.7 — feuille Polarisation : pilotage actif HV_BIAS 0-90V depuis 400V |
+| Établi le | 2026-09-28, mis à jour 2026-10-02 |
+| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§12) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§12bis) ; retours température MOSFET/transfo et courant primaire ajoutés, isolateurs migrés vers la famille ratiométrique AMC03x1R/AMC03x2R (§13) ; isolation C2000 rendue réelle — U3/U4/U5/U7/U8/U9 migrés sur GND_CTRL/3V3_CTRL, connecteur scindé CpuOut/CpuIn (§14) ; nouvelle feuille Polarisation — HV_BIAS piloté activement 0-90V depuis une source 400V externe, connecteurs C2000 agrandis à 16 broches (§15) |
 
 Convention reprise de `composants-datasheets/CLAUDE.md` : `spec` = exigence
 d'entrée · `déduit` = calculé · `?` = à trancher. Toute valeur `déduit` porte
@@ -293,8 +293,13 @@ sur l'autre carte.
 | Cin | C1 | A786MW477M1VLAV010 (KEMET, 470µF/35V, 10mΩ) | `data/carte-flyback/a786mw477m1vlav010.yaml` |
 | Cout | C3, C4 | 2× Panasonic 16SVPG330M (330µF/16V, 6,5mΩ) | `data/carte-flyback/16svpg330m.yaml` |
 | Cboot | — | 4,7µF X7R 0805/25V (générique) | non sourcé séparément (§8) |
-| Ampli isolé retour Vout | U7 | AMC0311S (DWV-8, gain 1V/V) — retour Vout isolé vers C2000 (§12) | à sourcer (`composants-datasheets/data/carte-flyback/amc0311s.yaml`, session dédiée) |
+| Ampli isolé retour Vout | U7 | AMC0311R (DWV-8, ratiométrique) — retour Vout isolé vers C2000 (§12, renommé depuis AMC0311S en §13) | à sourcer (`composants-datasheets/data/carte-flyback/amc0311r.yaml`, session dédiée) |
 | Diode bootstrap secondaire | D2 | BAT54C (SOT-23, Schottky double cathode commune — un seul canal utilisé, pin2/2e anode en réserve) | à sourcer (remplace BAT54/SOD-123, §12bis) |
+| Empreinte U7/U8/U9 | — | `lib_fp/SOIC_DWV.pretty/SOIC-8_DWV_5.85x11.5mm_P1.27mm.kicad_mod`, custom (boîtier DWV renforcé, cotes land pattern fournies par l'utilisateur) — modèle 3D `DWV0008A.stp` fourni par l'utilisateur, transform identité à affiner (§13) |
+| Thermistance temp. primaire | TH1 | NTC 10k/B=4000, 0805 | non sourcé séparément (§13) |
+| Ampli isolé retour température | U8 | AMC0311R (DWV-8, ratiométrique) — retour température primaire isolé vers C2000 (§13) | à sourcer |
+| Shunt courant primaire | R19 | 1210, valeur provisoire 7,5mΩ | à sourcer (valeur et dissipation, §13) |
+| Ampli isolé retour courant | U9 | AMC0302R (DWV-8, ratiométrique, ±50mV) — retour courant primaire isolé vers C2000, protection surcourant Q1 (§13) | à sourcer |
 
 ## 10. Points ouverts
 
@@ -554,3 +559,232 @@ remplacé. `kicad-cli sch erc` : **0 erreur**, 3 avertissements — retour
 exact à la même catégorie d'avertissements que la toute première version
 du schéma (MSD1514 + GND2 de U4 + GND1 de U7, ce dernier n'existant pas
 avant l'ajout du retour Vout).
+
+## 13. Retours température primaire et courant primaire isolés, migration AMC0311S→AMC0311R (2026-10-02)
+
+**Bug trouvé et corrigé — C20/C22 n'étaient pas les seuls.** En vérifiant
+le câblage de U7 avant de le dupliquer pour un nouveau capteur, C18
+(découplage côté `VDD1`/`GND1` de U7, censé être `RAIL_3V3_SEC`/`VOUT_N`
+comme le reste du secondaire flottant) s'est révélé câblé
+`RAIL_3V3_SEC`/**`GND`** — même défaut que C20/C22 (§ séance précédente,
+pont AC vers le primaire sur un rail flottant). Corrigé : label `GND` du
+côté concerné → `VOUT_N`.
+
+**AMC0311S → AMC0311R (U7), et AMC0302R introduit (U9).** TI a réorganisé
+cette famille d'amplis isolés en deux lignées : suffixe **R** = sortie
+single-ended ratiométrique (calée sur `REFIN`, branchable directement sur
+un ADC sans étage supplémentaire), suffixe **D** = sortie différentielle à
+gain fixe (nécessite soit un réseau résistif précis soit un ampli-op
+tampon pour respecter l'impédance source voulue par l'ADC SAR du C2000).
+U7 est renommé AMC0311S→**AMC0311R** (même brochage VDD1/INP/SNSN/GND1 —
+GND2/REFIN/OUT/VDD2, fiche `datasheets/isolation/amc0311r.pdf`). Nouveau
+boîtier : **DWV** (SOIC-8 large, 5,85×11,5mm, isolation renforcée 5kVrms)
+— aucune empreinte KiCad standard ne couvre cette taille (le plus grand
+SOIC-8 bundled plafonne à 7,5×5,85mm), empreinte custom créée :
+`lib_fp/SOIC_DWV.pretty/SOIC-8_DWV_5.85x11.5mm_P1.27mm.kicad_mod`, cotes
+du land pattern fournies par l'utilisateur (crop datasheet, 2026-10-02) :
+8 pastilles 1,8×0,6mm, pas 1,27mm, entraxe gauche-droite 10,9mm (9,1mm de
+creepage nominal entre les deux groupes — c'est cet écart qui impose le
+boîtier large). Modèle 3D `DWV0008A.stp` fourni par l'utilisateur, attaché
+en transformation identité (offset/rotate à affiner dans KiCad comme pour
+les autres empreintes custom).
+
+**U8 — AMC0311R, retour température primaire isolé** (nouveau, absent de
+la spec initiale). Surveille la température MOSFET/transformateur côté
+primaire. Diviseur NTC (TH1, 10k/B=4000, 0805) + R16 (680Ω) :
+`RAIL_3V3_PRI`→TH1→nœud→R16→`GND`, nœud sur `INP` ; `SNSN`=`GND`. NTC en
+haut (sortie croissante avec la température, meilleure résolution côté
+chaud) : ≈0,21V à 25°C, ≈2,19V à 125°C — dans la plage linéaire 0-2,25V de
+l'AMC0311R, marge avant l'écrêtage souple à 2,56V. C29 (100pF) en
+compensation `INP`-`SNSN`, comme sur U7. Sortie filtrée R17(100Ω)/C30(1nF)
+→ `TEMP_PRI_FBACK`. Découplage C25/C26 (100nF).
+
+**U9 — AMC0302R, retour courant primaire isolé** (nouveau, protection
+MOSFET primaire). Shunt bas côté (R19, 1210, valeur provisoire 7,5mΩ — à
+sourcer en passe dédiée) inséré en série entre la source de Q1 et `GND`
+dans `flyback.kicad_sch`, lu en différentiel par U9 : `INP`=`ISENSE_P`
+(côté source Q1), `INN`=`GND` (un shunt 2 bornes n'a pas de masse de sens
+séparée — même nœud physique que le retour de courant). AMC0302R choisi
+plutôt que la famille ±250mV (AMC0300R/AMC0202R) : avec Ipk=6,55A/
+Irms=3,37A (coin 6,3V/3A, §3), un shunt ±50mV (≈7,5mΩ) dissipe ≈0,09W en
+régime établi contre ≈0,43W pour un shunt ±250mV (≈38mΩ) — marge plus
+confortable sur un boîtier 1210. Sortie filtrée R18(100Ω)/C33(1nF) →
+`ISENSE_PRI_FBACK`. Découplage C31/C32 (100nF).
+
+**Les deux nouveaux isolateurs étaient d'abord câblés côté contrôle sur
+`RAIL_3V3_PRI`/`GND`** (comme U7 à l'époque) — migré vers `GND_CTRL`/
+`3V3_CTRL` dans la même session, voir §14.
+
+Édition chirurgicale sur `isolation.kicad_sch` et `flyback.kicad_sch`
+(insertion de R19 en série sur une broche déjà câblée de Q1). Bug
+d'outillage rencontré et corrigé en cours de route : une suppression de
+fil par recherche de chaîne à indentation fixe a coupé un bloc
+multi-lignes au mauvais endroit (le texte `'\t)\n'` matchait aussi
+l'intérieur de `'\t\t)\n'`), laissant un fragment orphelin qui décalait
+tous les niveaux de parenthèses du fichier d'un cran — détecté par
+comparaison du nombre de `(` et de `)` sur le fichier entier (3482 contre
+3483), corrigé en retirant le fragment exact. Deuxième bug trouvé via le
+même type de symptôme : le cache `(lib_symbols ...)` embarqué dans
+`isolation.kicad_sch` n'avait jamais été mis à jour (resté sur
+`AMC0311S`, jamais eu `AMC0302R` ni `Device:Thermistor_NTC`) —
+`kicad-cli` résout les pins depuis CE cache, pas depuis la bibliothèque
+externe ; symptôme : tous les pins d'un symbole renvoyés en
+`pintype "unspecified"` sur un faux net unique, ce qui fait remonter en
+ERC des `pin_not_connected`/`label_dangling` épars et trompeurs. Les deux
+leçons sont documentées en détail dans la mémoire de session. `kicad-cli
+sch erc` final : **0 erreur**, warnings restants = avertissements attendus
+déjà présents (GND2/GND1 sur net flottant `VOUT_N`, cache MSD1514
+préexistant) + désalignements de grille cosmétiques sur les nouveaux
+composants (replacement manuel prévu par l'utilisateur, comme pour tous
+les ajouts précédents sur ces feuilles).
+
+## 14. Isolation réelle du C2000 — GND_CTRL/3V3_CTRL, connecteur scindé en 2 (2026-10-02)
+
+Mise en œuvre du point ouvert du §13 : jusqu'ici U3 (et dans une moindre
+mesure U4/U5/U7/U8/U9 côté contrôle) partageaient `RAIL_3V3_PRI`/`GND`
+des deux côtés de leur barrière d'isolation — la puce isolante existait,
+mais sans séparation galvanique réelle vis-à-vis du C2000 externe, les
+deux « côtés » étant en fait le même rail/masse générés localement sur
+cette carte.
+
+**Câblage migré vers `3V3_CTRL`/`GND_CTRL`** (alimentation/masse
+réellement importées depuis la carte C2000, sans lien cuivre avec
+`RAIL_3V3_PRI`/`GND`) :
+
+| Composant | Broches migrées | Broches inchangées |
+|---|---|---|
+| U3 (ISO7710, PWM primaire) | VCC1(1,3), GND1(4) | VCC2(8)/GND2(5) → primaire local (vers U1) |
+| U4 (ISO7710, PWM secondaire) | VCC1(1,3), GND1(4) | VCC2(8)/GND2(5) → `RAIL_3V3_SEC`/`VOUT_N`, secondaire flottant |
+| U5 (DPC817, EN) | pin2 (cathode) | pins3/4 (sortie) → primaire local |
+| U7 (AMC0311R, retour Vout) | VDD2(8)/GND2(5)/REFIN(6) | VDD1/GND1/SNSN → secondaire flottant |
+| U8 (AMC0311R, retour température) | VDD2(8)/GND2(5)/REFIN(6) | VDD1/GND1/SNSN → primaire local (thermistance) |
+| U9 (AMC0302R, retour courant) | VDD2(8)/GND2(5)/REFIN(6) | VDD1/GND1/INN → primaire local (shunt) |
+
+Chaque composant migré garde son découplage 100nF propre, lui aussi
+basculé sur `3V3_CTRL`/`GND_CTRL` (C15 pour U3, C17 pour U4, C28 pour U7,
+C26 pour U8, C32 pour U9).
+
+**Connecteur Cpu1 (8 broches, un seul) scindé en deux nappes 2x4**,
+séparées par sens de signal :
+
+```
+CpuOut (sorties C2000 -> carte)      CpuIn (entrées C2000 / ADC)
+1 = 3V3_CTRL                         1 = 3V3_CTRL
+2 = GND_CTRL                         2 = GND_CTRL
+3 = PWM_PRI_IN                       3 = VOUT_FBACK
+4 = GND_CTRL                         4 = GND_CTRL
+5 = EN_PRI_IN                        5 = TEMP_PRI_FBACK
+6 = GND_CTRL                         6 = GND_CTRL
+7 = PWM_SEC_IN                       7 = ISENSE_PRI_FBACK
+8 = GND_CTRL                         8 = GND_CTRL
+```
+
+Les 4 broches de marge prévues sur CpuIn (§13bis) ont été consommées par
+les deux nouveaux retours température/courant — plus de marge disponible
+sur ce connecteur pour un futur ajout, à rouvrir si besoin.
+
+**`PWR_FLAG` ajoutés sur `3V3_CTRL`/`GND_CTRL`** (sur CpuOut) : ces rails
+sont importés depuis la carte C2000, invisibles pour l'ERC de cette
+feuille — même convention déjà utilisée dans `alim.kicad_sch` pour
+`VIN`/`GND`/`VBOOT`/`VOUT_N`, sans quoi ERC lève `power_pin_not_driven`
+sur chaque pin `power_in` de ce nouveau rail.
+
+Édition chirurgicale (22 renommages de label ciblés par coordonnée exacte
+— jamais de remplacement global `RAIL_3V3_PRI`→`3V3_CTRL`, qui aurait
+cassé le primaire — + suppression de Cpu1 et ses 8 étiquettes + ajout de
+2 connecteurs + 2 PWR_FLAG). Même bug de cache `lib_symbols` que le §13,
+cette fois sur `power:PWR_FLAG` (jamais utilisé dans cette feuille avant
+ces 2 flags) — diagnostiqué et corrigé par la même méthode. `kicad-cli
+sch erc` final : **0 erreur**, 37 avertissements (même famille que §13 :
+désalignements de grille cosmétiques sur les nouveaux objets +
+avertissements `GND`-flottant déjà acceptés).
+
+**Reste à faire côté utilisateur** : replacement de CpuOut/CpuIn et de
+tous les composants migrés dans KiCad (positions provisoires côté
+script), mise à jour du PCB (F8), et vérification visuelle que le
+système C2000 externe n'a pas déjà une masse reliée à celle de cette
+carte par un autre chemin (boîtier, câble blindé) — auquel cas la
+séparation serait refaite ailleurs sans que le schéma le montre.
+
+## 15. Nouvelle feuille « Polarisation » — pilotage actif de HV_BIAS depuis une source 400V (2026-10-02)
+
+Besoin exprimé : piloter depuis le C2000 la tension du point milieu du
+pont symétrique existant (R9/R10, 2×100kΩ entre `VOUT_P` et `VOUT_N`,
+`flyback.kicad_sch`) — ce point (`HV_BIAS`, déjà posé par l'utilisateur
+avec un connecteur-témoin `Bias1`) fixe de combien le secondaire flottant
+est élevé au-dessus du primaire. Jusqu'ici réglé passivement ; nouveau
+besoin : le rendre réglable 0-90V depuis une alimentation externe 400V
+max, pilotée/lue par le C2000.
+
+**Nouvelle feuille `polarisation.kicad_sch`**, raccrochée à la racine
+(page 5). Chaîne complète :
+
+**Source de courant 300µA** (400V→`HV_BIAS`, remplace un simple pont
+résistif après calcul du courant de fuite probable) : Q3 (BSS127I,
+600V, élément de puissance) + Q4 (MMBT2222, boucle de régulation) + R25
+(2kΩ, fixe I=Vbe/R25≈300µA) + R26-R29 (4×2M7 en série, polarisation
+grille Q3 depuis 400V, chaîne pour la tenue en tension — un seul 0805 ne
+tient que ~150V). Pourquoi un courant constant plutôt qu'un pont
+résistif classique : le courant de fuite chauffage-cathode des tubes
+(~1µA/tube ×10 tubes ≈10µA max, à confirmer sur le datasheet du tube
+réel) doit rester négligeable devant le courant de polarisation — marge
+×30 avec 300µA, la boucle logicielle absorbe le reste.
+
+**Protection `HV_BIAS`** : D3 (TVS SMCJ100A, même famille que D1)
+clampe à ~100V si Q5 se bloque ; R21 (1MΩ) tire la grille de Q5 vers
+`RAIL_3V3_PRI`, donc une perte de commande sature Q5 (HV_BIAS→~0V,
+sens sûr) plutôt que de le bloquer.
+
+**Commande grille Q5 (BSS127I, résistance variable 0-180kΩ à 300µA
+pour balayer 0-90V)** : PWM du C2000 → U10 (ISO7710, traverse
+`GND_CTRL`↔`GND` comme U3/U4) → filtre R20(10k)/C36(100nF) → grille Q5.
+Logic-level (Vth max 2,6V) choisi spécifiquement pour ce rôle — un
+MOSFET de puissance standard (Vth 3-4V) ne garantirait pas de conduire
+avec seulement 3,3V de commande.
+
+**Retour mesure `BIAS_FBACK`** : diviseur R22(470k)/R23(10k) (ratio
+calé pour amener 100V→2,08V, sous le plafond 2,25V de l'AMC0311R) + C40
+(100pF comp.) → U11 (AMC0311R, 4e instance, même famille que
+U7/U8/U9) → filtre R24(100Ω)/C41(1nF) → `BIAS_FBACK`.
+
+**Connecteurs C2000 agrandis 2x04→2x08 (16 broches)**, décision de
+l'utilisateur pour garder de la marge et rester standard avec
+d'autres cartes (shield, devkits) : `CpuOut`/`CpuIn` recréés en
+`Connector_Generic:Conn_01x16` / `PinHeader_2x08_P2.54mm_Vertical`,
+8 signaux existants conservés + `PWM_BIAS_IN`/`BIAS_FBACK` nouveaux +
+6 broches de marge (3 par connecteur) pour de futurs ajouts. Nouveau
+connecteur dédié `J1` (`HV400_IN`) pour l'alimentation 400V externe,
+avec son propre `PWR_FLAG`.
+
+**Composants ajoutés à `lib/custom_parts.kicad_sym`** : BSS127I et
+MMBT2222, construits en autonome (pas de mécanisme `extends` de la
+bibliothèque standard KiCad — `Transistor_FET:BSS127S` hérite de
+`Q_NMOS_GSD`, ambigu à mettre en cache correctement dans une feuille,
+cf. mémoire de session) avec le même brochage que les symboles standard
+KiCad (G/S/D ou B/E/C aux mêmes coordonnées), mais pointant vers la
+datasheet Infineon réellement sourcée plutôt que la référence
+générique Diodes Inc. du symbole KiCad.
+
+Deux bugs trouvés et corrigés en cours de route (détaillés en mémoire
+de session) : (1) `Device:D_TVS` a des broches horizontales
+`(-3.81,0)/(3.81,0)`, pas verticales comme `Device:R`/`Device:C` — un
+générateur de coordonnées validé sur R/C donnait des broches "non
+connectées" en ERC pour D3 tant que ce n'était pas corrigé ; (2) le
+cache `lib_symbols` de `isolation.kicad_sch` n'avait pas
+`Connector_Generic:Conn_01x16` (jamais utilisé dans cette feuille avant
+l'agrandissement des connecteurs C2000) — même symptôme et même
+diagnostic que pour `AMC0302R`/`power:PWR_FLAG` au §14.
+
+`kicad-cli sch erc` sur le projet complet (4 feuilles) : **0 erreur
+inattendue** — seules les 6 broches de marge volontairement non
+connectées (NC) sur les connecteurs 16 broches remontent en erreur
+(attendu pour des broches de réserve), plus les avertissements déjà
+documentés (grille cosmétique sur les nouveaux composants, `GND`
+flottant sur `VOUT_N`, cache MSD1514 préexistant).
+
+**Reste à sourcer/vérifier** : courant de fuite réel du tube utilisé
+(datasheet constructeur, remplace l'hypothèse 1µA/tube), valeur
+définitive de R25 (dépend de la vraie plage de conduction du BSS127I
+mesurée au banc, pas juste du Vbe), et le repositionnement de tous les
+nouveaux composants dans KiCad (placés par script à des coordonnées
+provisoires, comme d'habitude sur ces feuilles).

@@ -6,7 +6,7 @@ tube à vide et un étage de préamplification bas bruit, conçue sous KiCad 10.
 Convertisseur flyback 200kHz, 11-25V en entrée → 5,5-13V/3A en sortie.
 Secondaire entièrement flottant, élevable de 0 à 90V par un pont symétrique
 2×100kΩ (une résistance vers Vout+, une vers Vout-) — pour réduire le stress
-cathode/chauffage sur un préamplificateur à tubes bas bruit.
+cathode/chauffage sur un préamplificateur à tubes bas bruit (ùontage cascode).
 
 <p align="center">
   <img src="doc/kicad-filament.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">
@@ -30,7 +30,7 @@ sortie) est sourcé avec sa propre fiche datasheet dans
 — page citée, base (absolue / recommandée / typique / calculée), jamais de
 valeur choisie à l'oeil. Ce sourcing a d'ailleurs fait revenir deux fois sur
 le choix de Cin et Cout : le premier calcul prenait le coin 13V/3A (39W)
-comme pire cas, avant d'être recorrigé sur les vrais cas d'usage — deux
+comme pire cas, avant d'être recorrigé sur les vrais coins d'usage — deux
 câblages de filament qui tombent à **la même puissance réelle** (18,9W) et
 divisent par deux la contrainte de courant et d'ondulation retenue au départ.
 Le détail (formules, marges, historique des choix) est dans
@@ -53,7 +53,7 @@ isolateurs (5000V) — pas de slot d'isolation dans le PCB.
 
 ---
 
-## Le schéma est généré, les feuilles sont ensuite du travail à la main
+## Le schéma est généré, les feuilles sont ensuite routées à la main
 
 ```
 00-intention-conception.md      source de vérité (calculs, marges, sourcing)

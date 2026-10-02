@@ -686,7 +686,7 @@
         "uuid": "c8449ac7-87b3-4a93-889f-06dd686c5aff"
       }
     ],
-    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,R9-12,Reg3",
+    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,R9-12,Reg3,CpuIn1,CpuOut1",
     "variants": []
   },
   "sheets": [

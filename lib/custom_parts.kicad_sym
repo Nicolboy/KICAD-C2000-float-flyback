@@ -351,16 +351,16 @@
 			)
 		)
 	)
-	(symbol "AMC0311S"
+	(symbol "AMC0311R"
 		(pin_names (offset 0.508))
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "U" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "AMC0311S" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Package_SO:SOIC-8_7.5x5.85mm_P1.27mm" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/amc0311s.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Description" "Precision reinforced isolated amplifier, fixed gain 1V/V, 0-2.25V linear input, DWV-8" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "ki_keywords" "isolated amplifier isoamp AMC0311S" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(symbol "AMC0311S_0_1"
+		(property "Value" "AMC0311R" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "SOIC_DWV:SOIC-8_DWV_5.85x11.5mm_P1.27mm" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/amc0311r.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Description" "Precision reinforced isolated amplifier, ratiometric single-ended output, 77mV-2.25V linear input, DWV-8" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "ki_keywords" "isolated amplifier isoamp AMC0311R" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(symbol "AMC0311R_0_1"
 			(rectangle
 				(start -7.62 6.35) (end 7.62 -6.35)
 				(stroke (width 0.254) (type default))
@@ -372,7 +372,7 @@
 				(fill (type none))
 			)
 		)
-		(symbol "AMC0311S_1_1"
+		(symbol "AMC0311R_1_1"
 			(pin power_in line
 				(at -10.16 3.81 0)
 				(length 2.54)
@@ -420,6 +420,152 @@
 				(length 2.54)
 				(name "GND2" (effects (font (size 1.27 1.27))))
 				(number "5" (effects (font (size 1.27 1.27))))
+			)
+		)
+	)
+	(symbol "AMC0302R"
+		(pin_names (offset 0.508))
+		(exclude_from_sim no) (in_bom yes) (on_board yes)
+		(property "Reference" "U" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "AMC0302R" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "SOIC_DWV:SOIC-8_DWV_5.85x11.5mm_P1.27mm" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/amc0302r.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Description" "Precision reinforced isolated amplifier, ratiometric single-ended output, +-50mV input optimise shunt direct, DWV-8" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "ki_keywords" "isolated amplifier isoamp current shunt AMC0302R" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(symbol "AMC0302R_0_1"
+			(rectangle
+				(start -7.62 6.35) (end 7.62 -6.35)
+				(stroke (width 0.254) (type default))
+				(fill (type background))
+			)
+			(polyline
+				(pts (xy 0 6.35) (xy 0 -6.35))
+				(stroke (width 0.127) (type dash))
+				(fill (type none))
+			)
+		)
+		(symbol "AMC0302R_1_1"
+			(pin power_in line
+				(at -10.16 3.81 0)
+				(length 2.54)
+				(name "VDD1" (effects (font (size 1.27 1.27))))
+				(number "1" (effects (font (size 1.27 1.27))))
+			)
+			(pin input line
+				(at -10.16 1.27 0)
+				(length 2.54)
+				(name "INP" (effects (font (size 1.27 1.27))))
+				(number "2" (effects (font (size 1.27 1.27))))
+			)
+			(pin input line
+				(at -10.16 -1.27 0)
+				(length 2.54)
+				(name "INN" (effects (font (size 1.27 1.27))))
+				(number "3" (effects (font (size 1.27 1.27))))
+			)
+			(pin power_in line
+				(at -10.16 -3.81 0)
+				(length 2.54)
+				(name "GND1" (effects (font (size 1.27 1.27))))
+				(number "4" (effects (font (size 1.27 1.27))))
+			)
+			(pin power_in line
+				(at 10.16 3.81 180)
+				(length 2.54)
+				(name "VDD2" (effects (font (size 1.27 1.27))))
+				(number "8" (effects (font (size 1.27 1.27))))
+			)
+			(pin output line
+				(at 10.16 1.27 180)
+				(length 2.54)
+				(name "OUT" (effects (font (size 1.27 1.27))))
+				(number "7" (effects (font (size 1.27 1.27))))
+			)
+			(pin input line
+				(at 10.16 -1.27 180)
+				(length 2.54)
+				(name "REFIN" (effects (font (size 1.27 1.27))))
+				(number "6" (effects (font (size 1.27 1.27))))
+			)
+			(pin power_in line
+				(at 10.16 -3.81 180)
+				(length 2.54)
+				(name "GND2" (effects (font (size 1.27 1.27))))
+				(number "5" (effects (font (size 1.27 1.27))))
+			)
+		)
+	)
+	(symbol "BSS127I"
+		(pin_names (offset 0.508))
+		(exclude_from_sim no) (in_bom yes) (on_board yes)
+		(property "Reference" "Q" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "BSS127I" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/transistors/infineon-bss127i-datasheet-en.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Description" "600V N-Channel enhancement MOSFET, small-signal (21mA), logic-level (4.5V rated), SOT-23" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "ki_keywords" "MOSFET small-signal high-voltage BSS127" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(symbol "BSS127I_0_1"
+			(rectangle
+				(start -2.54 7.62) (end 2.54 -7.62)
+				(stroke (width 0.254) (type default))
+				(fill (type background))
+			)
+		)
+		(symbol "BSS127I_1_1"
+			(pin input line
+				(at -5.08 0.00 0)
+				(length 2.54)
+				(name "G" (effects (font (size 1.27 1.27))))
+				(number "1" (effects (font (size 1.27 1.27))))
+			)
+			(pin passive line
+				(at 2.54 -5.08 90)
+				(length 2.54)
+				(name "S" (effects (font (size 1.27 1.27))))
+				(number "2" (effects (font (size 1.27 1.27))))
+			)
+			(pin passive line
+				(at 2.54 5.08 270)
+				(length 2.54)
+				(name "D" (effects (font (size 1.27 1.27))))
+				(number "3" (effects (font (size 1.27 1.27))))
+			)
+		)
+	)
+	(symbol "MMBT2222"
+		(pin_names (offset 0.508))
+		(exclude_from_sim no) (in_bom yes) (on_board yes)
+		(property "Reference" "Q" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "MMBT2222" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/MMBT2222A.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Description" "NPN small-signal switching transistor, SOT-23" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "ki_keywords" "NPN transistor MMBT2222" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(symbol "MMBT2222_0_1"
+			(rectangle
+				(start -2.54 7.62) (end 2.54 -7.62)
+				(stroke (width 0.254) (type default))
+				(fill (type background))
+			)
+		)
+		(symbol "MMBT2222_1_1"
+			(pin input line
+				(at -5.08 0.00 0)
+				(length 2.54)
+				(name "B" (effects (font (size 1.27 1.27))))
+				(number "1" (effects (font (size 1.27 1.27))))
+			)
+			(pin passive line
+				(at 2.54 -5.08 90)
+				(length 2.54)
+				(name "E" (effects (font (size 1.27 1.27))))
+				(number "2" (effects (font (size 1.27 1.27))))
+			)
+			(pin passive line
+				(at 2.54 5.08 270)
+				(length 2.54)
+				(name "C" (effects (font (size 1.27 1.27))))
+				(number "3" (effects (font (size 1.27 1.27))))
 			)
 		)
 	)

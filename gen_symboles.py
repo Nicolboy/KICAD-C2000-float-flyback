@@ -160,7 +160,7 @@ def ucc5304():
     )
 
 
-def amc0311s():
+def amc0311r():
     body = rect(-7.62, 6.35, 7.62, -6.35)
     barrier = (
         '\t\t\t(polyline\n'
@@ -181,14 +181,100 @@ def amc0311s():
     ])
     return (
         header(
-            "AMC0311S", "U", "AMC0311S",
-            "Package_SO:SOIC-8_7.5x5.85mm_P1.27mm",
-            "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/amc0311s.pdf",
-            "Precision reinforced isolated amplifier, fixed gain 1V/V, 0-2.25V linear input, DWV-8",
-            "isolated amplifier isoamp AMC0311S",
+            "AMC0311R", "U", "AMC0311R",
+            "SOIC_DWV:SOIC-8_DWV_5.85x11.5mm_P1.27mm",
+            "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/amc0311r.pdf",
+            "Precision reinforced isolated amplifier, ratiometric single-ended output, 77mV-2.25V linear input, DWV-8",
+            "isolated amplifier isoamp AMC0311R",
         )
-        + '\t\t(symbol "AMC0311S_0_1"\n' + body + barrier + '\t\t)\n'
-        + '\t\t(symbol "AMC0311S_1_1"\n' + pins + '\t\t)\n'
+        + '\t\t(symbol "AMC0311R_0_1"\n' + body + barrier + '\t\t)\n'
+        + '\t\t(symbol "AMC0311R_1_1"\n' + pins + '\t\t)\n'
+        + '\t)\n'
+    )
+
+
+def amc0302r():
+    body = rect(-7.62, 6.35, 7.62, -6.35)
+    barrier = (
+        '\t\t\t(polyline\n'
+        '\t\t\t\t(pts (xy 0 6.35) (xy 0 -6.35))\n'
+        '\t\t\t\t(stroke (width 0.127) (type dash))\n'
+        '\t\t\t\t(fill (type none))\n'
+        '\t\t\t)\n'
+    )
+    pins = "".join([
+        pin("1", "VDD1", -10.16, 3.81, 0, "power_in"),
+        pin("2", "INP", -10.16, 1.27, 0, "input"),
+        pin("3", "INN", -10.16, -1.27, 0, "input"),
+        pin("4", "GND1", -10.16, -3.81, 0, "power_in"),
+        pin("8", "VDD2", 10.16, 3.81, 180, "power_in"),
+        pin("7", "OUT", 10.16, 1.27, 180, "output"),
+        pin("6", "REFIN", 10.16, -1.27, 180, "input"),
+        pin("5", "GND2", 10.16, -3.81, 180, "power_in"),
+    ])
+    return (
+        header(
+            "AMC0302R", "U", "AMC0302R",
+            "SOIC_DWV:SOIC-8_DWV_5.85x11.5mm_P1.27mm",
+            "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/amc0302r.pdf",
+            "Precision reinforced isolated amplifier, ratiometric single-ended output, +-50mV input optimise shunt direct, DWV-8",
+            "isolated amplifier isoamp current shunt AMC0302R",
+        )
+        + '\t\t(symbol "AMC0302R_0_1"\n' + body + barrier + '\t\t)\n'
+        + '\t\t(symbol "AMC0302R_1_1"\n' + pins + '\t\t)\n'
+        + '\t)\n'
+    )
+
+
+def bss127i():
+    # Corps simple (comme iso7710/amc0311r) ; brochage et coordonnees de
+    # pin IDENTIQUES a Q_NMOS_GSD standard KiCad (Transistor_FET.kicad_sym)
+    # -- G=1 (-5.08,0), S=2 (2.54,-5.08), D=3 (2.54,5.08) -- pour rester
+    # compatible avec tout schema qui calculerait les positions de pin a
+    # partir de cette table standard. Datasheet/footprint pointent sur la
+    # piece Infineon reellement sourcee (datasheets/transistors/
+    # infineon-bss127i-datasheet-en.pdf), pas la reference Diodes Inc. du
+    # symbole generique KiCad "BSS127S".
+    body = rect(-2.54, 7.62, 2.54, -7.62)
+    pins = "".join([
+        pin("1", "G", -5.08, 0, 0, "input", length=2.54),
+        pin("2", "S", 2.54, -5.08, 90, "passive", length=2.54),
+        pin("3", "D", 2.54, 5.08, 270, "passive", length=2.54),
+    ])
+    return (
+        header(
+            "BSS127I", "Q", "BSS127I",
+            "Package_TO_SOT_SMD:SOT-23",
+            "${KIPRJMOD}/../composants-datasheets/datasheets/transistors/infineon-bss127i-datasheet-en.pdf",
+            "600V N-Channel enhancement MOSFET, small-signal (21mA), logic-level (4.5V rated), SOT-23",
+            "MOSFET small-signal high-voltage BSS127",
+        )
+        + '\t\t(symbol "BSS127I_0_1"\n' + body + '\t\t)\n'
+        + '\t\t(symbol "BSS127I_1_1"\n' + pins + '\t\t)\n'
+        + '\t)\n'
+    )
+
+
+def mmbt2222():
+    # Brochage et coordonnees IDENTIQUES a Q_NPN_BEC standard KiCad
+    # (Transistor_BJT.kicad_sym) -- B=1 (-5.08,0), E=2 (2.54,-5.08),
+    # C=3 (2.54,5.08).
+    body = rect(-2.54, 7.62, 2.54, -7.62)
+    pins = "".join([
+        pin("1", "B", -5.08, 0, 0, "input", length=2.54),
+        pin("2", "E", 2.54, -5.08, 90, "passive", length=2.54),
+        pin("3", "C", 2.54, 5.08, 270, "passive", length=2.54),
+    ])
+    return (
+        header(
+            "MMBT2222", "Q", "MMBT2222",
+            "Package_TO_SOT_SMD:SOT-23",
+            "https://assets.nexperia.com/documents/data-sheet/MMBT2222A.pdf",
+            "NPN small-signal switching transistor, SOT-23",
+            "NPN transistor MMBT2222",
+        )
+        + '\t\t(symbol "MMBT2222_0_1"\n' + body + '\t\t)\n'
+        + '\t\t(symbol "MMBT2222_1_1"\n' + pins + '\t\t)\n'
         + '\t)\n'
     )
 
@@ -327,7 +413,8 @@ def mosfet_d2pak():
 
 def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    body = ucc27517() + iso7710() + msd1514() + mosfet_d2pak() + ucc5304() + amc0311s()
+    body = (ucc27517() + iso7710() + msd1514() + mosfet_d2pak() + ucc5304() + amc0311r()
+            + amc0302r() + bss127i() + mmbt2222())
     text = (
         '(kicad_symbol_lib\n'
         '\t(version 20241209)\n'

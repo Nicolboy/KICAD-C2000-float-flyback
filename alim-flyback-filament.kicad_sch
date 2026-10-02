@@ -143,6 +143,52 @@
 			)
 		)
 	)
+	(sheet
+		(at 20 90)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "94a61bea-1545-4ab4-b296-7d1dc7a0de10")
+		(property "Sheetname" "Polarisation"
+			(at 20 89.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "polarisation.kicad_sch"
+			(at 20 140.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "alim-flyback-filament"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
+					(page "5")
+				)
+			)
+		)
+	)
 	(sheet_instances
 		(path "/"
 			(page "1")
