@@ -48,7 +48,7 @@
 	(pad "8" smd rect (at 5.45 -1.905) (size 1.8 0.6) (layers "F.Cu" "F.Paste" "F.Mask"))
 
 	(model "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/DWV0008A.stp"
-		(offset (xyz 0 0 0))
+		(offset (xyz 0 0 1.746))
 		(scale (xyz 1 1 1))
 		(rotate (xyz -90 0 -90))
 	)

@@ -6,7 +6,7 @@ tube à vide et un étage de préamplification bas bruit, conçue sous KiCad 10.
 Convertisseur flyback 200kHz, 11-25V en entrée → 5,5-13V/3A en sortie.
 Secondaire entièrement flottant, élevable de 0 à 90V par un pont symétrique
 2×100kΩ (une résistance vers Vout+, une vers Vout-) — pour réduire le stress
-cathode/chauffage sur un préamplificateur à tubes bas bruit (ùontage cascode).
+cathode/chauffage sur un préamplificateur à tubes bas bruit (montage cascode).
 
 <p align="center">
   <img src="doc/kicad-filament.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">

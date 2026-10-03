@@ -706,41 +706,47 @@ système C2000 externe n'a pas déjà une masse reliée à celle de cette
 carte par un autre chemin (boîtier, câble blindé) — auquel cas la
 séparation serait refaite ailleurs sans que le schéma le montre.
 
-## 15. Nouvelle feuille « Polarisation » — pilotage actif de HV_BIAS depuis une source 400V (2026-10-02)
+## 15. Nouvelle feuille « Polarisation » — pilotage actif de HV_BIAS depuis une source 80V (2026-10-02)
 
 Besoin exprimé : piloter depuis le C2000 la tension du point milieu du
 pont symétrique existant (R9/R10, 2×100kΩ entre `VOUT_P` et `VOUT_N`,
 `flyback.kicad_sch`) — ce point (`HV_BIAS`, déjà posé par l'utilisateur
 avec un connecteur-témoin `Bias1`) fixe de combien le secondaire flottant
 est élevé au-dessus du primaire. Jusqu'ici réglé passivement ; nouveau
-besoin : le rendre réglable 0-90V depuis une alimentation externe 400V
-max, pilotée/lue par le C2000.
+besoin : le rendre réglable depuis une alimentation externe dédiée fixe
+80V (`J1`/`HV80_IN`), pilotée/lue par le C2000. (Première itération
+envisagée à 400V avec une chaîne de 4 résistances en série pour la tenue
+en tension ; simplifiée à 80V fixe — un seul 0805 suffit, cf. schéma
+réel.)
 
 **Nouvelle feuille `polarisation.kicad_sch`**, raccrochée à la racine
-(page 5). Chaîne complète :
+(page 5), régénérée en respectant les conventions du projet : étiquettes
+globales uniquement (aucun segment de fil explicite), tous les
+composants alignés sur la grille 1,27mm. Chaîne complète :
 
-**Source de courant 300µA** (400V→`HV_BIAS`, remplace un simple pont
-résistif après calcul du courant de fuite probable) : Q3 (BSS127I,
-600V, élément de puissance) + Q4 (MMBT2222, boucle de régulation) + R25
-(2kΩ, fixe I=Vbe/R25≈300µA) + R26-R29 (4×2M7 en série, polarisation
-grille Q3 depuis 400V, chaîne pour la tenue en tension — un seul 0805 ne
-tient que ~150V). Pourquoi un courant constant plutôt qu'un pont
-résistif classique : le courant de fuite chauffage-cathode des tubes
-(~1µA/tube ×10 tubes ≈10µA max, à confirmer sur le datasheet du tube
-réel) doit rester négligeable devant le courant de polarisation — marge
-×30 avec 300µA, la boucle logicielle absorbe le reste.
+**Source de courant régulée** (`HV80_IN`→`HV_BIAS`, remplace un simple
+pont résistif après calcul du courant de fuite probable) : Q3 (BSS127I,
+élément de puissance) + Q4 (MMBT2222, boucle de régulation) + R25 (2kΩ,
+fixe le point de régulation à I=Vbe/R25) + R26 (résistance unique,
+polarisation grille Q3 depuis `HV80_IN` — valeur corrigée par simulation,
+voir §15bis). Pourquoi un courant régulé plutôt qu'un pont résistif
+classique : le courant de fuite chauffage-cathode des tubes (~1µA/tube
+×10 tubes ≈10µA max, à confirmer sur le datasheet du tube réel) doit
+rester négligeable devant le courant de polarisation — large marge dans
+tous les cas, la boucle logicielle absorbe le reste.
 
 **Protection `HV_BIAS`** : D3 (TVS SMCJ100A, même famille que D1)
 clampe à ~100V si Q5 se bloque ; R21 (1MΩ) tire la grille de Q5 vers
 `RAIL_3V3_PRI`, donc une perte de commande sature Q5 (HV_BIAS→~0V,
 sens sûr) plutôt que de le bloquer.
 
-**Commande grille Q5 (BSS127I, résistance variable 0-180kΩ à 300µA
-pour balayer 0-90V)** : PWM du C2000 → U10 (ISO7710, traverse
-`GND_CTRL`↔`GND` comme U3/U4) → filtre R20(10k)/C36(100nF) → grille Q5.
-Logic-level (Vth max 2,6V) choisi spécifiquement pour ce rôle — un
-MOSFET de puissance standard (Vth 3-4V) ne garantirait pas de conduire
-avec seulement 3,3V de commande.
+**Commande grille Q5 (BSS127I, résistance variable 0-180kΩ)** : PWM du
+C2000 → U10 (ISO7710, traverse `GND_CTRL`↔`GND` comme U3/U4) → filtre
+R20(10k)/C36(100nF) → grille Q5. Logic-level (Vth max 2,6V) choisi
+spécifiquement pour ce rôle — un MOSFET de puissance standard (Vth
+3-4V) ne garantirait pas de conduire avec seulement 3,3V de commande.
+Plage réelle de `HV_BIAS` atteignable : voir §15bis (bornée par la
+source de courant, pas par Q5).
 
 **Retour mesure `BIAS_FBACK`** : diviseur R22(470k)/R23(10k) (ratio
 calé pour amener 100V→2,08V, sous le plafond 2,25V de l'AMC0311R) + C40
@@ -753,7 +759,7 @@ d'autres cartes (shield, devkits) : `CpuOut`/`CpuIn` recréés en
 `Connector_Generic:Conn_01x16` / `PinHeader_2x08_P2.54mm_Vertical`,
 8 signaux existants conservés + `PWM_BIAS_IN`/`BIAS_FBACK` nouveaux +
 6 broches de marge (3 par connecteur) pour de futurs ajouts. Nouveau
-connecteur dédié `J1` (`HV400_IN`) pour l'alimentation 400V externe,
+connecteur dédié `J1` (`HV80_IN`) pour l'alimentation 80V externe,
 avec son propre `PWR_FLAG`.
 
 **Composants ajoutés à `lib/custom_parts.kicad_sym`** : BSS127I et
@@ -788,3 +794,54 @@ définitive de R25 (dépend de la vraie plage de conduction du BSS127I
 mesurée au banc, pas juste du Vbe), et le repositionnement de tous les
 nouveaux composants dans KiCad (placés par script à des coordonnées
 provisoires, comme d'habitude sur ces feuilles).
+
+## 15bis. Simulation SPICE de la source de courant — R26 corrigé de 2M7 à 75k (2026-10-03)
+
+Avant de sourcer les composants, simulation du sous-circuit Q3/Q4/R25/R26
+sous ngspice (binaire console officiel, hors KiCad qui n'embarque
+`ngspice.dll` que pour son usage interne), avec les modèles SPICE réels
+du fabricant Diodes Inc. (second-source de la famille BSS127 et du
+MMBT2222A — pas l'Infineon BSS127I réellement sourcé, donc résultat
+indicatif sur la valeur exacte, fiable sur l'allure du comportement ; à
+confirmer au banc avec la pièce réelle).
+
+**Erreur de topologie trouvée** : l'hypothèse de conception initiale
+(« R26 ne fournit qu'un léger courant de polarisation de grille, le
+canal D-S de Q3 porte l'essentiel du courant régulé ») est fausse. La
+simulation montre que le canal de Q3 reste quasi inerte (<1µA) sur toute
+la plage : la contre-réaction via Q4 maintient Vgs(Q3) à peine au-dessus
+du seuil, donc la quasi-totalité du courant imposé par R26 est détournée
+par Q4 (collecteur→émetteur) vers R25, pas par le canal de Q3. Consé-
+quence directe : **c'est R26 qui fixe le courant disponible**
+(I ≈ (80V − HV_BIAS − ~3V de marge Vgs+Vbe)/R26), pas R25/Vbe seuls. Le
+montage se comporte donc, sur toute sa plage utile, plus comme une
+résistance (décroissance quasi linéaire du courant avec `HV_BIAS`) que
+comme une vraie source de courant plate.
+
+Avec la valeur d'origine (2M7, dimensionnée pour ~300µA sous l'hypothèse
+fausse ci-dessus), le courant réellement disponible n'atteignait que
+20-30µA en simulation — largement insuffisant.
+
+**Courbe de compliance mesurée** (balayage de `HV_BIAS` forcé de 0 à
+80V, modèle Vth=2,0V représentatif de l'Infineon BSS127I) pour R26=75k,
+valeur retenue :
+
+| HV_BIAS | Courant disponible |
+|---|---|
+| 0V | 1,01mA |
+| 40V | 0,49mA |
+| 60V | 0,23mA |
+| 75V | 32µA |
+| 78V | ≈0 |
+
+Courant quasi nul au-delà de ~78V (marge de tension de la boucle
+Q3/Q4 — Vgs(Q3)+Vbe(Q4)+chute R25, ~3V — épuisée face au rail fixe
+80V) ; décision explicite de l'utilisateur d'accepter ce comportement
+(1mA en bas de plage, encore quelques dizaines de µA à 75V) plutôt que
+de viser une vraie source de courant plate sur toute la plage.
+
+**R26 : 2M7 → 75k** (valeur standard E24) appliqué dans
+`polarisation.kicad_sch`. Dissipation vérifiée au pire point (HV_BIAS=0V,
+~75,3V aux bornes de R26, 1,01mA) : ~76mW, sous les 125mW d'un 0805 —
+pas de changement de boîtier nécessaire. `kicad-cli sch erc` re-vérifié
+sur le projet complet : aucune violation nouvelle (même base qu'au §15).
