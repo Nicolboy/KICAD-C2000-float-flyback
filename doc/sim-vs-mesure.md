@@ -50,13 +50,13 @@ trancher plus finement).
 ### ⚠ Constat le plus important de cette passe
 
 **Vds_Q2 dépasse 100V (la tenue de l'IPD050N10N5) à Vin≥23V environ**,
-côté secondaire, pendant l'anneau qui suit le pic de conduction — sans
+côté secondaire, pendant la résonance qui suit le pic de conduction — sans
 qu'aucun clamp secondaire ne soit modélisé (seul D1 côté primaire
 existe). Vin_max de la spec est 25V (`00-intention-conception.md`) : les
 points 25V→6V et 25V→12V simulent 106,7V et 106,8V, **au-delà de la
 tenue en tension du composant réellement sourcé**. À traiter avant
 d'aller plus loin : soit un clamp secondaire dédié, soit revérifier si le
-réseau Lmesh_sec/Cinter ESTIMÉ (non sourcé, voir §3) exagère l'anneau,
+réseau Lmesh_sec/Cinter ESTIMÉ (non sourcé, voir §3) exagère la résonance,
 soit réduire Vin_max d'usage réel.
 
 ### Pertes — total fiable (Pin−Pout), décomposition non publiée
@@ -102,7 +102,7 @@ même graphique, depuis les CSV.
 
 - [ ] Courant primaire I(L1)
 - [ ] Courant secondaire I(L2) — fenêtre de conduction utile, mode CCM/DCM
-- [ ] Tension drain Q1 — amplitude et amortissement de l'anneau
+- [ ] Tension drain Q1 — amplitude et amortissement de la résonance
 - [ ] **Tension drain Q2 — vérifier en priorité le dépassement 100V prédit à Vin≥23V**
 - [ ] Ondulation de Vout
 
@@ -147,7 +147,7 @@ modèle réel (lent), soit la mesure au banc.
 **Vds_Q2 bien plus faible avec le modèle Schottky** (37-50V typiquement,
 contre jusqu'à 106,8V avec le modèle réel, §2) — **ne pas conclure que le
 dépassement 100V a disparu** : c'est le modèle simplifié qui ne reproduit
-pas l'anneau non-linéaire réel du MOSFET. Le constat du §2 (Vds_Q2>100V à
+pas la résonance non-linéaire réelle du MOSFET. Le constat du §2 (Vds_Q2>100V à
 Vin≥23V) reste la référence tant qu'il n'est pas infirmé par une mesure.
 
 ## 6. Inexpliqué / à vérifier
@@ -159,7 +159,7 @@ Vin≥23V) reste la référence tant qu'il n'est pas infirmé par une mesure.
   (5,6% du pic de courant) — borderline, pas une conclusion ferme.
 - Dépassement Vds_Q2 100V à Vin≥23V : pas encore confronté à une mesure
   réelle, ni revérifié avec un vrai modèle de Lmesh/Cinter (actuellement
-  quasi nuls, donc l'anneau simulé est probablement **optimiste** par
+  quasi nuls, donc la résonance simulée est probablement **optimiste** par
   rapport au PCB réel — l'écart pourrait être pire en vrai, pas meilleur).
 - Point 20V→12V avec le modèle Schottky : Vout=10,84V, nettement sous la
   cible et sous le résultat du modèle réel (11,90V) au même D/Rload —

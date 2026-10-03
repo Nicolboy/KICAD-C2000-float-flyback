@@ -32,7 +32,7 @@ axs[0].grid(alpha=0.3)
 
 axs[1].axhline(100, color="red", ls="--", lw=1.5, label="Vds max Q2 (100V, IPD050N10N5)")
 axs[1].set_xlabel("Vin (V)")
-axs[1].set_ylabel("Vds max Q2 pendant l'anneau (V)")
+axs[1].set_ylabel("Vds max Q2 pendant la résonance (V)")
 axs[1].set_title("Contrainte tension secondaire -- pas de clamp cote secondaire")
 axs[1].legend()
 axs[1].grid(alpha=0.3)
