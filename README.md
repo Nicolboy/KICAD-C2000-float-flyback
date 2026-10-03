@@ -82,6 +82,31 @@ ce workspace.
 
 ---
 
+## Validation — simulation et mesure
+
+| Étape                       | État                                   |
+| --------------------------- | --------------------------------------- |
+| Calcul analytique           | fait — [`00-intention-conception.md`](00-intention-conception.md) |
+| Simulation LTspice (diode)  | étapes 1-4 faites, modèles réels (MOSFET Infineon, clamp D1) |
+| Prototype                   | à fabriquer                            |
+| Mesures au banc             | à faire                                |
+| Redressement synchrone      | à simuler puis mesurer (UCC24612)       |
+
+Balayage à Vin=11/20/25V, 6V et 12V à 10W (+ un point à charge légère) :
+rendement 84-91%, et surtout **la tension drain de Q2 dépasse 100V (sa
+tenue en tension) à Vin≥23V environ** côté secondaire — aucun clamp n'y
+est encore modélisé. À traiter avant d'aller plus loin sur le
+redressement synchrone.
+
+Autre résultat notable : la plupart des points réels fonctionnent en
+**CCM**, pas en DCM comme une estimation rapide l'avait d'abord suggéré —
+déterminé sur la forme d'onde (passage par zéro de I(L2)), pas supposé.
+
+Le détail, le protocole de mesure et le tableau calcul / simulation /
+mesure : [`doc/sim-vs-mesure.md`](doc/sim-vs-mesure.md).
+
+---
+
 ## Licence
 
 CERN-OHL-S v2 — voir [`LICENSE`](LICENSE).

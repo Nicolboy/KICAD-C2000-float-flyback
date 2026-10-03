@@ -1,0 +1,48 @@
+* IPD050N10N5 -- sous-circuit SPICE reel Infineon (variante _L0 de la
+* bibliotheque -- "L0" designe un niveau de complexite, PAS l'absence
+* d'inductances : Lg/Ld/Ls de boitier (3n/1n/1.5n) sont deja incluses
+* ci-dessous, ce sont les inductances de ROUTAGE PCB qui restent a
+* ajouter separement en .param ESTIME au niveau du netlist). Source :
+* bibliotheque officielle Infineon
+* OptiMOS5 100V LTspice, telechargee par l'utilisateur sur infineon.com
+* (page produit IPD050N10N5, Simulation Models), fichier
+* OptiMOS5_100V_LTSpice.lib, lignes 6412-6448.
+* Renomme ici en IPD050N10N5 (sans suffixe _L0) pour usage direct.
+
+.SUBCKT IPD050N10N5  drain  gate  source
+
+Lg     gate  g1    3n
+Ld     drain d1    1n
+Ls     source s1   1.5n
+Rs      s1    s2   785u TC=3m
+
+Rg     g1    g2     1.2
+M1      d2    g2    s2    s2    DMOS    L=1u   W=1u
+.MODEL DMOS NMOS ( KP= 309  VTO=4.1  THETA=0  VMAX=1.5e5  ETA=0.0035  LEVEL=3)
+Rd     d1    d2    3.11m TC=7m
+
+Dbd     s2    d2    Dbt
+.MODEL     Dbt    D(BV=107   M=0.75  CJO=1n  VJ=2.5V)
+Rsp     s2    s3     0.7
+Dbd1     s3    d2    Dbt1
+.MODEL     Dbt1    D(BV=1000   M=0.75  CJO=4.08n  VJ=2.5V)
+Dbody   s2   21    DBODY
+.MODEL DBODY  D(IS=35.8p  N=1.12  RS=0.06u  EG=1.12  TT=20n)
+Rdiode  d1  21    0.73m TC=1m
+
+
+
+
+.MODEL   sw    NMOS(VTO=0  KP=10   LEVEL=1)
+Maux      g2   c    a    a   sw
+Maux2     b    d    g2    g2   sw
+Eaux      c    a    d2    g2   1
+Eaux2     d    g2   d2    g2   -1
+Cox       b    d2   0.92n
+.MODEL     DGD    D(M=0.55   CJO=0.92n   VJ=0.5)
+Rpar      b    d2   1Meg
+Dgd       a    d2   DGD
+Rpar2     d2   a    10Meg
+Cgs     g2    s2    3.57n
+
+.ENDS  IPD050N10N5

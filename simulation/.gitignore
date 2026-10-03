@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.net
+*.raw
+*.op.raw
+*.log
+*.db
+_find_tmp.*
