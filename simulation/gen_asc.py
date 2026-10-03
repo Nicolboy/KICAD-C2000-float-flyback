@@ -97,10 +97,17 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 
 def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
           rload=None, lib_dir=None, lmesh_pri=1e-12, lmesh_sec=1e-12,
-          c_inter=0.0, settle_periods=4000, measure_periods=100):
-    """stage unique pour l'instant : redressement passif par la diode de
-    corps de Q2 (gate a 0V en permanence) -- pas de Q2 synchrone ici
-    (etape 5, hors scope de ce generateur)."""
+          c_inter=0.0, settle_periods=4000, measure_periods=100,
+          rectifier="schottky"):
+    """redressement passif uniquement (pas de Q2 synchrone -- etape 5,
+    hors scope de ce generateur). rectifier :
+      - "schottky" (defaut) : diode generique simple (IS=100n N=1 RS=5m),
+        rapide et robuste a simuler -- pour comparer le rendement vite,
+        PAS le composant reellement monte (il n'y en a pas de discret,
+        voir docstring du module).
+      - "body_diode" : diode de corps du vrai modele IPD050N10N5 (Q2 avec
+        gate a 0V) -- plus fidele mais beaucoup plus lent/capricieux a
+        converger (reseau Miller non-lineaire complet)."""
     ton1 = d * period
     s = Sheet()
     s.comment(40, 20,
@@ -113,6 +120,8 @@ def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
     lib_path = os.path.join(lib_dir, "IPD050N10N5.lib").replace("\\", "/")
     s.directive(40, 580, f'.lib "{lib_path}"')
     s.directive(40, 600, ".model DCLAMP_SMCJ43A D(BV=47.8 IBV=1m RS=1.0)")
+    if rectifier == "schottky":
+        s.directive(40, 620, ".model DSCHOTTKY D(IS=100n N=1 RS=5m)")
 
     # --- Vin + Cin reel (A786MW, 470uF, ESR=10mOhm) ---
     two_pin(s, "voltage", 80, 120, "V1", str(vin), "vin", "0")
@@ -144,16 +153,19 @@ def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
             "g1", "0")
 
     # --- Transfo secondaire : L2 (dot=n_sec1, PAS vout) -> Rdcr2 ->
-    # Lmesh_sec -> Q2 (= IPD050N10N5, gate=0V => diode de corps seule) ---
+    # Lmesh_sec -> redresseur (Schottky generique ou diode de corps Q2) ---
     two_pin(s, "ind", 960, 60, "L2", "10u ic=0", "n_sec1", "vout")
     two_pin(s, "res", 960, 220, "Rdcr2", "15m", "n_sec1", "n_sec1b")
     two_pin(s, "ind", 960, 340, "Lmesh_sec", f"{lmesh_sec}", "n_sec1b", "n_sec2")
 
-    mx2, my2 = s.symbol("nmos", 960, 460, rot="R0", inst="M2", value="IPD050N10N5", prefix="X")
-    s.flag(mx2 + PIN["nmos"]["D"][0], my2 + PIN["nmos"]["D"][1], "n_sec2")
-    s.flag(mx2 + PIN["nmos"]["G"][0], my2 + PIN["nmos"]["G"][1], "g2")
-    s.flag(mx2 + PIN["nmos"]["S"][0], my2 + PIN["nmos"]["S"][1], "0")
-    two_pin(s, "voltage", 1160, 460, "Vg2", "0", "g2", "0")
+    if rectifier == "schottky":
+        two_pin(s, "diode", 960, 460, "Drect", "DSCHOTTKY", "0", "n_sec2")
+    else:
+        mx2, my2 = s.symbol("nmos", 960, 460, rot="R0", inst="M2", value="IPD050N10N5", prefix="X")
+        s.flag(mx2 + PIN["nmos"]["D"][0], my2 + PIN["nmos"]["D"][1], "n_sec2")
+        s.flag(mx2 + PIN["nmos"]["G"][0], my2 + PIN["nmos"]["G"][1], "g2")
+        s.flag(mx2 + PIN["nmos"]["S"][0], my2 + PIN["nmos"]["S"][1], "0")
+        two_pin(s, "voltage", 1160, 460, "Vg2", "0", "g2", "0")
 
     # --- Cout reel (2x 16SVPG330M, 330uF/ESR=6.5mOhm chacun, paralleles) + Rload ---
     two_pin(s, "cap", 1280, 460, "Cout1", f"330u ic={vout_target}", "vout", "n_cout1_r")
@@ -180,10 +192,14 @@ def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
     # courant des inductances de maille, en serie directe avec D de M1/M2,
     # comme proxy exact du courant de drain.
     s.directive(40, 800, f".meas TRAN Ploss_Q1 AVG (I(Lmesh_pri)*(V(n_pri2)-V(n_q1s))) FROM {f0} TO {f1}")
-    s.directive(40, 820, f".meas TRAN Ploss_Q2body AVG (I(Lmesh_sec)*V(n_sec2)) FROM {f0} TO {f1}")
+    s.directive(40, 820, f".meas TRAN Ploss_Rect AVG (I(Lmesh_sec)*V(n_sec2)) FROM {f0} TO {f1}")
     s.directive(40, 840, f".meas TRAN Ploss_DCR1 AVG (I(Rdcr1)*I(Rdcr1)*0.015) FROM {f0} TO {f1}")
     s.directive(40, 860, f".meas TRAN Ploss_DCR2 AVG (I(Rdcr2)*I(Rdcr2)*0.015) FROM {f0} TO {f1}")
     s.directive(40, 880, f".meas TRAN Ploss_Rshunt AVG (I(Rshunt)*I(Rshunt)*0.0075) FROM {f0} TO {f1}")
+    # perte dans le clamp primaire D1 (inquietude explicite de l'utilisateur) :
+    # P = I(D1)*(Vanode-Vcathode) = I(D1)*(V(0)-V(n_pri2)), formule generale
+    # correcte en conduction directe ET en claquage (pas besoin de signe a part).
+    s.directive(40, 900, f".meas TRAN Ploss_D1 AVG (-I(D1)*V(n_pri2)) FROM {f0} TO {f1}")
     s.directive(1160, 720, f".meas TRAN Ploss_Cout AVG (I(Rcout1_esr)*I(Rcout1_esr)*0.0065+"
                            f"I(Rcout2_esr)*I(Rcout2_esr)*0.0065) FROM {f0} TO {f1}")
     s.directive(1160, 740, f".meas TRAN Vds_Q1_max MAX (V(n_pri2)-V(n_q1s)) FROM {f0} TO {f1}")

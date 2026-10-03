@@ -106,6 +106,50 @@ même graphique, depuis les CSV.
 - [ ] **Tension drain Q2 — vérifier en priorité le dépassement 100V prédit à Vin≥23V**
 - [ ] Ondulation de Vout
 
+## 2bis. Modèle simplifié (Schottky générique) — comparaison et perte clamp D1
+
+Le modèle de redressement par diode de corps du vrai IPD050N10N5 (§2) est
+fidèle mais lent (35-90s/point, convergence parfois capricieuse). Sur
+demande explicite (comparer vite, et surtout **chiffrer la perte dans le
+clamp D1** qui sera de toute façon présent quel que soit le choix de
+redressement) : Q1 et D1 restent réels, le redressement secondaire est
+remplacé par une Schottky générique simple (`.model D(IS=100n N=1
+RS=5m)`, pas un composant réellement sourcé — juste un modèle rapide et
+robuste pour ce comparatif).
+
+| Point | η (diode de corps) | η (Schottky) | **Perte D1 (clamp)** |
+|---|---|---|---|
+| 11V→6V  | 85,0% | 88,0% | 336mW |
+| 11V→12V | 90,2% | 91,5% | 327mW |
+| 20V→6V  | 84,9% | 87,5% | 459mW |
+| 20V→12V | 90,9% | 91,2% | 406mW |
+| 25V→6V  | 84,1% | 86,5% | 616mW |
+| 25V→12V | 89,3% | 87,9% | **891mW** |
+| 20V→6V, charge légère | 81,0% | 85,8% | 0,8mW (négligeable) |
+
+CSV : `simulation/results/envelope_schottky.csv`. Figure :
+`simulation/plots/compare_real_vs_schottky.png`.
+
+**Sur la perte clamp D1** : substantielle et monte avec Vin (jusqu'à
+891mW à 25V/12V) — confirme que c'était une inquiétude fondée. Reste
+large marge face à la tenue thermique du composant (P_av=5W max,
+`smcj43a.yaml`) : marge ×5,6 au pire point. Pas un problème de
+dimensionnement du composant, mais un vrai poste de rendement à ne pas
+négliger dans le bilan global.
+
+**Écart de rendement entre les deux modèles** : 1,5 à 3,5 points
+d'efficacité selon le point (le Schottky simplifié est systématiquement
+plus optimiste, sauf à 25V→12V où c'est l'inverse — à élucider, voir §6).
+Cohérent avec l'attente : le modèle simplifié donne un ordre de grandeur
+rapide, pas un chiffre de conception final — pour ça il faut soit le
+modèle réel (lent), soit la mesure au banc.
+
+**Vds_Q2 bien plus faible avec le modèle Schottky** (37-50V typiquement,
+contre jusqu'à 106,8V avec le modèle réel, §2) — **ne pas conclure que le
+dépassement 100V a disparu** : c'est le modèle simplifié qui ne reproduit
+pas l'anneau non-linéaire réel du MOSFET. Le constat du §2 (Vds_Q2>100V à
+Vin≥23V) reste la référence tant qu'il n'est pas infirmé par une mesure.
+
 ## 6. Inexpliqué / à vérifier
 
 - Décomposition des pertes Q1/Q2 par poste (conduction/commutation/Coss)
@@ -117,6 +161,11 @@ même graphique, depuis les CSV.
   réelle, ni revérifié avec un vrai modèle de Lmesh/Cinter (actuellement
   quasi nuls, donc l'anneau simulé est probablement **optimiste** par
   rapport au PCB réel — l'écart pourrait être pire en vrai, pas meilleur).
+- Point 20V→12V avec le modèle Schottky : Vout=10,84V, nettement sous la
+  cible et sous le résultat du modèle réel (11,90V) au même D/Rload —
+  seul point où le modèle simplifié donne un résultat moins favorable que
+  le modèle réel (tous les autres vont dans l'autre sens). Pas élucidé,
+  à revérifier avant de faire confiance à ce point précis.
 - Convergence SPICE intermittente sur certains points (le même point peut
   échouer à une relance et réussir à la suivante) — pas bloquant
   (nouvelle tentative suffit) mais pas expliqué.
