@@ -9,7 +9,7 @@ Secondaire entièrement flottant, élevable de 0 à 90V par un pont symétrique
 cathode/chauffage sur un préamplificateur à tubes bas bruit (montage cascode).
 
 <p align="center">
-  <img src="doc/kicad-filament.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">
+  <img src="doc/alim-flyback-filament.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">
 </p>
 
 ---

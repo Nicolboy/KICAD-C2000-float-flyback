@@ -13,9 +13,11 @@ T = 1 / 200e3
 
 
 def run(vin, vout_target, d, rload, out="point.asc", settle_periods=4000,
-        measure_periods=100, pout=10.0):
+        measure_periods=100, pout=10.0, rectifier="schottky",
+        sec_clamp_bv=None):
     build("point", vin, vout_target, pout, d, 100e-9, T, out, rload=rload,
-          settle_periods=settle_periods, measure_periods=measure_periods)
+          settle_periods=settle_periods, measure_periods=measure_periods,
+          rectifier=rectifier, sec_clamp_bv=sec_clamp_bv)
     subprocess.run([LTSPICE, "-b", out], stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL)
     log_path = out.replace(".asc", ".log")

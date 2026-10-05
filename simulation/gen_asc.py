@@ -98,16 +98,30 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
           rload=None, lib_dir=None, lmesh_pri=1e-12, lmesh_sec=1e-12,
           c_inter=0.0, settle_periods=4000, measure_periods=100,
-          rectifier="schottky"):
-    """redressement passif uniquement (pas de Q2 synchrone -- etape 5,
-    hors scope de ce generateur). rectifier :
+          rectifier="schottky", sec_clamp_bv=None):
+    """sec_clamp_bv : si renseigne (V), ajoute un clamp TVS D2sec (meme
+    modele diode zener/BV que D1, cathode=n_sec2/anode=GND -- meme
+    orientation, cf. commentaire D1 ci-dessous) entre drain Q2 et masse
+    secondaire, pour chiffrer la dissipation d'un clamp secondaire
+    candidat (exploratoire, pas encore un composant sourced/retenu).
+
+    rectifier :
       - "schottky" (defaut) : diode generique simple (IS=100n N=1 RS=5m),
         rapide et robuste a simuler -- pour comparer le rendement vite,
         PAS le composant reellement monte (il n'y en a pas de discret,
         voir docstring du module).
       - "body_diode" : diode de corps du vrai modele IPD050N10N5 (Q2 avec
         gate a 0V) -- plus fidele mais beaucoup plus lent/capricieux a
-        converger (reseau Miller non-lineaire complet)."""
+        converger (reseau Miller non-lineaire complet).
+      - "sync_ideal" : Q2 = vrai IPD050N10N5 (meme sous-circuit que
+        "body_diode", la diode de corps reste physiquement presente
+        pendant le temps mort), mais grille pilotee par un PULSE ideal
+        complementaire a Vg1 (ON pendant tout le temps bas de Q1, moins
+        `dead` de chaque cote). Sert de PROXY RAPIDE du comportement
+        qu'un UCC24612 realise par diode emulation -- aucun modele SPICE
+        UCC24612 n'est sourcable (controleur analogique a detection de
+        Vds, pas de macromodele publie TI) -- jamais a confondre avec une
+        simulation du composant reel ni avec une mesure."""
     ton1 = d * period
     s = Sheet()
     s.comment(40, 20,
@@ -165,7 +179,23 @@ def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
         s.flag(mx2 + PIN["nmos"]["D"][0], my2 + PIN["nmos"]["D"][1], "n_sec2")
         s.flag(mx2 + PIN["nmos"]["G"][0], my2 + PIN["nmos"]["G"][1], "g2")
         s.flag(mx2 + PIN["nmos"]["S"][0], my2 + PIN["nmos"]["S"][1], "0")
-        two_pin(s, "voltage", 1160, 460, "Vg2", "0", "g2", "0")
+        if rectifier == "sync_ideal":
+            # proxy UCC24612 (diode emulation idealisee) : ON pendant tout
+            # le temps bas de Q1, moins `dead` de chaque cote.
+            td2 = ton1 + dead
+            pw2 = period - ton1 - 2 * dead
+            two_pin(s, "voltage", 1160, 460,
+                    "Vg2", f"PULSE(0 10 {td2*1e6:.4f}u 2n 2n "
+                           f"{pw2*1e6:.4f}u {period*1e6:.4f}u)",
+                    "g2", "0")
+        else:
+            two_pin(s, "voltage", 1160, 460, "Vg2", "0", "g2", "0")
+
+    # --- clamp secondaire candidat (exploratoire, pas pose sur la vraie
+    # carte) : meme orientation que D1 (anode=GND, cathode=n_sec2) ---
+    if sec_clamp_bv:
+        s.directive(40, 560, f".model DCLAMP_SEC D(BV={sec_clamp_bv} IBV=1m RS=1.0)")
+        two_pin(s, "diode", 1060, 600, "D2sec", "DCLAMP_SEC", "0", "n_sec2")
 
     # --- Cout reel (2x 16SVPG330M, 330uF/ESR=6.5mOhm chacun, paralleles) + Rload ---
     two_pin(s, "cap", 1280, 460, "Cout1", f"330u ic={vout_target}", "vout", "n_cout1_r")
@@ -200,6 +230,8 @@ def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
     # P = I(D1)*(Vanode-Vcathode) = I(D1)*(V(0)-V(n_pri2)), formule generale
     # correcte en conduction directe ET en claquage (pas besoin de signe a part).
     s.directive(40, 900, f".meas TRAN Ploss_D1 AVG (-I(D1)*V(n_pri2)) FROM {f0} TO {f1}")
+    if sec_clamp_bv:
+        s.directive(40, 920, f".meas TRAN Ploss_D2sec AVG (-I(D2sec)*V(n_sec2)) FROM {f0} TO {f1}")
     s.directive(1160, 720, f".meas TRAN Ploss_Cout AVG (I(Rcout1_esr)*I(Rcout1_esr)*0.0065+"
                            f"I(Rcout2_esr)*I(Rcout2_esr)*0.0065) FROM {f0} TO {f1}")
     s.directive(1160, 740, f".meas TRAN Vds_Q1_max MAX (V(n_pri2)-V(n_q1s)) FROM {f0} TO {f1}")

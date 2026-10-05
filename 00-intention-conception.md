@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Révision | v0.7 — feuille Polarisation : pilotage actif HV_BIAS 0-90V depuis 400V |
-| Établi le | 2026-09-28, mis à jour 2026-10-02 |
-| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§12) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§12bis) ; retours température MOSFET/transfo et courant primaire ajoutés, isolateurs migrés vers la famille ratiométrique AMC03x1R/AMC03x2R (§13) ; isolation C2000 rendue réelle — U3/U4/U5/U7/U8/U9 migrés sur GND_CTRL/3V3_CTRL, connecteur scindé CpuOut/CpuIn (§14) ; nouvelle feuille Polarisation — HV_BIAS piloté activement 0-90V depuis une source 400V externe, connecteurs C2000 agrandis à 16 broches (§15) |
+| Révision | v0.8 — redressement synchrone secondaire réel : UCC24612 (U12) remplace U2/U4, clamp D4 ajouté |
+| Établi le | 2026-09-28, mis à jour 2026-10-04 |
+| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§12) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§12bis) ; retours température MOSFET/transfo et courant primaire ajoutés, isolateurs migrés vers la famille ratiométrique AMC03x1R/AMC03x2R (§13) ; isolation C2000 rendue réelle — U3/U4/U5/U7/U8/U9 migrés sur GND_CTRL/3V3_CTRL, connecteur scindé CpuOut/CpuIn (§14) ; nouvelle feuille Polarisation — HV_BIAS piloté activement 0-90V depuis une source 400V externe, connecteurs C2000 agrandis à 16 broches (§15) ; cible 18,9W validée par simulation sous réserve d'un clamp secondaire, U2(UCC27517)+U4(ISO7710) remplacés par U12(UCC24612, détection Vds) + D4(SMCJ54A) (§16) |
 
 Convention reprise de `composants-datasheets/CLAUDE.md` : `spec` = exigence
 d'entrée · `déduit` = calculé · `?` = à trancher. Toute valeur `déduit` porte
@@ -289,7 +289,7 @@ sur l'autre carte.
 | Clamp primaire | D1 | SMCJ43A (SMC/DO-214AB) | `data/carte-flyback/smcj43a.yaml` |
 | Rail 8,25V primaire | Reg1 | LM317M (SOT-223) + R1=100Ω/R2=560Ω | `data/carte-flyback/lm317m.yaml` |
 | LDO ISO7710 primaire | Reg2 | MCP1703-3302 (SOT-23A, 3,3V) | `data/carte-flyback/mcp1703.yaml` |
-| LDO auxiliaire secondaire | Reg3 | MCP1703-3302 (SOT-23A, 3,3V) — alimente VCC2 de l'ISO7710 secondaire (U4) et VDD1 de l'AMC0311S (U7) | `data/carte-flyback/mcp1703.yaml` |
+| LDO auxiliaire secondaire | Reg3 | MCP1703-3302 (SOT-23A, 3,3V) — VI depuis VOUT_P direct (§16), alimente VDD1 de U7 (AMC0311R) | `data/carte-flyback/mcp1703.yaml` |
 | Cin | C1 | A786MW477M1VLAV010 (KEMET, 470µF/35V, 10mΩ) | `data/carte-flyback/a786mw477m1vlav010.yaml` |
 | Cout | C3, C4 | 2× Panasonic 16SVPG330M (330µF/16V, 6,5mΩ) | `data/carte-flyback/16svpg330m.yaml` |
 | Cboot | — | 4,7µF X7R 0805/25V (générique) | non sourcé séparément (§8) |
@@ -300,6 +300,9 @@ sur l'autre carte.
 | Ampli isolé retour température | U8 | AMC0311R (DWV-8, ratiométrique) — retour température primaire isolé vers C2000 (§13) | à sourcer |
 | Shunt courant primaire | R19 | 1210, valeur provisoire 7,5mΩ | à sourcer (valeur et dissipation, §13) |
 | Ampli isolé retour courant | U9 | AMC0302R (DWV-8, ratiométrique, ±50mV) — retour courant primaire isolé vers C2000, protection surcourant Q1 (§13) | à sourcer |
+| Redressement synchrone secondaire | U12 | UCC24612 (SOT23-5) — remplace U2(UCC27517)+U4(ISO7710), détection Vds (§16) | à sourcer (`datasheets/ucc24612.pdf` déjà présent, pas encore de yaml) |
+| Clamp secondaire | D4 | SMCJ54A (SMC/DO-214AB, même boîtier/famille que D1) — dimensionné `doc/sim-vs-mesure.md` §7bis (§16) | à sourcer (`datasheets/bourns-smcj-series.pdf` déjà présent, pas encore de yaml) |
+| Découplage U12 | C42, C43 | 2,2µF (REG) + 100nF (VDD, bypass HF local) (§16) | non sourcé séparément, générique comme Cboot |
 
 ## 10. Points ouverts
 
@@ -845,3 +848,107 @@ de viser une vraie source de courant plate sur toute la plage.
 ~75,3V aux bornes de R26, 1,01mA) : ~76mW, sous les 125mW d'un 0805 —
 pas de changement de boîtier nécessaire. `kicad-cli sch erc` re-vérifié
 sur le projet complet : aucune violation nouvelle (même base qu'au §15).
+
+## 16. Redressement synchrone secondaire réel — UCC24612 (U12) remplace U2/U4, clamp D4 ajouté (2026-10-04)
+
+Suite de `doc/sim-vs-mesure.md` §7/§7bis : la cible réelle (18,9W) a été
+simulée avec un proxy de redressement synchrone (grille idéale) avant
+d'intégrer le vrai composant. Verdict : tenable **à condition** d'ajouter
+un clamp secondaire sur Q2 (absent jusqu'ici — point ouvert du §10
+ci-dessus, passé de souhaitable à bloquant à cette puissance). Les deux
+changements ci-dessous découlent de ce verdict chiffré, pas d'un choix a
+priori.
+
+**U2 (UCC27517) + U4 (ISO7710) retirés, remplacés par U12 (UCC24612).**
+Cause : le canal secondaire était piloté « à l'aveugle » — PWM_SEC_IN
+depuis le C2000, timing fixé par le firmware, aucun retour sur le vrai
+Vds de Q2. L'UCC24612 élimine ce problème par construction (détection
+Vds, diode emulation) : plus besoin d'isolateur ni de canal PWM dédié
+pour ce rôle, net moins de composants (2 CI retirés, 1 plus petit
+ajouté). Config **low-side** (source de Q2 déjà côté masse secondaire) :
+
+```
+VG(1)  -> R12 (déjà posée, inchangée) -> GATE_Q2
+VS(2)  -> VOUT_N (même label que l'ancien GND de U2, position reprise)
+REG(3) -> REG_SR -> C42 (2,2µF, obligatoire : courant de grille moyen
+          Qg×fsw ≈ 10-13mA > seuil 5mA de la datasheet §9)
+VDD(4) -> VOUT_P directement (recommandation datasheet §9 pour le
+          low-side, Vout 5,8-13V dans la plage admise 4,5-28V — pas
+          besoin d'enroulement auxiliaire ni de R-C-D, réservés au
+          high-side) + C43 (100nF, bypass HF local, en plus du banc Cout)
+VD(5)  -> SW_SEC (Kelvin direct vers le drain de Q2, piste dédiée hors
+          chemin de puissance par construction — même nœud que T1 pin2
+          et D4 cathode)
+```
+
+Nouveau symbole `custom_parts:UCC24612` (SOT23-5, même boîtier que
+l'ancien UCC27517 — zéro changement d'empreinte), ajouté à
+`lib/custom_parts.kicad_sym` sur le même modèle que UCC27517/ISO7710.
+U12 reprend la position exacte de l'ancien U2 ; ses pins VG/VS tombent
+sur les mêmes coordonnées que les anciens OUT/GND de U2, donc le fil
+existant vers R12 et le label VOUT_N n'ont pas eu besoin d'être retouchés
+— seuls VDD/VD/REG (anciens VDD/IN+/IN- de U2, sur VBOOT) ont été
+rebranchés.
+
+**D4 (SMCJ54A) ajouté** en clamp secondaire, cathode=SW_SEC (drain Q2),
+anode=VOUT_N — même construction/orientation que D1. Choix chiffré en
+détail dans `doc/sim-vs-mesure.md` §7bis : clampe Vds_Q2 à ~61-65V
+(marge ×1,5 vs les 100V du MOSFET) pour 0,03-0,76W de dissipation (marge
+×7 vs son propre P_av=5W). Le SMCJ43A (même réf. que D1) a aussi été
+testé et tient les deux contraintes, mais coûte jusqu'à 2 points de
+rendement système en plus (le clamp n'absorbe pas qu'une perte locale —
+le couplage K1 L1 L2 relie les deux résonances, écrêter plus bas côté
+secondaire fait tirer davantage sur Vin pour un Pout quasi identique) —
+le SMCJ54A est donc retenu malgré la référence BOM supplémentaire.
+
+**VBOOT/D2(BAT54C)/C8(Cboot)/C20/C22 retirés par l'utilisateur**
+(édition GUI directe, même session) — vestigiaux depuis que VDD de
+l'UCC24612 va directement sur VOUT_P, comme déjà noté ci-dessus. Mais
+**ce nettoyage a cassé l'alimentation de Reg3** (MCP1703, LDO 3,3V
+secondaire) sans que son rôle disparaisse : Reg3 reste nécessaire pour
+VDD1 de U7 (AMC0311R, retour Vout isolé). Deux incidents trouvés et
+corrigés dans la foulée (ERC + vérification croisée, pas juste visuel) :
+
+1. Reg3 supprimé entièrement (pas juste rebranché) → son VI n'était plus
+   alimenté. **Recréé** dans `flyback.kicad_sch`, VI câblé directement
+   sur VOUT_P (au lieu de l'ancien VBOOT/D2) — Vin_max MCP1703=16V vs
+   VOUT_P max=13V, marge ×1,23 (`mcp1703.yaml`), largement suffisant
+   sans bootstrap.
+2. **Plus grave** : en attendant, VDD1 de U7 avait été rebranché
+   directement sur VOUT_P (13V) — or VDD1 de l'AMC0311R a un maximum
+   absolu de **6,5V** (`amc0311r.pdf` §6.1) : ça aurait détruit le
+   composant au premier démarrage à Vout élevé. Rebranché sur
+   `RAIL_3V3_SEC` (sortie régulée de Reg3) à la place.
+
+Les deux corrections ont été trouvées en recroisant `kicad-cli sch export
+netlist` après l'édition GUI de l'utilisateur, pas par relecture visuelle
+— la marge de l'AMC0311R en particulier n'était pas quelque chose
+d'évident à repérer à l'œil sur le schéma.
+
+**PWR_FLAG ajouté sur VOUT_P** (`alim.kicad_sch`, même rangée que les
+PWR_FLAG VIN/GND/VOUT_N déjà en place) — nécessaire car VDD de U12 est le
+premier pin de type *power input* jamais posé sur ce net (jusqu'ici
+VOUT_P n'était touché que par des pins *passive*, qui n'ont pas besoin
+d'un flag). Sans lui, ERC lève `power_pin_not_driven` sur VDD.
+
+**Vérification.** `kicad-cli sch erc` sur le projet complet, état final
+(après nettoyage utilisateur + corrections Reg3/U7 ci-dessus) : 213
+violations (223 avant ce §16), **7 erreurs — même famille déjà connue et
+acceptée** (broches de réserve CpuOut/CpuIn non connectées, §15 ; le
+7e, `CpuOut1` pin 7 = ancien `PWM_SEC_IN`, rejoint cette catégorie
+puisque l'UCC24612 n'a plus besoin de ce signal firmware). Aucune
+violation `power_pin_not_driven` ni autre anomalie électrique restante.
+
+**Marge UVLO à surveiller au banc (pas un point bloquant, juste plus
+tendu que souhaité)** : à Vout_min=5,8V (filament réglé bas, §12bis),
+VDD=VOUT_P=5,8V directement. Seuil UVLO réel de l'UCC24612
+(`ucc24612.pdf` tbl 6.5, mesuré sur REG) : VREG_ON max=4,87V, dropout
+max=0,45V à VDD=5V → VDD nécessaire ≈5,32V pire cas. Marge ≈0,48V —
+positive (contrairement au rejet de l'UCC5304 en §12bis qui avait une
+marge négative dans ce même scénario), mais plus courte que souhaité ;
+à vérifier en charge réelle avant de considérer le point tranché.
+
+**Reste à faire côté utilisateur** : replacement de U12/C42/C43/D4/Reg3
+dans KiCad (positions provisoires côté script, mêmes désalignements de
+grille cosmétiques que chaque ajout précédent) et mise à jour du PCB
+(F8) — le nettoyage VBOOT/D2/C8/C20/C22 est fait.
