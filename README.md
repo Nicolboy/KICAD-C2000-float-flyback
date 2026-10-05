@@ -1,5 +1,18 @@
 # KICAD-C2000-float-flyback
 
+- **18.9W** — real-world target power, simulated efficiency up to 94.8%
+- **+5 points** efficiency from synchronous rectification (UCC24612) vs. body-diode
+- **106.8V → 61–65V** — secondary overvoltage, resolved by a TVS clamp sized through simulation (×1.5 margin vs. the 100V MOSFET rating)
+
+Isolated, floating-secondary flyback power supply for vacuum-tube filament
+heating and a low-noise preamp stage, designed in KiCad 10. 200kHz,
+11–25V in → 5.5–13V/3A out, secondary floating and liftable 0–90V for
+cathode/filament stress reduction. Synchronous secondary rectification
+(UCC24612, direct Vds sensing — no firmware timing) validated by SPICE at
+the real 18.9W target, including a secondary-side overvoltage finding and
+the clamp that fixes it — see *Validation* below for the figures and
+`doc/sim-vs-mesure.md` for the full data.
+
 Alimentation flyback isolée et flottante pour le chauffage d'un filament de
 tube à vide et un étage de préamplification bas bruit, conçue sous KiCad 10.
 
