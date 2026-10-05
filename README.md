@@ -16,13 +16,16 @@ cathode/chauffage sur un préamplificateur à tubes bas bruit (montage cascode).
 
 ## Le point de conception le plus notable
 
-L'isolation primaire/secondaire passe par deux ISO7710 (un par traversée de
-signal : PWM primaire, PWM secondaire) et un DPC817 (EN), chacun associé à un
-UCC27517 monté en inverseur — l'un pilote le MOSFET primaire, l'autre la
-rectification synchrone côté potentiel bas. Le secondaire flottant ne reçoit
-**aucune alimentation dédiée** : il démarre en bootstrap via la diode de
-corps du MOSFET secondaire, et les drivers/isolateurs secondaires ne prennent
-le relais qu'une fois Vout monté au-dessus du seuil UVLO de l'UCC27517.
+Le redressement synchrone secondaire (Q2) est piloté par un **UCC24612**, pas
+par le C2000 : ce contrôleur détecte directement le Vds de Q2 (diode
+emulation) et pilote sa grille tout seul — aucun signal PWM ni isolateur
+dédié à faire traverser la barrière pour ce canal. Avant ça, la commande
+passait par un ISO7710+UCC27517 secondaires pilotés en PWM depuis le C2000 :
+un timing fixé par le firmware, « à l'aveugle », sans retour sur le vrai Vds
+de Q2 — remplacé une fois ce défaut identifié. L'UCC24612 est alimenté
+directement depuis Vout (VDD dans sa plage 4,5-28V, pas de bootstrap
+nécessaire) ; côté primaire, l'isolation PWM/EN (ISO7710 + UCC27517 + DPC817)
+reste inchangée.
 
 Chaque composant de puissance (MOSFETs, clamp, condensateurs d'entrée et de
 sortie) est sourcé avec sa propre fiche datasheet dans
@@ -42,9 +45,9 @@ Le détail (formules, marges, historique des choix) est dans
 
 | Bloc | Rôle |
 |---|---|
-| Primaire | Cin, MOSFET N (TO-252), clamp TVS (boîtier SMC), UCC27517 + ISO7710 (PWM) |
-| Isolation | ISO7710 ×2 (PWM primaire, PWM secondaire) + DPC817 (EN) |
-| Secondaire (flottant) | MOSFET N potentiel bas (rectification synchrone), UCC27517 auto-alimenté par bootstrap, banc Cout, pont bias 2×100kΩ |
+| Primaire | Cin, MOSFET N (TO-252), clamp TVS D1 (boîtier SMC), UCC27517 + ISO7710 (PWM) |
+| Isolation | ISO7710 (PWM primaire) + DPC817 (EN) — plus de canal PWM dédié au secondaire |
+| Secondaire (flottant) | MOSFET N potentiel bas (rectification synchrone), UCC24612 (détection Vds, alimenté direct depuis Vout) + clamp TVS D4, banc Cout, pont bias 2×100kΩ |
 | Couplage | Coilcraft MSD1514, 1:1 (k≈0,99), 10µH par enroulement |
 
 L'isolation fonctionnelle est dimensionnée pour l'écart réel présent sur la
@@ -87,23 +90,54 @@ ce workspace.
 | Étape                       | État                                   |
 | --------------------------- | --------------------------------------- |
 | Calcul analytique           | fait — [`00-intention-conception.md`](00-intention-conception.md) |
-| Simulation LTspice (diode)  | étapes 1-4 faites, modèles réels (MOSFET Infineon, clamp D1) |
+| Simulation LTspice (diode, 10W)       | étapes 1-4 faites, modèles réels (MOSFET Infineon, clamp D1) |
+| Simulation LTspice (18,9W, synchrone) | faite — proxy UCC24612, clamp secondaire dimensionné |
+| Redressement synchrone (KiCad)        | implémenté — UCC24612 (U12) + clamp D4 |
 | Prototype                   | à fabriquer                            |
 | Mesures au banc             | à faire                                |
-| Redressement synchrone      | à simuler puis mesurer (UCC24612)       |
 
 Balayage à Vin=11/20/25V, 6V et 12V à 10W (+ un point à charge légère) :
-rendement 84-91%, et surtout **la tension drain de Q2 dépasse 100V (sa
-tenue en tension) à Vin≥23V environ** côté secondaire — aucun clamp n'y
-est encore modélisé. À traiter avant d'aller plus loin sur le
-redressement synchrone.
+rendement 84-91%, et la tension drain de Q2 dépasse déjà 100V (sa tenue
+en tension) à Vin≥23V environ, sans clamp secondaire modélisé à ce
+stade.
+
+<p align="center">
+  <img src="simulation/plots/envelope_eta_vds.png" alt="Rendement et Vds Q2 vs Vin, 10W, redressement par diode de corps" width="100%">
+</p>
 
 Autre résultat notable : la plupart des points réels fonctionnent en
 **CCM**, pas en DCM comme une estimation rapide l'avait d'abord suggéré —
 déterminé sur la forme d'onde (passage par zéro de I(L2)), pas supposé.
+Comparé à un modèle Schottky générique simplifié (rapide mais pas le
+composant réel) pour chiffrer la perte dans le clamp D1 :
+
+<p align="center">
+  <img src="simulation/plots/compare_real_vs_schottky.png" alt="Rendement modele reel vs simplifie, et perte dans le clamp D1" width="100%">
+</p>
+
+Rejoué à la cible réelle (**18,9W**) avec un proxy de redressement
+synchrone : le dépassement empire (dès Vin=20V, jusqu'à 106,8V) —
+indépendant du redresseur, c'est une résonance de l'inductance de fuite.
+Le passage en synchrone (UCC24612) apporte jusqu'à +5 points de
+rendement, mais ne corrige pas la surtension :
+
+<p align="center">
+  <img src="simulation/plots/envelope_eta_vds_18w9.png" alt="Rendement et Vds Q2 vs Vin, 18,9W, Schottky vs reel+synchrone" width="100%">
+</p>
+
+D'où le clamp secondaire **D4 (SMCJ54A)**, qui ramène Vds_Q2 à 61-65V
+(marge ×1,5) pour 0,03-0,76W de dissipation (marge ×6,6 vs les 5W du
+composant) — comparé au SMCJ43A (même réf. que D1, déjà au BOM) qui tient
+aussi mais coûte jusqu'à 2 points de rendement de plus :
+
+<p align="center">
+  <img src="simulation/plots/clamp_comparison_18w9.png" alt="Comparaison clamp secondaire SMCJ43A vs SMCJ54A, dissipation et tenue en tension" width="100%">
+</p>
 
 Le détail, le protocole de mesure et le tableau calcul / simulation /
-mesure : [`doc/sim-vs-mesure.md`](doc/sim-vs-mesure.md).
+mesure : [`doc/sim-vs-mesure.md`](doc/sim-vs-mesure.md) (§7/§7bis pour le
+passage 18,9W) ; l'implémentation KiCad correspondante :
+[`00-intention-conception.md`](00-intention-conception.md) §16.
 
 ---
 
