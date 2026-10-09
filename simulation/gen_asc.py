@@ -174,6 +174,33 @@ def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
 
     if rectifier == "schottky":
         two_pin(s, "diode", 960, 460, "Drect", "DSCHOTTKY", "0", "n_sec2")
+    elif rectifier == "rd3p04_proxy":
+        # Proxy RD3P04BBKHRB (ROHM, datasheets/transistors/rd3p04bbkhrbtl-e.pdf) :
+        # pas de sous-circuit fondeur disponible (contrairement a
+        # l'IPD050N10N5) -- NMOS level=1 construit sur les points
+        # sources (VTO=1,9V, Fig.9 Tj=25C, graph_read ; RD=23mOhm,
+        # Rds_on typ VGS=10V/10A, p.2 ; KP eleve pour que RD domine la
+        # resistance a l'etat passant, pas la pente du canal), IS quasi
+        # nul pour desactiver la diode de corps interne du modele --
+        # remplacee par une diode EXPLICITE separee (DRD3P04BODY,
+        # VSD=1,5V max @ IS=35A, p.3) + un Coss EXPLICITE (115pF typ,
+        # p.3) en parallele, meme esprit que le proxy Schottky du S2bis.
+        # AUCUNE capacite grille modelisee -- la perte de grille ne peut
+        # pas sortir de cette sim, elle se calcule a part (Qg*Vgs*fsw).
+        s.directive(40, 500, ".model MRD3P04 NMOS(VTO=1.9 KP=200 RD=0.023 RS=0 IS=1e-15)")
+        s.directive(40, 520, ".model DRD3P04BODY D(IS=100n N=1 RS=43m)")
+        mx2, my2 = s.symbol("nmos", 960, 460, rot="R0", inst="M2", value="MRD3P04")
+        s.flag(mx2 + PIN["nmos"]["D"][0], my2 + PIN["nmos"]["D"][1], "n_sec2")
+        s.flag(mx2 + PIN["nmos"]["G"][0], my2 + PIN["nmos"]["G"][1], "g2")
+        s.flag(mx2 + PIN["nmos"]["S"][0], my2 + PIN["nmos"]["S"][1], "0")
+        two_pin(s, "cap", 1080, 460, "CossRD3P04", "115p", "0", "n_sec2")
+        two_pin(s, "diode", 1160, 460, "DbodyRD3P04", "DRD3P04BODY", "0", "n_sec2")
+        td2 = ton1 + dead
+        pw2 = period - ton1 - 2 * dead
+        two_pin(s, "voltage", 1240, 460,
+                "Vg2", f"PULSE(0 10 {td2*1e6:.4f}u 2n 2n "
+                       f"{pw2*1e6:.4f}u {period*1e6:.4f}u)",
+                "g2", "0")
     else:
         mx2, my2 = s.symbol("nmos", 960, 460, rot="R0", inst="M2", value="IPD050N10N5", prefix="X")
         s.flag(mx2 + PIN["nmos"]["D"][0], my2 + PIN["nmos"]["D"][1], "n_sec2")

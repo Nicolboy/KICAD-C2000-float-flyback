@@ -4,7 +4,7 @@
 |---|---|
 | Révision | v0.8 — redressement synchrone secondaire réel : UCC24612 (U12) remplace U2/U4, clamp D4 ajouté |
 | Établi le | 2026-09-28, mis à jour 2026-10-04 |
-| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§12) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§12bis) ; retours température MOSFET/transfo et courant primaire ajoutés, isolateurs migrés vers la famille ratiométrique AMC03x1R/AMC03x2R (§13) ; isolation C2000 rendue réelle — U3/U4/U5/U7/U8/U9 migrés sur GND_CTRL/3V3_CTRL, connecteur scindé CpuOut/CpuIn (§14) ; nouvelle feuille Polarisation — HV_BIAS piloté activement 0-90V depuis une source 400V externe, connecteurs C2000 agrandis à 16 broches (§15) ; cible 18,9W validée par simulation sous réserve d'un clamp secondaire, U2(UCC27517)+U4(ISO7710) remplacés par U12(UCC24612, détection Vds) + D4(SMCJ54A) (§16) |
+| Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§13) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§13bis) ; retours température MOSFET/transfo et courant primaire ajoutés, isolateurs migrés vers la famille ratiométrique AMC03x1R/AMC03x2R (§14) ; isolation C2000 rendue réelle — U3/U4/U5/U7/U8/U9 migrés sur GND_CTRL/3V3_CTRL, connecteur scindé CpuOut/CpuIn (§15) ; nouvelle feuille Polarisation — HV_BIAS piloté activement 0-78V utiles depuis une source 80V externe fixe, connecteurs C2000 agrandis à 16 broches (§16) ; cible 18,9W validée par simulation sous réserve d'un clamp secondaire, U2(UCC27517)+U4(ISO7710) remplacés par U12(UCC24612, détection Vds) + D4(SMCJ54A) (§17) |
 
 Convention reprise de `composants-datasheets/CLAUDE.md` : `spec` = exigence
 d'entrée · `déduit` = calculé · `?` = à trancher. Toute valeur `déduit` porte
@@ -226,7 +226,7 @@ marge en tension plus courte : 16V vs Vout_max=13V = ×1,23 (23%), contre
 ×1,92 pour l'ancienne solution — acceptée explicitement par l'utilisateur
 après avoir vu le calcul.
 
-**Cboot** (stockage bootstrap secondaire, alimente UCC27517-secondaire en
+**Cboot — composant retiré (§17, 2026-10-04), calcul conservé pour mémoire.** (stockage bootstrap secondaire, alimentait UCC27517-secondaire en direct + MCP1703 en amont de l'ISO7710-secondaire — architecture validée avec l'utilisateur en amont de cette session)
 direct + MCP1703 en amont de l'ISO7710-secondaire — architecture validée
 avec l'utilisateur en amont de cette session) :
 
@@ -289,33 +289,30 @@ sur l'autre carte.
 | Clamp primaire | D1 | SMCJ43A (SMC/DO-214AB) | `data/carte-flyback/smcj43a.yaml` |
 | Rail 8,25V primaire | Reg1 | LM317M (SOT-223) + R1=100Ω/R2=560Ω | `data/carte-flyback/lm317m.yaml` |
 | LDO ISO7710 primaire | Reg2 | MCP1703-3302 (SOT-23A, 3,3V) | `data/carte-flyback/mcp1703.yaml` |
-| LDO auxiliaire secondaire | Reg3 | MCP1703-3302 (SOT-23A, 3,3V) — VI depuis VOUT_P direct (§16), alimente VDD1 de U7 (AMC0311R) | `data/carte-flyback/mcp1703.yaml` |
+| LDO auxiliaire secondaire | Reg3 | MCP1703-3302 (SOT-23A, 3,3V) — VI depuis VOUT_P direct (§17), alimente VDD1 de U7 (AMC0311R) | `data/carte-flyback/mcp1703.yaml` |
 | Cin | C1 | A786MW477M1VLAV010 (KEMET, 470µF/35V, 10mΩ) | `data/carte-flyback/a786mw477m1vlav010.yaml` |
 | Cout | C3, C4 | 2× Panasonic 16SVPG330M (330µF/16V, 6,5mΩ) | `data/carte-flyback/16svpg330m.yaml` |
-| Cboot | — | 4,7µF X7R 0805/25V (générique) | non sourcé séparément (§8) |
-| Ampli isolé retour Vout | U7 | AMC0311R (DWV-8, ratiométrique) — retour Vout isolé vers C2000 (§12, renommé depuis AMC0311S en §13) | à sourcer (`composants-datasheets/data/carte-flyback/amc0311r.yaml`, session dédiée) |
-| Diode bootstrap secondaire | D2 | BAT54C (SOT-23, Schottky double cathode commune — un seul canal utilisé, pin2/2e anode en réserve) | à sourcer (remplace BAT54/SOD-123, §12bis) |
-| Empreinte U7/U8/U9 | — | `lib_fp/SOIC_DWV.pretty/SOIC-8_DWV_5.85x11.5mm_P1.27mm.kicad_mod`, custom (boîtier DWV renforcé, cotes land pattern fournies par l'utilisateur) — modèle 3D `DWV0008A.stp` fourni par l'utilisateur, transform identité à affiner (§13) |
-| Thermistance temp. primaire | TH1 | NTC 10k/B=4000, 0805 | non sourcé séparément (§13) |
-| Ampli isolé retour température | U8 | AMC0311R (DWV-8, ratiométrique) — retour température primaire isolé vers C2000 (§13) | à sourcer |
-| Shunt courant primaire | R19 | 1210, valeur provisoire 7,5mΩ | à sourcer (valeur et dissipation, §13) |
-| Ampli isolé retour courant | U9 | AMC0302R (DWV-8, ratiométrique, ±50mV) — retour courant primaire isolé vers C2000, protection surcourant Q1 (§13) | à sourcer |
-| Redressement synchrone secondaire | U12 | UCC24612 (SOT23-5) — remplace U2(UCC27517)+U4(ISO7710), détection Vds (§16) | à sourcer (`datasheets/ucc24612.pdf` déjà présent, pas encore de yaml) |
-| Clamp secondaire | D4 | SMCJ54A (SMC/DO-214AB, même boîtier/famille que D1) — dimensionné `doc/sim-vs-mesure.md` §7bis (§16) | à sourcer (`datasheets/bourns-smcj-series.pdf` déjà présent, pas encore de yaml) |
-| Découplage U12 | C42, C43 | 2,2µF (REG) + 100nF (VDD, bypass HF local) (§16) | non sourcé séparément, générique comme Cboot |
+| Ampli isolé retour Vout | U7 | AMC0311R (DWV-8, ratiométrique) — retour Vout isolé vers C2000 (§13, renommé depuis AMC0311S en §14) | à sourcer (`composants-datasheets/data/carte-flyback/amc0311r.yaml`, session dédiée) |
+| Empreinte U7/U8/U9 | — | `lib_fp/SOIC_DWV.pretty/SOIC-8_DWV_5.85x11.5mm_P1.27mm.kicad_mod`, custom (boîtier DWV renforcé, cotes land pattern fournies par l'utilisateur) — modèle 3D `DWV0008A.stp` fourni par l'utilisateur, transform identité à affiner (§14) |
+| Thermistance temp. primaire | TH1 | NTC 10k/B=4000, 0805 | non sourcé séparément (§14) |
+| Ampli isolé retour température | U8 | AMC0311R (DWV-8, ratiométrique) — retour température primaire isolé vers C2000 (§14) | à sourcer |
+| Shunt courant primaire | R19 | 1210, valeur provisoire 7,5mΩ | à sourcer (valeur et dissipation, §14) |
+| Ampli isolé retour courant | U9 | AMC0302R (DWV-8, ratiométrique, ±50mV) — retour courant primaire isolé vers C2000, protection surcourant Q1 (§14) | à sourcer |
+| Redressement synchrone secondaire | U12 | UCC24612 (SOT23-5) — remplace U2(UCC27517)+U4(ISO7710), détection Vds (§17) | à sourcer (`datasheets/ucc24612.pdf` déjà présent, pas encore de yaml) |
+| Clamp secondaire | D4 | SMCJ54A (SMC/DO-214AB, même boîtier/famille que D1) — dimensionné `doc/sim-vs-mesure.md` §7bis (§17) | à sourcer (`datasheets/bourns-smcj-series.pdf` déjà présent, pas encore de yaml) |
+| Découplage U12 | C42, C43 | 2,2µF (REG) + 100nF (VDD, bypass HF local) (§17) | non sourcé séparément, générique comme Cboot |
 
-## 10. Points ouverts
+## 11. Points ouverts
 
 - [ ] Rendement η=0,85 utilisé en §3 — hypothèse, à vérifier au banc
 - [ ] Vf du redresseur secondaire en phase bootstrap (§5) — 1V pris par
-      hypothèse. IPB020N10N5 (sourcé) donne Vf_body_diode=1,2V max à 100A
+      hypothèse. IPD050N10N5 (sourcé, Q2) donne Vf_body_diode=1,2V max à 40A
       (très au-dessus du courant réel ~6,55A) — conforte l'hypothèse comme
-      raisonnablement conservatrice sans la remplacer par une lecture de
-      courbe précise (fig.12 du datasheet, non faite)
-- [ ] Diode de bootstrap secondaire elle-même (Vout → Cboot) — pas encore
-      choisie ; la chute Vf≈0,5V utilisée en §"Alim secondaire" pour le
-      calcul de marge du MCP1703 est une hypothèse à confirmer une fois le
-      composant sourcé
+      raisonnablement conservatrice.
+- [x] Diode de bootstrap secondaire (Vout → Cboot) — **devenue sans objet** :
+      Cboot et le bootstrap associé sont retirés (§17), Reg3 (MCP1703) est
+      câblé directement sur VOUT_P, plus de diode ni de chute Vf dans ce
+      chemin
 - [x] **Pin1(Gate)/Pin3(Source) de l'empreinte TO252-3_TabPin2 étaient
       permutées** (2026-10-01) — la réserve initiale du fichier
       d'empreinte (« pin1=haute/pin3=basse, pas confirmé par capture
@@ -369,13 +366,13 @@ sur l'autre carte.
       symboles) déduite par symétrie du schéma simplifié du datasheet, pas
       explicitement marquée — à confirmer sur pièce réelle avant simulation.
 - [x] Marge VDD de l'UCC5304 au coin bas — **résolu en revenant à
-      ISO7710+UCC27517 sur le secondaire** (§12bis) : le plancher réel
+      ISO7710+UCC27517 sur le secondaire** (§13bis) : le plancher réel
       d'usage n'est pas 6,3V mais jusqu'à 5,8V (filament réglable -5 à
       -10% sur 6,3V nominal), ce qui aurait mis VBOOT sous le seuil UVLO
       *garanti* (pas juste recommandé) de l'UCC5304 — voir calcul précis
-      §12bis avec les seuils UVLO réels du datasheet (p.8 tbl 6.9).
+      §13bis avec les seuils UVLO réels du datasheet (p.8 tbl 6.9).
 - [ ] Valeurs du filtre RC en sortie de l'AMC0311S (R15=100Ω, C24=1nF,
-      §12) — proposées par défaut (fc≈1,6MHz, n'entame pas la bande
+      §13) — proposées par défaut (fc≈1,6MHz, n'entame pas la bande
       passante propre de l'ampli ~120kHz), à revoir une fois la spec
       d'entrée de l'ADC côté C2000 connue.
 - [ ] R11/R12 (résistances de grille en sortie des UCC, 1Ω/0805) — valeur
@@ -383,10 +380,13 @@ sur l'autre carte.
       dimensionnement tracé ici (amortissement/EMI, ordre de grandeur
       courant pour ce type d'application).
 
-## 11. État du projet KiCad
+- [ ] **R19 sature l'AMC0302R au coin dimensionnant** — R19 × Ipk = 7,5mΩ × 6,55A ≈ 49,2mV contre ±50mV de pleine échelle (marge 1,6%), au régime nominal retenu comme dimensionnant (§3). U9 sert à la protection surcourant de Q1 (§14) : il doit voir au-dessus du pic nominal pour détecter un défaut, pas s'écrêter dessus. À trancher : R19 plus faible (ex. 5mΩ → 32,8mV, marge ×1,52, dissipation 57mW) ou plage AMC0300R/AMC0202R (±250mV) avec le shunt actuel — pas encore choisi.
+- [ ] **Plage de `HV_BIAS` — spec 0-90V (§2) non atteignable avec le rail 80V retenu** (§16) : le courant de polarisation tombe à ~0 au-delà de ~78V (§16bis), accepté explicitement pour le comportement de la source mais pas reporté dans le tableau de spec, qui affiche toujours 90V. D3 (SMCJ100A) clampe à 100V — marge à revérifier contre la valeur retenue. À trancher : abaisser la spec à ~78V, ou lever le rail `HV80_IN` au-dessus de 90V + marge.
+
+## 12. État du projet KiCad
 
 Schéma généré par script (`gen_composants.py`, méthode reprise de
-shield-c2000 : étiquettes globales uniquement, aucun fil, empreintes posées
+KICAD-C2000-devkit : étiquettes globales uniquement, aucun fil, empreintes posées
 sur l'instance). **Restructuré en feuilles hiérarchiques** sur demande de
 l'utilisateur (2026-09-28) : une feuille racine (`alim-flyback-filament.kicad_sch`,
 3 blocs `(sheet ...)`) + trois sous-feuilles —
@@ -404,7 +404,7 @@ secondaire) plutôt que la connectivité.
 
 **Depuis (2026-09-30), les 3 feuilles sont des fichiers de travail
 hand-edited** (placement, câblage et réorganisation faits à la main dans
-KiCad par l'utilisateur, plus jamais régénérés par script) — voir §12 pour
+KiCad par l'utilisateur, plus jamais régénérés par script) — voir §13 pour
 le détail des changements les plus récents (UCC5304, AMC0311S, Cpu1).
 Composants redistribués entre feuilles par l'utilisateur au passage :
 `J1→In1`, `J3→Out1`, `J4→Bias1` (renommés), `Reg3/C11/C12/R9/R10` déplacés
@@ -436,7 +436,7 @@ Alignement vérifié visuellement dans KiCad par l'utilisateur au fur et à
 mesure — pas de rendu 3D possible côté agent, uniquement validation
 syntaxique (`kicad-cli fp export svg`).
 
-## 12. Secondaire UCC5304 + retour Vout isolé AMC0311S (2026-09-30)
+## 13. Secondaire UCC5304 + retour Vout isolé AMC0311S (2026-09-30)
 
 Deux changements demandés par l'utilisateur, ajoutés par édition
 chirurgicale de `isolation.kicad_sch` (suppression/ajout de blocs ciblés,
@@ -493,7 +493,7 @@ Vout=6,3V  (coin réel) → INP=1,03V
 **Filtre RC de sortie** (R15=100Ω série, C24=1nF vers GND, sur demande de
 l'utilisateur) : fc≈1,6MHz — valeurs par défaut, n'entament pas la bande
 passante propre de l'AMC0311S (~120kHz typ), à revoir une fois la spec
-d'entrée ADC du C2000 connue (point ouvert, §10bis).
+d'entrée ADC du C2000 connue (point ouvert, §11).
 
 **Découplage (règle utilisateur, 100nF/0805 par CI)**, appliquée à U6/U7
 uniquement (pas de retrofit sur U1/U3/U5, décision explicite) :
@@ -502,7 +502,7 @@ C25 (RAIL_3V3_PRI-GND, U6 VCCI), C26 (VBOOT-VOUT_N, U6 VDD), C27
 
 **3. Cpu1 (ex-J2, connecteur de commande vers le C2000 externe) agrandi de
 4 à 16 broches** (8 signaux + 8 masses en alternance stricte 1:1) — reprend
-le motif déjà en place sur `shield-c2000` (liaison shield↔puissance,
+le motif déjà en place sur `KICAD-C2000-devkit` (liaison shield↔puissance,
 4 nappes 2×8). Meilleure intégrité de signal sur les fronts PWM isolés et
 le retour analogique (masse dédiée adjacente à chaque signal plutôt
 qu'une masse unique partagée) et marge pour signaux futurs :
@@ -522,10 +522,10 @@ et U7 GND1 — même motif déjà accepté pour l'ancien U4, le secondaire
 flottant est référencé à `VOUT_N` et non à un net nommé `GND` par
 conception).
 
-## 12bis. Retour sur UCC5304 — marge UVLO insuffisante pour un filament réglable (2026-09-30)
+## 13bis. Retour sur UCC5304 — marge UVLO insuffisante pour un filament réglable (2026-09-30)
 
 **UCC5304 abandonné côté secondaire, retour à ISO7710 (U4) + UCC27517
-(U2)** comme avant §12. Cause : l'utilisateur veut pouvoir régler la
+(U2)** comme avant §13. Cause : l'utilisateur veut pouvoir régler la
 tension filament 5 à 10% en dessous du nominal 6,3V, donc supporter
 Vout≈5,8V **en régime établi**, pas seulement en transitoire.
 
@@ -542,7 +542,7 @@ tbl 6.9 Electrical Characteristics — pas la valeur unique simplifiée
 §8) — **en dessous du seuil de démarrage typique (5,5V) et du seuil de
 maintien pire-cas (5,6V)**. Risque réel de non-démarrage ou de décrochage
 UVLO en régime établi, pas qu'une marge « recommandée » entamée comme au
-coin 6,3V (§12). L'ancien UCC27517 (UVLO ≈4,2V typ, `carte-puissance/
+coin 6,3V (§13). L'ancien UCC27517 (UVLO ≈4,2V typ, `carte-puissance/
 ucc27517.yaml`) conserve une marge large jusqu'à 5,8V. **U7 (AMC0311S) et
 le retour Vout isolé sont conservés inchangés** — ce point ne concernait
 que le choix du driver secondaire.
@@ -563,7 +563,7 @@ exact à la même catégorie d'avertissements que la toute première version
 du schéma (MSD1514 + GND2 de U4 + GND1 de U7, ce dernier n'existant pas
 avant l'ajout du retour Vout).
 
-## 13. Retours température primaire et courant primaire isolés, migration AMC0311S→AMC0311R (2026-10-02)
+## 14. Retours température primaire et courant primaire isolés, migration AMC0311S→AMC0311R (2026-10-02)
 
 **Bug trouvé et corrigé — C20/C22 n'étaient pas les seuls.** En vérifiant
 le câblage de U7 avant de le dupliquer pour un nouveau capteur, C18
@@ -616,7 +616,7 @@ confortable sur un boîtier 1210. Sortie filtrée R18(100Ω)/C33(1nF) →
 
 **Les deux nouveaux isolateurs étaient d'abord câblés côté contrôle sur
 `RAIL_3V3_PRI`/`GND`** (comme U7 à l'époque) — migré vers `GND_CTRL`/
-`3V3_CTRL` dans la même session, voir §14.
+`3V3_CTRL` dans la même session, voir §15.
 
 Édition chirurgicale sur `isolation.kicad_sch` et `flyback.kicad_sch`
 (insertion de R19 en série sur une broche déjà câblée de Q1). Bug
@@ -641,9 +641,9 @@ préexistant) + désalignements de grille cosmétiques sur les nouveaux
 composants (replacement manuel prévu par l'utilisateur, comme pour tous
 les ajouts précédents sur ces feuilles).
 
-## 14. Isolation réelle du C2000 — GND_CTRL/3V3_CTRL, connecteur scindé en 2 (2026-10-02)
+## 15. Isolation réelle du C2000 — GND_CTRL/3V3_CTRL, connecteur scindé en 2 (2026-10-02)
 
-Mise en œuvre du point ouvert du §13 : jusqu'ici U3 (et dans une moindre
+Mise en œuvre du point ouvert du §14 : jusqu'ici U3 (et dans une moindre
 mesure U4/U5/U7/U8/U9 côté contrôle) partageaient `RAIL_3V3_PRI`/`GND`
 des deux côtés de leur barrière d'isolation — la puce isolante existait,
 mais sans séparation galvanique réelle vis-à-vis du C2000 externe, les
@@ -682,7 +682,7 @@ CpuOut (sorties C2000 -> carte)      CpuIn (entrées C2000 / ADC)
 8 = GND_CTRL                         8 = GND_CTRL
 ```
 
-Les 4 broches de marge prévues sur CpuIn (§13bis) ont été consommées par
+Les 4 broches de marge prévues sur CpuIn (§13) ont été consommées par
 les deux nouveaux retours température/courant — plus de marge disponible
 sur ce connecteur pour un futur ajout, à rouvrir si besoin.
 
@@ -695,10 +695,10 @@ sur chaque pin `power_in` de ce nouveau rail.
 Édition chirurgicale (22 renommages de label ciblés par coordonnée exacte
 — jamais de remplacement global `RAIL_3V3_PRI`→`3V3_CTRL`, qui aurait
 cassé le primaire — + suppression de Cpu1 et ses 8 étiquettes + ajout de
-2 connecteurs + 2 PWR_FLAG). Même bug de cache `lib_symbols` que le §13,
+2 connecteurs + 2 PWR_FLAG). Même bug de cache `lib_symbols` que le §14,
 cette fois sur `power:PWR_FLAG` (jamais utilisé dans cette feuille avant
 ces 2 flags) — diagnostiqué et corrigé par la même méthode. `kicad-cli
-sch erc` final : **0 erreur**, 37 avertissements (même famille que §13 :
+sch erc` final : **0 erreur**, 37 avertissements (même famille que §14 :
 désalignements de grille cosmétiques sur les nouveaux objets +
 avertissements `GND`-flottant déjà acceptés).
 
@@ -709,7 +709,7 @@ système C2000 externe n'a pas déjà une masse reliée à celle de cette
 carte par un autre chemin (boîtier, câble blindé) — auquel cas la
 séparation serait refaite ailleurs sans que le schéma le montre.
 
-## 15. Nouvelle feuille « Polarisation » — pilotage actif de HV_BIAS depuis une source 80V (2026-10-02)
+## 16. Nouvelle feuille « Polarisation » — pilotage actif de HV_BIAS depuis une source 80V (2026-10-02)
 
 Besoin exprimé : piloter depuis le C2000 la tension du point milieu du
 pont symétrique existant (R9/R10, 2×100kΩ entre `VOUT_P` et `VOUT_N`,
@@ -732,7 +732,7 @@ pont résistif après calcul du courant de fuite probable) : Q3 (BSS127I,
 élément de puissance) + Q4 (MMBT2222, boucle de régulation) + R25 (2kΩ,
 fixe le point de régulation à I=Vbe/R25) + R26 (résistance unique,
 polarisation grille Q3 depuis `HV80_IN` — valeur corrigée par simulation,
-voir §15bis). Pourquoi un courant régulé plutôt qu'un pont résistif
+voir §16bis). Pourquoi un courant régulé plutôt qu'un pont résistif
 classique : le courant de fuite chauffage-cathode des tubes (~1µA/tube
 ×10 tubes ≈10µA max, à confirmer sur le datasheet du tube réel) doit
 rester négligeable devant le courant de polarisation — large marge dans
@@ -748,7 +748,7 @@ C2000 → U10 (ISO7710, traverse `GND_CTRL`↔`GND` comme U3/U4) → filtre
 R20(10k)/C36(100nF) → grille Q5. Logic-level (Vth max 2,6V) choisi
 spécifiquement pour ce rôle — un MOSFET de puissance standard (Vth
 3-4V) ne garantirait pas de conduire avec seulement 3,3V de commande.
-Plage réelle de `HV_BIAS` atteignable : voir §15bis (bornée par la
+Plage réelle de `HV_BIAS` atteignable : voir §16bis (bornée par la
 source de courant, pas par Q5).
 
 **Retour mesure `BIAS_FBACK`** : diviseur R22(470k)/R23(10k) (ratio
@@ -782,7 +782,7 @@ connectées" en ERC pour D3 tant que ce n'était pas corrigé ; (2) le
 cache `lib_symbols` de `isolation.kicad_sch` n'avait pas
 `Connector_Generic:Conn_01x16` (jamais utilisé dans cette feuille avant
 l'agrandissement des connecteurs C2000) — même symptôme et même
-diagnostic que pour `AMC0302R`/`power:PWR_FLAG` au §14.
+diagnostic que pour `AMC0302R`/`power:PWR_FLAG` au §15.
 
 `kicad-cli sch erc` sur le projet complet (4 feuilles) : **0 erreur
 inattendue** — seules les 6 broches de marge volontairement non
@@ -798,7 +798,7 @@ mesurée au banc, pas juste du Vbe), et le repositionnement de tous les
 nouveaux composants dans KiCad (placés par script à des coordonnées
 provisoires, comme d'habitude sur ces feuilles).
 
-## 15bis. Simulation SPICE de la source de courant — R26 corrigé de 2M7 à 75k (2026-10-03)
+## 16bis. Simulation SPICE de la source de courant — R26 corrigé de 2M7 à 75k (2026-10-03)
 
 Avant de sourcer les composants, simulation du sous-circuit Q3/Q4/R25/R26
 sous ngspice (binaire console officiel, hors KiCad qui n'embarque
@@ -847,14 +847,14 @@ de viser une vraie source de courant plate sur toute la plage.
 `polarisation.kicad_sch`. Dissipation vérifiée au pire point (HV_BIAS=0V,
 ~75,3V aux bornes de R26, 1,01mA) : ~76mW, sous les 125mW d'un 0805 —
 pas de changement de boîtier nécessaire. `kicad-cli sch erc` re-vérifié
-sur le projet complet : aucune violation nouvelle (même base qu'au §15).
+sur le projet complet : aucune violation nouvelle (même base qu'au §16).
 
-## 16. Redressement synchrone secondaire réel — UCC24612 (U12) remplace U2/U4, clamp D4 ajouté (2026-10-04)
+## 17. Redressement synchrone secondaire réel — UCC24612 (U12) remplace U2/U4, clamp D4 ajouté (2026-10-04)
 
 Suite de `doc/sim-vs-mesure.md` §7/§7bis : la cible réelle (18,9W) a été
 simulée avec un proxy de redressement synchrone (grille idéale) avant
 d'intégrer le vrai composant. Verdict : tenable **à condition** d'ajouter
-un clamp secondaire sur Q2 (absent jusqu'ici — point ouvert du §10
+un clamp secondaire sur Q2 (absent jusqu'ici — point ouvert du §11
 ci-dessus, passé de souhaitable à bloquant à cette puissance). Les deux
 changements ci-dessous découlent de ce verdict chiffré, pas d'un choix a
 priori.
@@ -933,18 +933,18 @@ d'un flag). Sans lui, ERC lève `power_pin_not_driven` sur VDD.
 
 **Vérification.** `kicad-cli sch erc` sur le projet complet, état final
 (après nettoyage utilisateur + corrections Reg3/U7 ci-dessus) : 213
-violations (223 avant ce §16), **7 erreurs — même famille déjà connue et
-acceptée** (broches de réserve CpuOut/CpuIn non connectées, §15 ; le
+violations (223 avant ce §17), **7 erreurs — même famille déjà connue et
+acceptée** (broches de réserve CpuOut/CpuIn non connectées, §16 ; le
 7e, `CpuOut1` pin 7 = ancien `PWM_SEC_IN`, rejoint cette catégorie
 puisque l'UCC24612 n'a plus besoin de ce signal firmware). Aucune
 violation `power_pin_not_driven` ni autre anomalie électrique restante.
 
 **Marge UVLO à surveiller au banc (pas un point bloquant, juste plus
-tendu que souhaité)** : à Vout_min=5,8V (filament réglé bas, §12bis),
+tendu que souhaité)** : à Vout_min=5,8V (filament réglé bas, §13bis),
 VDD=VOUT_P=5,8V directement. Seuil UVLO réel de l'UCC24612
 (`ucc24612.pdf` tbl 6.5, mesuré sur REG) : VREG_ON max=4,87V, dropout
 max=0,45V à VDD=5V → VDD nécessaire ≈5,32V pire cas. Marge ≈0,48V —
-positive (contrairement au rejet de l'UCC5304 en §12bis qui avait une
+positive (contrairement au rejet de l'UCC5304 en §13bis qui avait une
 marge négative dans ce même scénario), mais plus courte que souhaité ;
 à vérifier en charge réelle avant de considérer le point tranché.
 
