@@ -29,7 +29,7 @@ from pathlib import Path
 
 import kicad_gen as pg
 
-PROJECT = "alim-flyback-filament"
+PROJECT = "KICAD-HT"
 ROOT = Path(__file__).parent
 CUSTOM_LIB = ROOT / "lib" / "custom_parts.kicad_sym"
 

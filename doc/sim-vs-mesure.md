@@ -1,6 +1,6 @@
 # Validation — calcul, simulation, mesure
 
-Étage flyback de `alim-flyback-filament`, redressement passif par la
+Étage flyback de `KICAD-HT`, redressement passif par la
 diode de corps de Q2 (étape de validation avant le contrôleur de
 redressement synchrone UCC24612).
 

@@ -509,7 +509,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "alim-flyback-filament.kicad_pro",
+    "filename": "KICAD-HT.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -693,8 +693,8 @@
     "subpart_id_separator": 0,
     "top_level_sheets": [
       {
-        "filename": "alim-flyback-filament.kicad_sch",
-        "name": "alim-flyback-filament",
+        "filename": "KICAD-HT.kicad_sch",
+        "name": "KICAD-HT",
         "uuid": "c8449ac7-87b3-4a93-889f-06dd686c5aff"
       }
     ],
@@ -704,7 +704,7 @@
   "sheets": [
     [
       "c8449ac7-87b3-4a93-889f-06dd686c5aff",
-      "alim-flyback-filament"
+      "KICAD-HT"
     ],
     [
       "4222d5eb-1966-4c25-91d0-a2dfc8338ee2",

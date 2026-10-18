@@ -44,7 +44,7 @@
 			)
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
 					(page "4")
 				)
@@ -90,7 +90,7 @@
 			)
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
 					(page "2")
 				)
@@ -136,7 +136,7 @@
 			)
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
 					(page "5")
 				)
@@ -182,7 +182,7 @@
 			)
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
 					(page "3")
 				)

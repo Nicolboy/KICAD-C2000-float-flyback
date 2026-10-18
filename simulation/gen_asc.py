@@ -1,5 +1,5 @@
 """Generateur de schema LTspice (.asc) pour l'etage primaire+transfo+
-redressement de la carte alim-flyback-filament.
+redressement de la carte KICAD-HT.
 
 Modeles utilises (tous sources, voir composants-datasheets/data/carte-flyback/) :
   - Q1 et Q2 (redressement passif par diode de corps) : IPD050N10N5 reel

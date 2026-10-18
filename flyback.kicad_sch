@@ -2954,7 +2954,7 @@
 			(uuid "7c981a02-dbf6-4730-8558-ca769e63e90c")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "C45")
 					(unit 1)
@@ -3034,7 +3034,7 @@
 			(uuid "b7e34f98-055d-4b26-9d16-f40577e32475")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "Q2")
 					(unit 1)
@@ -3111,7 +3111,7 @@
 			(uuid "aba18712-8f96-4f61-905f-c4afe83a996e")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "R19")
 					(unit 1)
@@ -3190,7 +3190,7 @@
 			(uuid "7b0a3470-51ae-4b89-8af2-835271c1c34e")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "D4")
 					(unit 1)
@@ -3267,7 +3267,7 @@
 			(uuid "60ebc86b-bbac-4193-87a1-7bcdfa905890")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "R8")
 					(unit 1)
@@ -3344,7 +3344,7 @@
 			(uuid "726f4337-f836-413b-afb5-61d4f9aba632")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "C3")
 					(unit 1)
@@ -3421,7 +3421,7 @@
 			(uuid "349be794-5f24-4430-b3a7-9b5ca8582a47")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "Out1")
 					(unit 1)
@@ -3498,7 +3498,7 @@
 			(uuid "57a5ae17-5e79-4f37-b07c-ba5bd891b995")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "R9")
 					(unit 1)
@@ -3578,7 +3578,7 @@
 			(uuid "3dd78a6d-4b80-4362-aee1-e63fbd0dab22")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "Q1")
 					(unit 1)
@@ -3659,7 +3659,7 @@
 			(uuid "333803a5-b325-4838-9e09-59b87b1664dc")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "Reg3")
 					(unit 1)
@@ -3742,7 +3742,7 @@
 			(uuid "f6207778-a34c-4687-9467-d0d904acff27")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "T1")
 					(unit 1)
@@ -3819,7 +3819,7 @@
 			(uuid "2892db5e-74ee-4ad3-b4b4-7208012a0c68")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "D1")
 					(unit 1)
@@ -3896,7 +3896,7 @@
 			(uuid "e50fa2aa-37b3-4267-a29a-64b343c1eccb")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "R10")
 					(unit 1)
@@ -3973,7 +3973,7 @@
 			(uuid "2066f2a8-0315-40d1-8074-c4a1a13ec0d7")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "R7")
 					(unit 1)
@@ -4050,7 +4050,7 @@
 			(uuid "289abbd9-d741-4e4a-9e00-2d806d93dd3e")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "C4")
 					(unit 1)
@@ -4128,7 +4128,7 @@
 			(uuid "cef5fba2-5ac4-40b7-9fbb-65e5ef0471e3")
 		)
 		(instances
-			(project "alim-flyback-filament"
+			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/d1aa561e-ad66-47ab-8ae9-07ed41f103a3"
 					(reference "C44")
 					(unit 1)

@@ -388,7 +388,7 @@ sur l'autre carte.
 Schéma généré par script (`gen_composants.py`, méthode reprise de
 KICAD-C2000-devkit : étiquettes globales uniquement, aucun fil, empreintes posées
 sur l'instance). **Restructuré en feuilles hiérarchiques** sur demande de
-l'utilisateur (2026-09-28) : une feuille racine (`alim-flyback-filament.kicad_sch`,
+l'utilisateur (2026-09-28) : une feuille racine (`KICAD-HT.kicad_sch`,
 3 blocs `(sheet ...)`) + trois sous-feuilles —
 
 | Feuille | Fichier | Contenu | Composants |
@@ -416,7 +416,7 @@ PCB généré avec contour de carte (70×55mm, à ajuster) — placement et
 routage sont les étapes manuelles suivantes, comme pour les autres cartes
 de ce workspace.
 
-Fichiers : `alim-flyback-filament.kicad_pro/.kicad_sch/.kicad_pcb`,
+Fichiers : `KICAD-HT.kicad_pro/.kicad_sch/.kicad_pcb`,
 `lib/custom_parts.kicad_sym`, `kicad_gen.py`, `gen_symboles.py`,
 `gen_composants.py` (génération initiale, ne plus rejouer sur les feuilles
 hand-edited).
