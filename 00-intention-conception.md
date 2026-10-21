@@ -952,3 +952,77 @@ marge négative dans ce même scénario), mais plus courte que souhaité ;
 dans KiCad (positions provisoires côté script, mêmes désalignements de
 grille cosmétiques que chaque ajout précédent) et mise à jour du PCB
 (F8) — le nettoyage VBOOT/D2/C8/C20/C22 est fait.
+
+## 18. `CpuOut1`/`CpuIn1` remplacés par `J2`, aligné pin-à-pin sur `J21` du shield (2026-10-21)
+
+**Pourquoi.** `KICAD-C2000-powershield` a évolué (décision #26 de son
+`doc/decisions.md`) : la carte Filament/HT ne partage plus un signal à
+la fois sur les nappes génériques du devkit, elle reçoit désormais un
+connecteur IDC 2×10 dédié, `J21` (`NAPPE_FILAMENT_HT`). `KICAD-HT`
+utilisait encore deux connecteurs génériques 16 broches point-à-point
+(`CpuOut1`/`CpuIn1`, `isolation.kicad_sch`), avec un jeu de noms de net
+différent de celui du shield.
+
+**Fait.** Les deux anciens connecteurs remplacés par un seul,
+`J2` (`Connector_Generic:Conn_01x20`, footprint
+`Connector_IDC:IDC-Header_2x10_P2.54mm_Vertical` — même footprint que
+`J21` côté shield, compatibilité câble réelle), aligné pin-à-pin :
+
+| Pin `J2`/`J21` | Net | Pin `J2`/`J21` | Net |
+|---|---|---|---|
+| 1 | `3V3_ISO` | 11 | `Vht` |
+| 2 | `GND_CTRL` | 12 | `GND_CTRL` |
+| 3 | `PWM_ht` | 13 | `Temp_ht` |
+| 4 | `GND_CTRL` | 14 | `GND_CTRL` |
+| 5 | `PWM_EN` | 15 | `I_Shunt_ht` |
+| 6 | `GND_CTRL` | 16 | `GND_CTRL` |
+| 7 | `PWM_bias` | 17 | `I_Shunt_ht_comp` |
+| 8 | `GND_CTRL` | 18 | `GND_CTRL` |
+| 9 | `Vht_EN` | 19 | `V_bias` |
+| 10 | `GND_CTRL` | 20 | `GND_CTRL` |
+
+(`GND_CTRL` reste `GND_CTRL`, pas renommé en `GND` malgré le nom utilisé
+côté shield — `KICAD-HT` a déjà un net `GND` séparé, la masse primaire
+non isolée ; renommer aurait court-circuité silencieusement les deux
+domaines par coïncidence de nom.)
+
+7 nets renommés pour correspondre au vocabulaire du shield, partout où
+ils apparaissent (`isolation.kicad_sch` et `polarisation.kicad_sch`) :
+`PWM_PRI_IN`→`PWM_ht`, `EN_PRI_IN`→`PWM_EN` (confirmé : même signal, pas
+une coïncidence de nom — la fonction « enable primaire » de cette carte
+a convergé vers le drapeau système partagé du shield),
+`PWM_BIAS_IN`→`PWM_bias`, `VOUT_FBACK`→`Vht`, `TEMP_PRI_FBACK`→`Temp_ht`,
+`ISENSE_PRI_FBACK`→`I_Shunt_ht`, `BIAS_FBACK`→`V_bias`,
+`3V3_CTRL`→`3V3_ISO`.
+
+**Deux broches posées mais non câblées en interne, par décision
+explicite** (pas une fonction devinée) :
+- `Vht_EN` (pin 9) — GPIO C2000 générique, jamais câblé nulle part sur
+  cette carte jusqu'ici ; réserve.
+- `I_Shunt_ht_comp` (pin 17) — réservé pour le futur signal de trip
+  rapide (architecture de limitation de courant cycle-à-cycle locale,
+  validée mais pas encore implémentée, branche
+  `feat/limitation-courant-locale`). Dimensionné côté shield pour un
+  chemin comparateur/Trip Zone (22Ω, pas 100Ω comme les autres voies).
+
+**Piège rencontré en implémentant** : l'édition chirurgicale de
+`isolation.kicad_sch` a d'abord produit un fichier structurellement
+invalide à deux reprises (fragment de bloc orphelin, puis insertion du
+nouveau connecteur à l'intérieur du bloc `lib_symbols` au lieu de la
+zone des composants placés) — `kicad-cli sch erc` ne détectait pas ces
+corruptions (résultats en apparence normaux mais en réalité incohérents
+en aval), seule l'interface KiCad les a signalées au chargement. Les
+deux corrigés en revenant à la dernière version commitée et en
+reprenant avec une insertion à position fixe, vérifiée par rejeu de la
+grammaire exacte du format `.kicad_sch` à chaque étape (pas seulement
+l'équilibre des parenthèses). Trois étiquettes `GND_CTRL` de réserve de
+l'ancien `CpuIn1` (ses broches 12/14/16, réellement câblées contrairement
+aux broches 11/13/15) avaient aussi été oubliées lors du nettoyage
+initial, retrouvées orphelines via l'ERC de l'interface KiCad et
+retirées.
+
+**Vérification finale** : `kicad-cli sch erc` sur la hiérarchie
+complète, **0 erreur** — 219 avertissements restants, tous de la même
+famille que ceux déjà présents avant ce changement (désalignements de
+grille cosmétiques, `lib_symbol_mismatch` préexistant sur `T1`/`MSD1514`),
+confirmé par comparaison structurée avec l'état avant modification.
