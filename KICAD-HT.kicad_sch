@@ -189,6 +189,52 @@
 			)
 		)
 	)
+	(sheet
+		(at 110 90)
+		(size 70 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "b1e6f2a4-3c9d-4e5a-8f21-6a7d9c4e2b10")
+		(property "Sheetname" "Limitation_Courant"
+			(at 110 89.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "limitation-courant.kicad_sch"
+			(at 110 140.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "KICAD-HT"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff"
+					(page "6")
+				)
+			)
+		)
+	)
 	(sheet_instances
 		(path "/"
 			(page "1")
