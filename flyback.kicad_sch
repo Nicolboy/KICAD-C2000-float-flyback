@@ -1810,6 +1810,49 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "custom_parts:WSK1206R0100FEA"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no) (in_bom yes) (on_board yes)
+			(property "Reference" "R" (at 6.35 0 90) (effects (font (size 1.27 1.27))))
+			(property "Value" "WSK1206R0100FEA" (at -6.35 0 90) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "WSK1206:WSK1206R0100FEA" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/resistors/wsk1206.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(property "Description" "Shunt Kelvin 10mOhm 1% 1206, 4 broches -- pin1=S1(haut-gauche, sense), pin2=F1(haut, force, meme position que Device:R pin1), pin3=S2(bas-droite, sense), pin4=F2(bas, force, meme position que Device:R pin2). Layout vertical choisi pour reprendre exactement les coordonnees de pin de l'ancien Device:R (chemin de puissance ISENSE_P/GND inchange), les 2 broches sense ajoutees en diagonale (S1 haut-gauche, S2 bas-droite) -- mapping confirme par l'utilisateur, pas deductible du land pattern seul (4 pastilles identiques)." (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(property "ki_keywords" "shunt kelvin current sense WSK1206" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(symbol "WSK1206R0100FEA_0_1"
+				(rectangle
+					(start -2.032 2.54) (end 2.032 -2.54)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "WSK1206R0100FEA_1_1"
+				(pin passive line
+					(at -4.572 2.54 0)
+					(length 2.54)
+					(name "S1" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name "F1" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 4.572 -2.54 180)
+					(length 2.54)
+					(name "S2" (effects (font (size 1.27 1.27))))
+					(number "3" (effects (font (size 1.27 1.27))))
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name "F2" (effects (font (size 1.27 1.27))))
+					(number "4" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
 	)
 	(junction
 		(at 71.12 71.12)
@@ -2366,6 +2409,52 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+			)
+		)
+	)
+	(global_label "ISNS_KP"
+		(shape bidirectional)
+		(at 75.438 86.36 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0a8a7498-4019-49dc-806a-fa2ad2c7226c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 75.438 86.36 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "ISNS_KN"
+		(shape bidirectional)
+		(at 84.582 91.44 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d5b3ffc9-ba3b-4b36-8c53-a6cbb4a71962")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 84.582 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
 			)
 		)
 	)
@@ -3043,7 +3132,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
+		(lib_id "custom_parts:WSK1206R0100FEA")
 		(at 80.01 88.9 0)
 		(unit 1)
 		(body_style 1)
@@ -3063,7 +3152,7 @@
 				)
 			)
 		)
-		(property "Value" "7m5"
+		(property "Value" "10m"
 			(at 84.836 87.376 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3073,7 +3162,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_1210_3225Metric"
+		(property "Footprint" "WSK1206:WSK1206R0100FEA"
 			(at 80.01 88.9 0)
 			(hide yes)
 			(show_name no)
@@ -3084,7 +3173,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/resistors/wsk1206.pdf"
 			(at 80.01 88.9 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3109,6 +3198,12 @@
 		)
 		(pin "2"
 			(uuid "aba18712-8f96-4f61-905f-c4afe83a996e")
+		)
+		(pin "3"
+			(uuid "214c000d-9ab0-4223-b215-9f189c69cef7")
+		)
+		(pin "4"
+			(uuid "40c6deef-d945-4c29-8570-0595cee484d6")
 		)
 		(instances
 			(project "KICAD-HT"
