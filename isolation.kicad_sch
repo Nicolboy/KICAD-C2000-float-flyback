@@ -4013,6 +4013,55 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "custom_parts:SN74LVC1G08"
+			(pin_names (offset 0.508))
+			(exclude_from_sim no) (in_bom yes) (on_board yes)
+			(property "Reference" "U" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
+			(property "Value" "SN74LVC1G08" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/sn74lvc1g08.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(property "Description" "Single 2-input AND gate, SOT23-5 (DBV) -- meme brochage que SN74LVC1G132 (A1/B2/GND3/Y4/VCC5). Gating de IN+ de U1 : Y=EN_PRI_OUT AND NOT(Q_TRIP), car IN- de U1 est deja occupe par PWM_PRI_OUT (pas disponible pour le verrou comme suppose initialement)." (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(property "ki_keywords" "AND gate SN74LVC1G08" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+			(symbol "SN74LVC1G08_0_1"
+				(rectangle
+					(start -7.62 5.08) (end 7.62 -5.08)
+					(stroke (width 0.254) (type default))
+					(fill (type background))
+				)
+			)
+			(symbol "SN74LVC1G08_1_1"
+				(pin power_in line
+					(at 0.00 7.62 270)
+					(length 2.54)
+					(name "VCC" (effects (font (size 1.27 1.27))))
+					(number "5" (effects (font (size 1.27 1.27))))
+				)
+				(pin power_in line
+					(at 0.00 -7.62 90)
+					(length 2.54)
+					(name "GND" (effects (font (size 1.27 1.27))))
+					(number "3" (effects (font (size 1.27 1.27))))
+				)
+				(pin input line
+					(at -10.16 2.54 0)
+					(length 2.54)
+					(name "A" (effects (font (size 1.27 1.27))))
+					(number "1" (effects (font (size 1.27 1.27))))
+				)
+				(pin input line
+					(at -10.16 -2.54 0)
+					(length 2.54)
+					(name "B" (effects (font (size 1.27 1.27))))
+					(number "2" (effects (font (size 1.27 1.27))))
+				)
+				(pin output line
+					(at 10.16 0.00 180)
+					(length 2.54)
+					(name "Y" (effects (font (size 1.27 1.27))))
+					(number "4" (effects (font (size 1.27 1.27))))
+				)
+			)
+		)
 		(symbol "power:PWR_FLAG"
 			(power global)
 			(pin_numbers
@@ -5542,7 +5591,7 @@
 			)
 		)
 	)
-	(global_label "GND"
+	(global_label "ISNS_KN"
 		(shape bidirectional)
 		(at 209.84 246.27 180)
 		(fields_autoplaced yes)
@@ -6375,7 +6424,7 @@
 		)
 	)
 
-	(global_label "ISENSE_P"
+	(global_label "ISNS_KP"
 		(shape bidirectional)
 		(at 209.84 243.73 180)
 		(fields_autoplaced yes)
@@ -6567,7 +6616,7 @@
 			)
 		)
 	)
-	(global_label "EN_PRI_OUT"
+	(global_label "EN_PRI_GATED"
 		(shape bidirectional)
 		(at 145.542 156.464 180)
 		(fields_autoplaced yes)
@@ -8040,7 +8089,7 @@
 				)
 			)
 		)
-		(property "Value" "100"
+		(property "Value" "1k"
 			(at 249.936 240.538 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9680,7 +9729,7 @@
 				)
 			)
 		)
-		(property "Value" "1n"
+		(property "Value" "47n"
 			(at 252.222 251.206 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10541,4 +10590,76 @@
 		)
 	)
 
+	(symbol
+		(lib_id "custom_parts:SN74LVC1G08")
+		(at 187.96 109.22 0)
+		(unit 1)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(uuid "6b1c67a4-bacd-40bd-94fb-a307e70c6e60")
+		(property "Reference" "U13" (at 179.07 109.22 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "SN74LVC1G08" (at 196.85 109.22 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5" (at 187.96 109.22 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(pin "5" (uuid "37d88baf-516e-4fe1-8ffa-f580351a7da4"))
+		(pin "3" (uuid "6c61c3c6-4a93-4835-a27f-c84a4f082862"))
+		(pin "1" (uuid "26b16b7d-4e5e-4ea3-aead-9e0a273f9eac"))
+		(pin "2" (uuid "99f08b50-9f82-4752-bc61-248f8dde0d80"))
+		(pin "4" (uuid "80dfa248-b255-46b6-a271-5ae8e3705a76"))
+		(instances
+			(project "KICAD-HT"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799" (reference "U13") (unit 1))
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 175.26 95.25 0)
+		(unit 1)
+		(exclude_from_sim no) (in_bom yes) (on_board yes) (dnp no)
+		(uuid "ebbe7374-6c1d-4edb-ac7c-21e0febf7c76")
+		(property "Reference" "C46" (at 166.37 95.25 0) (effects (font (size 1.27 1.27))))
+		(property "Value" "100n" (at 184.15 95.25 0) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric" (at 175.26 95.25 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(pin "1" (uuid "a53b9654-ddb7-42ac-8ed9-9540fe68eecf"))
+		(pin "2" (uuid "9673be54-7393-40d2-9546-e0c4b13ef979"))
+		(instances
+			(project "KICAD-HT"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799" (reference "C46") (unit 1))
+			)
+		)
+	)
+	(global_label "EN_PRI_OUT" (shape bidirectional) (at 177.80 106.68 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "5b1aa8c4-c8b4-4530-9312-9a46afc757a8")
+	)
+	(global_label "nQ_TRIP" (shape bidirectional) (at 177.80 111.76 180)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "6a3f7512-11c8-48a5-82bb-f4a2fbf3e9e2")
+	)
+	(global_label "GND" (shape bidirectional) (at 187.96 116.84 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "57baa00b-966d-45d0-afea-2e0dcd77765c")
+	)
+	(global_label "EN_PRI_GATED" (shape bidirectional) (at 198.12 109.22 0)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "207255cd-b96a-4433-a12f-5ee86ab09746")
+	)
+	(global_label "RAIL_3V3_PRI" (shape bidirectional) (at 187.96 101.60 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "92faf5a6-77a0-42a6-b389-cc9b4028f3c8")
+	)
+	(global_label "RAIL_3V3_PRI" (shape bidirectional) (at 175.26 91.44 90)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify left))
+		(uuid "f642a0ba-a049-43db-99ba-bec405e6dfa3")
+	)
+	(global_label "GND" (shape bidirectional) (at 175.26 99.06 270)
+		(fields_autoplaced yes)
+		(effects (font (size 1.27 1.27)) (justify right))
+		(uuid "6d751205-2434-4da9-b59d-cfa6111ec877")
+	)
 )
