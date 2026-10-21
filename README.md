@@ -62,6 +62,11 @@ Le détail (formules, marges, historique des choix) est dans
 | Isolation | ISO7710 (PWM primaire) + DPC817 (EN) — plus de canal PWM dédié au secondaire |
 | Secondaire (flottant) | MOSFET N potentiel bas (rectification synchrone), UCC24612 (détection Vds, alimenté direct depuis Vout) + clamp TVS D4, banc Cout, pont bias 2×100kΩ |
 | Couplage | Coilcraft MSD1514, 1:1 (k≈0,99), 10µH par enroulement |
+| Limitation de courant (§19) | TSV791 (×10,09) + LMV7219 (comparateur) + 74LVC1G132/74LVC1G74 (blanking/verrou) + ISO7710F, 100% primaire sauf le retour isolé `I_Shunt_ht_comp` — coupe Q1 en ~100ns sur défaut, indépendant du C2000 |
+
+Ce tableau n'a pas suivi toutes les évolutions depuis §13 (U8/U9, feuille
+`polarisation.kicad_sch`, connecteur `J2`) — `00-intention-conception.md`
+reste la source de vérité pour l'architecture actuelle.
 
 L'isolation fonctionnelle est dimensionnée pour l'écart réel présent sur la
 carte (~100V avec le bias), pas pour la tenue diélectrique complète des

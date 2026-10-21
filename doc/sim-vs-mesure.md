@@ -95,6 +95,26 @@ dans cette passe (reste à faire si besoin, étape 3 du plan complet).
 Données brutes : `mesures/` — exports CSV de l'oscilloscope, un fichier
 par capture, nommé `AAAAMMJJ_point_grandeur.csv`.
 
+### 4bis. Limitation de courant cycle-à-cycle (§19 de `00-intention-conception.md`)
+
+À faire une fois la carte assemblée avec la feuille `limitation-courant.kicad_sch` :
+
+- **Dépassement de trip** : sonde de courant sur Q1 (ou shunt R19 côté
+  Kelvin) + sonde de tension Vds, seuil abaissé artificiellement (pont
+  R31/R32 temporaire) pour déclencher à un courant mesurable sans
+  dépasser le MOSFET, à Vin = 11V / 20V / 25V. Comparer le dépassement
+  réel au budget de retard calculé en §19 (~0,2–0,26A à 25V).
+- **Durée réelle du blanking** : sonde sur `PWM_LEB` (A du NAND `U17`) et
+  `COMP` (sortie LMV7219), mesurer le temps entre front montant de
+  `PWM_PRI_OUT` et le moment où `PWM_LEB` franchit VT+ (0,79–1,16V à
+  VCC≈3,3V, datasheet `sn74lvc1g132.pdf` p.6) — comparer à la constante
+  RC nominale (R33×C52≈150ns).
+- **Suivi de `I_Shunt_ht_comp`** : vérifier que chaque trip produit bien un
+  front descendant sur `I_Shunt_ht_comp` côté connecteur `J2` (donc côté
+  C2000 après `J21`), et que le signal reste haut en fonctionnement
+  normal, bas si le primaire est débranché/non alimenté (défaut
+  `ISO7710F` de `U19`).
+
 ## 5. Comparaison des formes d'onde
 
 Pour chaque point : la courbe simulée et la mesure superposées sur le

@@ -1026,3 +1026,251 @@ complète, **0 erreur** — 219 avertissements restants, tous de la même
 famille que ceux déjà présents avant ce changement (désalignements de
 grille cosmétiques, `lib_symbol_mismatch` préexistant sur `T1`/`MSD1514`),
 confirmé par comparaison structurée avec l'état avant modification.
+
+## 19. Limitation de courant cycle-par-cycle locale au primaire + retour isolé `nTRIP` (2026-10-21)
+
+**Pourquoi.** U9 (AMC0302R) a 1,6–2,1µs de retard de chaîne : inutilisable
+pour couper Q1 avant dépassement sur un défaut rapide (pente jusqu'à
+2,5A/µs à 25V). Ferme aussi le point ouvert §11 « R19 sature l'AMC0302R au
+coin dimensionnant ». Architecture validée en principe lors d'une revue de
+prompt précédente, implémentée ici : une chaîne **rapide, 100% primaire**
+(ampli ×G + comparateur + verrou → coupe le driver en ~100ns, fonctionne
+même C2000 planté) séparée d'une chaîne **lente isolée** (filtre moyenneur
+→ AMC0302R → ADC C2000, courant moyen).
+
+En parallèle, R19 passe de 7,5mΩ/1210/2 broches à **10mΩ, Yageo
+`WSK1206R0100FEA`, 1206, 4 broches Kelvin** — changement physique intégré à
+cette passe (`flyback.kicad_sch`).
+
+### Trois écarts corrigés par rapport au prompt d'origine
+
+Le prompt de départ décrivait un circuit supposé, pas le circuit réel.
+Trois points ont dû être corrigés après vérification directe du schéma
+(pas d'hypothèse non vérifiée, conformément à la règle du dépôt) :
+
+1. **U3 reste `ISO7710` — pas `ISO7710F` comme demandé.** Vérifié dans
+   `isolation.kicad_sch` : U1 (UCC27517) a `IN+`=`EN_PRI_OUT`,
+   `IN−`=`PWM_PRI_OUT` (pas l'inverse supposé, et `IN−` n'était pas à
+   `GND`). Avec `OUT(U1) = IN+ AND NOT(IN−)` (datasheet UCC27517,
+   `composants-datasheets/datasheets/ucc27517.pdf`, p.3–4) : si `3V3_ISO`
+   perd l'alimentation, `ISO7710` (pas F) donne `PWM_PRI_OUT` par défaut
+   **haut** (`composants-datasheets/datasheets/isolation/iso7710.pdf`, p.19
+   tbl 7-1 et p.20 tbl 7-2) → `NOT(haut)=bas` → `OUT(U1)=bas` → **Q1 déjà
+   coupé, sûr par construction actuelle**. Passer U3 en `ISO7710F`
+   (défaut bas) aurait **désactivé** cette protection en cas de perte du
+   côté contrôle. U3 **non modifié**. Seul le nouvel isolateur `U19`
+   (retour `nTRIP`, sens primaire→contrôle, inverse de U3) est
+   `ISO7710F` : conforme au prompt, le sens de défaut-bas y est correct
+   (primaire non alimenté ⇒ `I_Shunt_ht_comp` par défaut bas = trip vu du
+   C2000).
+
+2. **Verrou branché sur `IN+` de U1 (via un AND), pas sur `IN−` comme
+   supposé.** `IN−` de U1 est déjà occupé par `PWM_PRI_OUT` (le vrai signal
+   PWM), pas disponible pour le verrou. Solution retenue : nouveau
+   `SN74LVC1G08` (AND, SOT-23-5, déjà sourcé localement — datasheet +
+   fiches YAML + doc existantes pour ce composant, seule pièce de la
+   chaîne logique déjà présente dans le dépôt datasheets), U13 dans
+   `isolation.kicad_sch` : `EN_PRI_GATED = EN_PRI_OUT AND nQ_TRIP`,
+   branché sur `IN+` ; `IN−` reste `PWM_PRI_OUT`, intouché. Vérifié sur la
+   table de vérité du verrou (ci-dessous) : `nQ_TRIP` = H dans tous les
+   états normaux, **L uniquement à l'état verrouillé (trip)** →
+   `EN_PRI_GATED` suit `EN_PRI_OUT` en fonctionnement normal, forcé bas
+   (donc `OUT(U1)=0`, Q1 coupé) dès que le verrou trippe, quel que soit
+   l'état de `PWM_PRI_OUT`.
+
+3. **Connecteur déjà prêt — rien à ajouter.** Le prompt demandait d'ajouter
+   une broche `nTRIP_CTRL` à un connecteur. `J2` (§18, posé le même jour)
+   a déjà une broche réservée exactement pour ce signal, `I_Shunt_ht_comp`
+   (pin 17), dimensionnée côté shield avec une résistance série 22Ω (pas
+   100Ω comme les autres voies) — anticipant déjà un usage comparateur/
+   trip zone. La sortie isolée de `U19` est directement nommée
+   `I_Shunt_ht_comp` (même net, pas de renommage, pas de modification du
+   connecteur).
+
+### Pièces : substitutions actées avec l'utilisateur
+
+- **Comparateur** : `LMV7219` (SOT23-5) — inchangé du prompt. Datasheet
+  `composants-datasheets/datasheets/opamp/lmv7219.pdf` : Vos max 6mV
+  (p.5–6), tPD typ 7–11ns selon overdrive (p.5–7), plage de mode commun
+  −0,2V à VCC−1V (p.11, texte — couvre confortablement 0,85V).
+- **Référence de seuil : `ATL431`** (SOT-23-3, DBZ), pas le `LM4040` du
+  prompt — demandé par l'utilisateur. Datasheet
+  `composants-datasheets/datasheets/atl431.pdf` (SLVSCV5E) : Vref=2,500V
+  typ, 2,475–2,525mV grade A (p.4, tbl 5.5), **Ika,min=35µA max** (p.4 —
+  bien plus permissif qu'un TL431 classique ~1mA), **stable sans charge
+  capacitive** (p.1 — pas de fenêtre d'ESR à respecter comme un TL431
+  classique). Pinout ATL431 (pas ATL432, brochage différent) : 1=CATHODE,
+  2=REF, 3=ANODE (p.3). Montage : REF court-circuité sur CATHODE (mode
+  2 broches, sortie fixe 2,5V — c'est la sortie **minimale** possible d'un
+  ATL431/TL431, on ne peut pas descendre en dessous de Vref par ce
+  montage), polarisé depuis `RAIL_3V3_PRI`, puis **pont diviseur séparé**
+  pour dériver `V_TH` (confirmé par l'utilisateur : « une pont diviseur ou
+  une résistance »).
+- **Logique : famille `SN74LVC1G`.** Aucun symbole/empreinte KiCad
+  n'existait pour ces parts avant cette passe, seules les datasheets
+  étaient déjà locales (sauf 1G08) :
+  - `SN74LVC1G132` (NAND Schmitt, LEB) — **SOT-23-5** (DBV), A=1/B=2/
+    GND=3/Y=4/VCC=5 (`sn74lvc1g132.pdf`, p.3 fig 4-1). VT+ = 0,79–1,16V à
+    VCC≈3V (p.6, tbl 5.5, note (1) : typiques à VCC=3,3V).
+  - `SN74LVC1G74` (verrou D) — **VSSOP-8** (package `DCU`, confirmé
+    explicitement « Package Type: VSSOP, Package Drawing: DCU » dans
+    l'addendum d'ordre, pas de variante SOT-23 dans cette révision malgré
+    le souvenir initial) : CLK=1/D=2/Q=3/GND=4/`nQ`=5/`nCLR`=6/`nPRE`=7/
+    VCC=8 (`sn74lvc1g74.pdf`, p.4 fig 5-1).
+  - `SN74LVC1G08` (AND, gating `IN+` de U1) — **déjà sourcé localement**
+    (datasheet + 2 fiches YAML + doc hw), SOT-23-5, même brochage que
+    1G132.
+- **Protection d'entrée : `BAT54S`** (pas un simple `BAT54` comme dans le
+  prompt) — déjà utilisé 43 fois dans `KICAD-C2000-powershield` comme
+  clamp bidirectionnel GND/rail sur signaux MCU, même pattern repris ici :
+  pin1→`GND`, pin2→`RAIL_3V3_PRI`, pin3→nœud protégé (`IN+` du TSV791,
+  après la résistance série R27). Symbole copié depuis
+  `Power_Parts:BAT54S` (KICAD-C2000-powershield). Améliore le clamp
+  simple du prompt : protège aussi contre un défaut positif, pas
+  seulement l'undershoot ESL.
+
+### Seuil et gain — méthode et valeurs
+
+R19 passant de 7,5mΩ à 10mΩ, le courant de trip cible est repris identique
+(~8,4A, cohérent avec la marge MSD1514 Isat=13,4A déjà discutée en §14) :
+
+- **Gain TSV791 inchangé : ×10,09** (Rf=R29=9,09kΩ, Rg=R28=1,00kΩ, E96
+  1%) — ne dépend pas de R19 ; la marge de non-saturation (pic ESL +0,3V
+  → 3V en sortie, sous le rail 3,3V) ne dépend pas non plus de R19.
+  TSV791 : GBP 35MHz min/50MHz typ à VCC=3,3V (`tsv791.pdf`, p.8, tbl 7 —
+  valeur relue visuellement, l'extraction texte brute de ce tableau
+  colonnes-fusionnées n'était pas fiable).
+- **Seul le pont diviseur après l'ATL431 est recalculé** :
+  `V_TH = Ipk_cible × gain × R19 = 8,4 × 10,09 × 0,010 ≈ 0,848V`
+  (au lieu de 0,6345V avec le LM4040 du prompt original, calculé pour
+  7,5mΩ). R31(16,5kΩ)/R32(8,45kΩ) → `V_TH = 2,5 × 8,45/(16,5+8,45) ≈
+  0,847V` → `Ipk_trip ≈ 0,847/(10,09×0,010) ≈ 8,39A`. Courant du pont
+  ≈100µA, négligeable devant Iref max 150nA de l'ATL431 (p.4) — l'erreur
+  de charge sur le pont lui-même est négligeable (le pont est en aval du
+  nœud 2,5V, pas sur la broche REF).
+- **R30 (polarisation ATL431) = 2,67kΩ** : avec `RAIL_3V3_PRI`≈3,3V,
+  courant de polarisation ≈(3,3−2,5)/2,67k≈300µA, très au-dessus du
+  minimum 35µA (marge ×8,5 même en comptant les ~100µA tirés par le pont
+  R31/R32).
+- Seuil résultant **≈8,39A**, tolérance estimée du même ordre que le
+  prompt d'origine (offset TSV791 ≤0,2mV, offset LMV7219 6mV max/gain,
+  ATL431 grade A ±1%, gain ±1%) — valeurs à affiner au banc, non
+  recalculées ici (déplacement du point de fonctionnement, pas de la
+  méthode de calcul de marge).
+
+### Chaîne lente (U9/AMC0302R) — deux corrections
+
+- **Entrée déplacée sur les pastilles Kelvin de R19** (`ISNS_KP`/`ISNS_KN`,
+  au lieu du chemin de puissance `ISENSE_P`/`GND`) — amélioration : gratuite
+  une fois le Kelvin disponible, strictement plus précise (élimine l'IR-drop
+  du chemin de puissance de la mesure).
+- **Filtre de sortie R18/C33 retaillé** (100Ω/1nF → **1kΩ/47nF**, fc≈3,4kHz)
+  pour réellement moyenner le courant sur une période de commutation
+  (200kHz) au lieu de filtrer seulement du bruit HF — l'ancien
+  dimensionnement (fc≈1,6MHz) ne moyennait rien. Valeur de premier jet,
+  compromis réjection d'ondulation / temps de réponse de la boucle de
+  contrôle non figé, à retoucher au banc selon la cadence d'échantillonnage
+  ADC réellement utilisée côté C2000. Ferme le point ouvert §11 : au courant
+  moyen nominal (~1,9A), 1,9×0,010=19mV, loin des ±50mV pleine échelle de
+  l'AMC0302R — plus de saturation possible en régime établi, quelle que
+  soit la valeur finale de R19 entre 7,5 et 10mΩ.
+- Topologie d'entrée de l'AMC0302R (INP/INN directes, sans filtre dédié)
+  laissée telle quelle : la recommandation fabricant (filtre différentiel
+  symétrique R1=R2+C différentiel+caps mode commun, `amc0302r.pdf` p.30
+  fig 8-2, confirmée par les images fournies par l'utilisateur) n'a pas été
+  ajoutée dans cette passe — purement une amélioration de réjection EMI/HF,
+  sans incidence sur le point ouvert §11 ni sur l'architecture de
+  protection ; à faire dans une passe ultérieure si nécessaire.
+
+### Table de vérité du verrou (`SN74LVC1G74`, U18)
+
+| `PWM_PRI_OUT` | blanking | `COMP` | `nPRE` | `nCLR` | `Q` | `nQ_TRIP` | `EN_PRI_GATED` |
+|---|---|---|---|---|---|---|---|
+| bas | – | x | — | bas | bas | haut | suit `EN_PRI_OUT` |
+| haut | non écoulé | x | haut | haut | maintien (bas) | haut | suit `EN_PRI_OUT` |
+| haut | écoulé | bas (pas de défaut) | haut | haut | bas | haut | suit `EN_PRI_OUT` |
+| haut | écoulé | **haut (défaut)** | **bas** | haut | **haut** (verrouillé jusqu'à `PWM_PRI_OUT`=bas) | **bas** | **forcé bas → Q1 coupé** |
+
+Priorité `nPRE`/`nCLR` à l'état bas simultané (ligne impossible ici
+puisque `nCLR` suit directement `PWM_PRI_OUT` et `nPRE` ne peut passer bas
+que si `PWM_PRI_OUT` est haut) à confirmer explicitement sur la datasheet
+`sn74lvc1g74.pdf` (§7 Device Functional Modes) avant le banc — non
+bloquant pour cette implémentation schématique, noté pour la vérification
+au banc.
+
+### Blanking (LEB)
+
+`R33`(1,5kΩ)/`C52`(100pF) sur `PWM_PRI_OUT` → `PWM_LEB`, entrée A du NAND
+`U17`. Constante de temps RC ≈150ns ; durée réelle du blanking dépendant
+du seuil VT+ réel du NAND Schmitt (0,79–1,16V à VCC≈3,3V, voir plus haut)
+— à mesurer au banc, pas recalculée ici en valeur finale (dépend de la
+forme exacte du front RC, pas juste de τ).
+
+### Interface C2000 (description, pas de code — ce dépôt n'a pas de firmware)
+
+- GPIO `I_Shunt_ht_comp` (côté C2000, après le connecteur) → X-Bar
+  d'entrée → eCAP, front descendant, compteur synchronisé au zéro de
+  l'ePWM ⇒ `t_trip` par cycle ⇒ estimation `L ≈ Vin·(t_trip − t_retard)/I_TH`.
+  Option miroir : même signal → X-Bar ePWM → Digital Compare → CBC (le PWM
+  du C2000 reflète alors la coupure réelle, pas de boucle instable
+  puisque le verrou ne se libère qu'au PWM bas). Noms de registres/X-Bar
+  à confirmer dans le TRM F28P55x.
+- Défaut franc : N trips consécutifs ⇒ arrêt one-shot (TZ OSHT par
+  logiciel).
+- `I_Shunt_ht_comp` bas au démarrage = primaire non alimenté ⇒ ne pas
+  démarrer le PWM (cohérent avec le défaut `ISO7710F` de `U19`).
+
+### Limites connues (documentées, pas résolues dans cette passe)
+
+- Pendant le blanking (~150ns), la protection est aveugle — un défaut où
+  le courant primaire monte par l'inductance de fuite seule n'est limité
+  qu'en fin de blanking.
+- La chaîne lente ne voit plus le courant crête (filtre moyenneur) :
+  l'info crête vient uniquement du timing eCAP de `I_Shunt_ht_comp`.
+- Seuil fixe (pont résistif) — un seuil réglable par le C2000 est une
+  évolution possible, hors périmètre ici.
+- Topologie d'entrée symétrique recommandée par TI pour l'AMC0302R
+  (ci-dessus) pas encore appliquée — EMI/HF uniquement, pas de protection
+  fonctionnelle affectée.
+
+### Datasheets et BOM — état de la vérification
+
+Chaque valeur ci-dessus cite sa page. **Les fiches YAML formelles
+(`composants-datasheets/data/*.yaml`) de ces 6 nouvelles pièces n'ont PAS
+été produites dans cette passe** : le schéma
+`.claude/rules/data-yaml.md` de ce dépôt annexe exige (a) une **passe de
+vérification en double extraction** dans un worktree séparé avant de
+considérer une fiche finalisée, (b) pour `pinmap`, une **capture
+d'empreinte PCB réelle** — impossible ici, `KICAD-HT` n'a aucune piste/via
+(0 PCB routé), et (c) pour `ATL431`/`LMV7219`, aucune `family` existante
+du schéma ne correspond proprement (référence de tension ajustable /
+comparateur — ni `opamp`, ni `logic`, ni `csa` ne collent sans forcer),
+ce qui demanderait d'étendre le tableau de familles de
+`.claude/rules/data-yaml.md` **et** `tools/lint_hw.py` dans le même
+commit, hors périmètre de cette tâche schématique. Produire des fiches
+qui ne passeraient pas cette rigueur (ou qui la contourneraient) irait
+contre la règle cardinale du dépôt annexe (« aucune valeur sans
+source », pas de `src` approximatif). **Suivi à faire séparément dans
+`composants-datasheets`** : fiches `atl431.yaml`, `lmv7219.yaml`,
+`sn74lvc1g132.yaml`, `sn74lvc1g74.yaml`, `bat54s.yaml`,
+`wsk1206r0100fea.yaml` (`sn74lvc1g08.yaml` existe déjà). Deux valeurs
+encore à relire proprement avant toute fiche formelle : VT+ du 1G132 à
+3,3V précis (actuellement une plage min/max p.6, pas de typ isolé) et le
+tableau GBP du TSV791 à 3,3V (p.8, relu visuellement cette fois — fiable,
+mais la fiche `tsv791.yaml` existante cite encore l'extraction texte
+d'origine à vérifier/recouper).
+
+### Vérification finale
+
+`kicad-cli sch erc` sur la hiérarchie complète (5 feuilles désormais) :
+**0 erreur**, 220 avertissements — 216 `endpoint_off_grid` (famille
+préexistante, désalignements cosmétiques), 1 `lib_symbol_mismatch`
+préexistant (`T1`/`MSD1514`), 1 `ground_pin_not_ground` préexistant (U7),
+2 `isolated_pin_label` (`Vht_EN` préexistant §18, `Q_TRIP` — sortie de
+réserve du verrou, intentionnellement non consommée ailleurs). Comparé
+point par point à l'état juste avant cette passe : aucune régression,
+seul `Q_TRIP` est un avertissement réellement nouveau, attendu et
+justifié. Validation grammaticale top-level + absence de fragment
+résiduel sur les 4 fichiers touchés/créés (`flyback.kicad_sch`,
+`isolation.kicad_sch`, `KICAD-HT.kicad_sch`, `limitation-courant.kicad_sch`),
+même discipline que pour §18.
