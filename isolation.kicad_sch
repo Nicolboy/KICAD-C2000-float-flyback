@@ -6482,6 +6482,30 @@
 			)
 		)
 	)
+	(global_label "RAIL_3V3_PRI"
+		(shape bidirectional)
+		(at 141.478 50.292 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "6fc25cdc-7460-46fd-b6b8-6b77b2c7d537")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 158.1536 50.292 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+	)
 	(global_label "GND_CTRL"
 		(shape bidirectional)
 		(at 195.58 35.56 0)
@@ -6994,30 +7018,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-			)
-		)
-	)
-	(global_label "RAIL_8V25"
-		(shape bidirectional)
-		(at 141.478 50.292 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "af696031-a17a-4d2a-a4bf-dac24ca729c2")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 155.2507 50.292 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 			)
 		)
 	)

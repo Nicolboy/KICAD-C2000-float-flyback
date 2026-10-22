@@ -2358,7 +2358,7 @@
 	)
 	(global_label "LED_Q_A"
 		(shape bidirectional)
-		(at 70.866 176.53 270)
+		(at 65.532 176.53 270)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2368,7 +2368,7 @@
 		)
 		(uuid "4267aaef-d2ea-4484-a2ea-8b945fa51486")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 70.866 188.4279 90)
+			(at 65.532 188.4279 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2382,7 +2382,7 @@
 	)
 	(global_label "LED_Q_A"
 		(shape bidirectional)
-		(at 62.23 171.958 90)
+		(at 56.896 171.958 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2392,7 +2392,7 @@
 		)
 		(uuid "435c125b-3192-43f1-a67b-6b75e786d5a8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 62.23 160.0601 90)
+			(at 56.896 160.0601 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2569,7 +2569,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 62.23 179.578 270)
+		(at 56.896 179.578 270)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2579,7 +2579,7 @@
 		)
 		(uuid "60339bd4-fe6f-4b40-8b0d-0579bdf77e0f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 62.23 187.545 90)
+			(at 56.896 187.545 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3287,7 +3287,7 @@
 			)
 		)
 	)
-	(global_label "nPRE"
+	(global_label "~{PRE}"
 		(shape bidirectional)
 		(at 235.712 46.736 0)
 		(fields_autoplaced yes)
@@ -3299,7 +3299,7 @@
 		)
 		(uuid "d182c2c9-3695-42cf-b105-3ee6991e9891")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 235.712 46.736 0)
+			(at 243.4975 46.736 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3307,10 +3307,11 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 	)
-	(global_label "nPRE"
+	(global_label "~{PRE}"
 		(shape bidirectional)
 		(at 43.688 149.86 180)
 		(fields_autoplaced yes)
@@ -3322,7 +3323,7 @@
 		)
 		(uuid "d231487f-4c17-4b77-804c-741ce2ee19eb")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 43.688 149.86 0)
+			(at 35.9025 149.86 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3330,6 +3331,7 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
 	)
@@ -3451,7 +3453,7 @@
 	)
 	(global_label "Q_TRIP"
 		(shape bidirectional)
-		(at 70.866 168.91 90)
+		(at 65.532 168.91 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3461,7 +3463,7 @@
 		)
 		(uuid "e8a38a9b-0e42-45f2-bb14-7fb285343e03")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 70.866 158.403 90)
+			(at 65.532 158.403 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3639,7 +3641,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 62.23 175.768 180)
+		(at 56.896 175.768 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3649,7 +3651,7 @@
 		(dnp no)
 		(uuid "127992cc-393b-49a7-a5ec-b5a69deab89d")
 		(property "Reference" "R34"
-			(at 58.166 174.498 0)
+			(at 52.832 174.498 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3659,7 +3661,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 58.42 176.53 0)
+			(at 53.086 176.53 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3669,7 +3671,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 62.23 175.768 0)
+			(at 56.896 175.768 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3680,7 +3682,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 62.23 175.768 0)
+			(at 56.896 175.768 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3691,7 +3693,7 @@
 			)
 		)
 		(property "Description" "LED de defaut Q_TRIP (D6) -- resistance de limitation de courant"
-			(at 62.23 175.768 0)
+			(at 56.896 175.768 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4206,7 +4208,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 70.866 172.72 90)
+		(at 65.532 172.72 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4216,7 +4218,7 @@
 		(dnp no)
 		(uuid "7c6a1506-e7b2-4bee-bd3e-ea610eaf52f5")
 		(property "Reference" "D6"
-			(at 75.946 174.244 90)
+			(at 70.612 174.244 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4226,7 +4228,7 @@
 			)
 		)
 		(property "Value" "LED"
-			(at 75.692 172.212 90)
+			(at 70.358 172.212 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4236,7 +4238,7 @@
 			)
 		)
 		(property "Footprint" "LED_THT:LED_D3.0mm"
-			(at 70.866 172.72 0)
+			(at 65.532 172.72 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4247,7 +4249,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 70.866 172.72 0)
+			(at 65.532 172.72 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4258,7 +4260,7 @@
 			)
 		)
 		(property "Description" "LED rouge 3mm, defaut latche (Q_TRIP)"
-			(at 70.866 172.72 0)
+			(at 65.532 172.72 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
