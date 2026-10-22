@@ -716,7 +716,7 @@
 		(property "Reference" "U" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "SN74LVC1G08" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/sn74lvc1g08.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/logic/sn74lvc1g08.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "Description" "Single 2-input AND gate, SOT23-5 (DBV) -- meme brochage que SN74LVC1G132 (A1/B2/GND3/Y4/VCC5). Gating de IN+ de U1 : Y=EN_PRI_OUT AND NOT(Q_TRIP), car IN- de U1 est deja occupe par PWM_PRI_OUT (pas disponible pour le verrou comme suppose initialement)." (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "ki_keywords" "AND gate SN74LVC1G08" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(symbol "SN74LVC1G08_0_1"
@@ -869,7 +869,7 @@
 		(property "Reference" "U" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "TSV791" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/tsv791.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/opamp/tsv791.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "Description" "Ampli-op SOT23-5, GBP=35MHz min/50MHz typ a VCC=3.3V (Table 7 p.8), Vicm rail-to-rail +-0.1V (p.5). Pinout p.2 : 1=OUT,2=VCC-,3=IN+,4=IN-,5=VCC+" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "ki_keywords" "opamp operational amplifier TSV791" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(symbol "TSV791_0_1"
@@ -958,43 +958,6 @@
 				(length 2.54)
 				(name "OUT" (effects (font (size 1.27 1.27))))
 				(number "1" (effects (font (size 1.27 1.27))))
-			)
-		)
-	)
-	(symbol "ATL431"
-		(pin_names (offset 0.508))
-		(exclude_from_sim no) (in_bom yes) (on_board yes)
-		(property "Reference" "U" (at 0 11.43 0) (effects (font (size 1.27 1.27))))
-		(property "Value" "ATL431" (at 0 -11.43 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/atl431.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Description" "Shunt regulateur ajustable 2.5V low-Iq, SOT-23 (DBZ) -- Vref=2.500V typ (p.4), Ika,min=35uA max (p.4), stable sans charge capacitive (p.1). Pinout ATL431 (pas ATL432, brochage different) : 1=CATHODE, 2=REF, 3=ANODE (p.3)" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "ki_keywords" "shunt regulator reference adjustable ATL431" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(symbol "ATL431_0_1"
-			(rectangle
-				(start -2.54 7.62) (end 2.54 -7.62)
-				(stroke (width 0.254) (type default))
-				(fill (type background))
-			)
-		)
-		(symbol "ATL431_1_1"
-			(pin passive line
-				(at 2.54 5.08 270)
-				(length 2.54)
-				(name "CATHODE" (effects (font (size 1.27 1.27))))
-				(number "1" (effects (font (size 1.27 1.27))))
-			)
-			(pin input line
-				(at -5.08 0.00 0)
-				(length 2.54)
-				(name "REF" (effects (font (size 1.27 1.27))))
-				(number "2" (effects (font (size 1.27 1.27))))
-			)
-			(pin passive line
-				(at 2.54 -5.08 90)
-				(length 2.54)
-				(name "ANODE" (effects (font (size 1.27 1.27))))
-				(number "3" (effects (font (size 1.27 1.27))))
 			)
 		)
 	)

@@ -75,7 +75,12 @@ BOM = [
     ("R29", DEV, R, "9.09k", FP_R, {"1": "ISNS_AMP_FB", "2": "ISNS_AMP"}),
 
     # -- reference de seuil ATL431 2.5V + pont diviseur --
-    ("U15", "custom_parts", "ATL431", "ATL431", "Package_TO_SOT_SMD:SOT-23",
+    # Symbole stock "Reference_Voltage:TL431DBZ" (pas custom_parts:ATL431) :
+    # meme brochage (1=K/2=REF/3=A) et meme footprint SOT-23, substitue a
+    # la main dans le schema (plus adapte que le symbole custom dessine a
+    # la main) -- la piece reellement sourcee/montee reste l'ATL431, Value
+    # et Datasheet de l'instance le confirment explicitement.
+    ("U15", "Reference_Voltage", "TL431DBZ", "ATL431", "Package_TO_SOT_SMD:SOT-23",
      {"1": "V_REF25", "2": "V_REF25", "3": "GND"}),
     ("R30", DEV, R, "2.67k", FP_R, {"1": "RAIL_3V3_PRI", "2": "V_REF25"}),
     ("C49", DEV, C, "100n", FP_C, {"1": "V_REF25", "2": "GND"}),

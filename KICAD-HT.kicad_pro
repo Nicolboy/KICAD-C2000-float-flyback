@@ -698,7 +698,7 @@
         "uuid": "c8449ac7-87b3-4a93-889f-06dd686c5aff"
       }
     ],
-    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,R9-12,Reg3,CpuIn1,CpuOut1",
+    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,C57,R9-12,Reg3,CpuIn1,CpuOut1",
     "variants": []
   },
   "sheets": [
@@ -721,6 +721,10 @@
     [
       "94a61bea-1545-4ab4-b296-7d1dc7a0de10",
       "Polarisation"
+    ],
+    [
+      "b1e6f2a4-3c9d-4e5a-8f21-6a7d9c4e2b10",
+      "Limitation_Courant"
     ]
   ],
   "text_variables": {},

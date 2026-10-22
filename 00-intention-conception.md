@@ -1100,9 +1100,16 @@ Trois points ont dû être corrigés après vérification directe du schéma
   bien plus permissif qu'un TL431 classique ~1mA), **stable sans charge
   capacitive** (p.1 — pas de fenêtre d'ESR à respecter comme un TL431
   classique). Pinout ATL431 (pas ATL432, brochage différent) : 1=CATHODE,
-  2=REF, 3=ANODE (p.3). Montage : REF court-circuité sur CATHODE (mode
-  2 broches, sortie fixe 2,5V — c'est la sortie **minimale** possible d'un
-  ATL431/TL431, on ne peut pas descendre en dessous de Vref par ce
+  2=REF, 3=ANODE (p.3) — **identique au brochage standard TL431 DBZ**.
+  Symbole/empreinte dans le schéma : `Reference_Voltage:TL431DBZ` (stock
+  KiCad), pas un symbole custom — substitué à la main après coup (plus
+  adapté qu'un symbole dessiné à la main, même brochage/footprint
+  SOT-23 confirmé) ; la pièce réellement sourcée/montée reste l'ATL431
+  (Value de l'instance = `ATL431`, Datasheet pointée vers
+  `atl431.pdf`, pas la fiche TL431 générique du symbole stock). Montage :
+  REF court-circuité sur CATHODE (mode 2 broches, sortie fixe 2,5V —
+  c'est la sortie **minimale** possible d'un ATL431/TL431, on ne peut
+  pas descendre en dessous de Vref par ce
   montage), polarisé depuis `RAIL_3V3_PRI`, puis **pont diviseur séparé**
   pour dériver `V_TH` (confirmé par l'utilisateur : « une pont diviseur ou
   une résistance »).
@@ -1274,3 +1281,82 @@ justifié. Validation grammaticale top-level + absence de fragment
 résiduel sur les 4 fichiers touchés/créés (`flyback.kicad_sch`,
 `isolation.kicad_sch`, `KICAD-HT.kicad_sch`, `limitation-courant.kicad_sch`),
 même discipline que pour §18.
+
+### Addendum 2026-10-21 — LED de défaut sur `Q_TRIP`
+
+`Q_TRIP` (sortie de réserve du verrou, jusqu'ici non consommée) reçoit un
+usage réel demandé par l'utilisateur : « simplement une led rouge 3mm sur
+la sortie Q, avec une resistance 10k et reliee au 3V3 ». Ajout de `R34`
+(10k, 0805) et `D6` (`Device:LED`, `LED_THT:LED_D3.0mm`, même symbole/
+empreinte que les LED existantes de `KICAD-C2000-powershield`/
+`KICAD-C2000-devkit`) : `RAIL_3V3_PRI` → `R34` → `D6` anode → `D6` cathode
+→ `Q_TRIP`. Choix volontairement simple, pas de fiche YAML composant
+produite (LED générique non référencée précisément, à la demande de
+l'utilisateur — pas de valeur de datasheet à sourcer puisqu'aucune pièce
+précise n'a été retenue).
+
+**Polarité corrigée par l'utilisateur (2026-10-21, après coup)** :
+câblage initial (`RAIL_3V3_PRI` → `R34` → `D6` → `Q_TRIP`) donnait une LED
+allumée en fonctionnement normal, éteinte en défaut — contre-intuitif,
+signalé ci-dessus. Corrigé à la main dans l'IHM : `R34` pin 1 déplacé de
+`RAIL_3V3_PRI` vers `GND`, `D6` repositionnée (anode/`A` côté `Q_TRIP` =
+sortie `Q` de `U18`, cathode/`K` côté `LED_Q_A` = `R34` pin 2). Vérifié
+par export netlist (`kicad-cli sch export netlist`) : net `Q_TRIP` =
+{`D6` pin 2 (`A`), `U18` pin 3 (`Q`)} ; net `LED_Q_A` = {`D6` pin 1 (`K`),
+`R34` pin 2} ; `R34` pin 1 = `GND`. Chemin : `Q_TRIP` (haut en défaut,
+anode) → `D6` → `R34` → `GND` — la LED s'allume maintenant **en défaut
+latché**, sens intuitif correct.
+
+Édition chirurgicale (pas de régénération par `gen_limitation_courant.py`)
+car le fichier `limitation-courant.kicad_sch` a été entre-temps rouvert et
+retravaillé à la main par l'utilisateur dans l'IHM KiCad : réannotation
+globale du projet (ex. `C49`→`C57`, collision de référence avec une autre
+feuille), repositionnement complet des composants, et ajout de fils réels
+(15 `wire` + 4 `junction`, alors que la convention du projet jusqu'ici
+était étiquettes globales seules). `R34`/`D6` suivent toujours la
+convention étiquette globale, posés dans une zone vide du schéma
+(bas-gauche, hors de tout composant existant), pas raccordés par fil.
+
+**Correction 2026-10-21 (post-coup)** : l'édition chirurgicale ci-dessus
+avait en réalité inséré le bloc `lib_symbols` de `Device:LED` au mauvais
+endroit — pas juste avant la fermeture réelle de `(lib_symbols ...)`
+(après la dernière définition `custom_parts:TSV791`), mais plus loin dans
+le fichier, **imbriqué à l'intérieur de l'étiquette globale `ISNS_AMP`**
+(entre sa propriété `Intersheetrefs` et sa propre parenthèse fermante) —
+une fausse identification de « la fermeture de lib_symbols » faite sans
+vérifier ce qui précédait réellement ce point dans le fichier. Résultat :
+`kicad-cli sch export svg` sur la feuille seule échouait
+(« Échec du chargement de la schématique »), et dans l'IHM la feuille
+s'ouvrait sans composants (seuls les fils restaient visibles) — exactement
+le symptôme signalé par l'utilisateur. Diagnostic mené par bissection
+(retirer catégorie par catégorie, puis élément par élément, en
+reconstruisant chaque variante avec un analyseur S-expression conscient
+des chaînes entre guillemets, pas un simple comptage de parenthèses) :
+isolé à l'étiquette `ISNS_AMP`, confirmé en relisant directement le
+fichier réel (pas une reconstruction) autour de cette ligne. Corrigé en
+déplaçant le bloc `Device:LED` à la vraie position (juste après
+`custom_parts:TSV791`, avant le premier `junction`/`global_label` réel) ;
+`ISNS_AMP` restaurée à sa forme d'origine. Revérifié : chargement
+standalone OK, export hiérarchie complète OK, comptage des éléments
+top-level identique avant/après (121, dont 26 `symbol`/70 `global_label`),
+`Q_TRIP` toujours résolu par `D6`. Leçon retenue : un simple comptage de
+parenthèses (`check_balance.py`) ne suffit pas à garantir qu'une insertion
+est au bon ENDROIT, seulement qu'elle est équilibrée en nombre — vérifier
+le contexte immédiat (ce qui précède/suit réellement) avant d'insérer,
+pas seulement après.
+
+**Trouvaille annexe, non corrigée ici** : `kicad-cli sch erc` (10.0.5) sur
+ce fichier donne des résultats **non déterministes** d'une exécution à
+l'autre (257 vs 253 violations totales constatées, composition différente
+à chaque fois : `wire_dangling`, `unconnected_wire_endpoint` et
+`pin_not_driven` apparaissent 0 à 8 fois selon le tirage). Vérifié par 6
+exécutions répétées sur un fichier strictement inchangé (3 avec l'ajout
+`R34`/`D6`, 3 sur une copie restaurée sans). Les deux jeux donnent
+exactement les mêmes 3 `isolated_pin_label` restants (`nQ_TRIP`,
+`Vht_EN`, `I_Shunt_ht_comp`) et la même composition flottante — **la
+non-déterminisme préexiste au présent ajout, il n'en est pas la cause**.
+Origine probable : de très courts segments de fil (quelques centièmes de
+mm) laissés par l'édition manuelle, autour de la zone `U15`/`R31`/`R32`
+(pont `V_TH`) et de `D5` — à probablement nettoyer (re-snapper ces
+bouts de fil sur leur pastille) si l'utilisateur veut un ERC stable ;
+non traité ici, hors périmètre de la demande (« juste la LED »).
