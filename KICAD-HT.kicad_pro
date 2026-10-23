@@ -536,6 +536,32 @@
         "schematic_color": "rgb(0, 255, 0)",
         "tuning_profile": "",
         "wire_width": 10
+      },
+      {
+        "bus_width": 15,
+        "clearance": 0.2,
+        "name": "CTRL",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.25,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 10
+      },
+      {
+        "bus_width": 15,
+        "clearance": 0.2,
+        "name": "PRI",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.25,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 10
       }
     ],
     "meta": {
@@ -543,7 +569,168 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": []
+    "netclass_patterns": [
+      {
+        "netclass": "CTRL",
+        "pattern": "GND_CTRL"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "3V3_ISO"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "PWM_EN"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "PWM_bias"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "PWM_ht"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "I_Shunt_ht"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "I_Shunt_ht_comp"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Temp_ht"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "V_bias"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Vht"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Vht_EN"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Net-(R3-Pad2)"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Net-(U8-OUT)"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Net-(U9-OUT)"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Net-(U11-OUT)"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "GND"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "RAIL_3V3_PRI"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "RAIL_8V25"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "VIN"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "SW_PRI"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "GATE_Q1"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "EN_PRI_OUT"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "EN_PRI_GATED"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "PWM_PRI_OUT"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "PWM_LEB"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "ISNS_AMP"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "ISNS_AMP_FB"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "ISNS_AMP_P"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "ISNS_KN"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "ISNS_KP"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "ISENSE_P"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "COMP"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "Q_TRIP"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "~{Q_TRIP}"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "~{PRE}"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "V_REF25"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "V_TH"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "Net-(In1-Pin_1)"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "Net-(Reg1-ADJ)"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "Net-(U1-OUT)"
+      }
+    ]
   },
   "pcbnew": {
     "last_paths": {

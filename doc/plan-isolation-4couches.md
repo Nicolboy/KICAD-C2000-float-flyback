@@ -315,16 +315,12 @@ faire sur ce chemin.
 ```
 (version 1)
 
-(rule "meme_composant"
-  (condition "A.Reference == B.Reference")
-  (constraint clearance (min 0.2mm)))
-
 (rule "barriere_controle"
-  (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL')")
+  (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL') && A.Reference != B.Reference")
   (constraint clearance (min 4mm)))
 
 (rule "barriere_primaire_secondaire"
-  (condition "(A.hasNetclass('SEC') || A.hasNetclass('SEC_PWR')) && (B.hasNetclass('PRI') || B.hasNetclass('PRI_PWR'))")
+  (condition "(A.hasNetclass('SEC') || A.hasNetclass('SEC_PWR')) && (B.hasNetclass('PRI') || B.hasNetclass('PRI_PWR')) && A.Reference != B.Reference")
   (constraint clearance (min 2.5mm)))
 ```
 
@@ -333,23 +329,23 @@ contrainte `creepage` ignore les conditions de zone (anomalie 24853,
 corroborée par un second rapport en février 2026). Ici `clearance` suffit,
 la ligne de fuite n'étant jamais la contrainte sur une carte plane.
 
-**Exception « même composant » (`meme_composant`)** : les sept isolateurs
-violeraient sinon la barrière à leurs propres broches, puisque leurs deux
-côtés sont nécessairement à quelques mm l'un de l'autre. KiCad évalue les
-règles **dans l'ordre du fichier, la première qui correspond gagne** — la
-règle d'exception doit donc être déclarée **avant** `barriere_controle`,
-sinon elle n'est jamais atteinte pour les broches concernées.
-`A.Reference`/`B.Reference` résolvent bien au repère du footprint parent
-d'une pastille (confirmé par un exemple d'usage réel, pas supposé), mais
-je n'ai pas trouvé de confirmation officielle aussi directe pour la forme
-comparative `A.Reference == B.Reference` (une comparaison entre deux
-pastilles, pas une pastille contre un repère fixe) — **à tester dans
-KiCad avant de s'y fier** : lancer un DRC juste après avoir écrit le
-fichier, un isolateur doit cesser de violer la barrière sans qu'aucune
-autre violation n'apparaisse ailleurs. Vérifier aussi que la contrainte
-de dégagement minimum globale (Board Setup → Design Rules → Constraints)
-n'est pas réglée au-dessus de `0,2 mm` : cette valeur prévaut toujours
-sur une règle personnalisée qui tenterait de descendre plus bas.
+**Correction 2026-10-23, par test réel (`kicad-cli pcb drc`), pas par
+lecture du fichier.** Une règle d'exception **séparée** pour « même
+composant » — testée avec `A.Reference == B.Reference`, puis avec huit
+règles explicites une par isolateur pour écarter un doute sur cette
+syntaxe précise — **ne fait rien** : 139 violations identiques avant et
+après, y compris entre pastilles du même composant. KiCad n'applique pas
+ici « la première règle qui correspond gagne » pour `clearance`, contre
+ce que suggéraient les sources consultées sur l'ordre d'évaluation.
+**Ce qui marche** : l'exclusion `A.Reference != B.Reference` intégrée
+directement dans la condition de la règle de barrière elle-même, comme
+ci-dessus — mesuré : 139 → 36 violations de dégagement sur `KICAD-HT`
+après correction (les 5 restantes, entre pastilles d'un même repère, sont
+un problème de boîtier `U18`/VSSOP-8 sans rapport avec cette règle).
+Vérifier aussi que la contrainte de dégagement minimum globale
+(Board Setup → Design Rules → Constraints) n'est pas réglée au-dessus de
+`0,2 mm` : cette valeur prévaut toujours sur une règle personnalisée qui
+tenterait de descendre plus bas.
 
 ---
 
