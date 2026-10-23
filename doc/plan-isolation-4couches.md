@@ -37,6 +37,24 @@
 >   non exigée par le §2 ci-dessous). Détail dans le §20 de
 >   `00-intention-conception.md`.
 
+> **Correction 2026-10-23 — 8,5 mm → 4 mm, partout dans ce document.**
+> Les 8,5 mm supposés aux §2/§4/§7 ci-dessous reposaient sur une
+> isolation **renforcée** non vérifiée pour tous les composants qui
+> traversent réellement les barrières. Vérifié dans la datasheet
+> `iso7710.pdf` (§5.6) : `ISO7710`/`ISO7710F` (`U3`, `U10`, `U19`), dans
+> le boîtier D-8 effectivement monté, sont classés **« Basic
+> Insulation »** — `CLR`/`CPG` = 4 mm, pas 8,5. Le renforcé n'existe que
+> sur la variante DW-16 (large), non montée. Comme ces trois isolateurs
+> font partie des barrières contrôle↔primaire et contrôle↔secondaire, la
+> barrière entière hérite de leur classe, pas de celle des `AMC0302R`/
+> `AMC0311R` (qui, eux, sont bien en boîtier large reinforced). Décision :
+> aligner toute la distance contrôle↔{primaire,secondaire} sur **4 mm**,
+> uniforme, plutôt que de faire varier la distance selon le composant
+> précis à chaque point de la barrière. Règle `.kicad_dru` corrigée au
+> §6. Le reste du raisonnement (pas de fente, bandeau de contrôle,
+> disposition §4) reste valable à 4 mm au lieu de 8,5 — seule la valeur
+> numérique change, pas la méthode.
+
 ---
 
 ## 1. L'architecture réelle
@@ -279,12 +297,31 @@ cette hypothèse étant signalée comme la plus fragile du document.
 
 ### Règles personnalisées
 
+**Mise à jour 2026-10-23 — 8,5 mm → 4 mm.** Vérifié directement dans la
+datasheet `iso7710.pdf` (§5.6) : le boîtier réellement utilisé pour
+`ISO7710`/`ISO7710F` (`U3`, `U10`, `U19`) est le **D-8** (SOIC-8 étroit,
+`Package_SO:SOIC-8_3.9x4.9mm_P1.27mm`), explicitement classé
+**« Basic Insulation »** dans la datasheet — `CLR`/`CPG` = 4 mm, pas 8,5.
+Le renforcé 8,5 mm n'existe que sur la variante **DW-16** (large) du même
+composant, non montée ici. Les `AMC0302R`/`AMC0311R` (`U8`, `U9`, `U11`),
+eux, sont bien en boîtier large (`SOIC_DWV:SOIC-8_DWV_5.85x11.5mm_P1.27mm`,
+reinforced 8,5 mm confirmé) — seuls les isolateurs numériques sont
+concernés par la correction. Choix retenu : aligner la barrière
+contrôle↔primaire/secondaire sur **4 mm**, cohérent avec le composant
+réellement monté, isolation **basique** et non renforcée.
+`DPC817` (`U5`) mesuré à ≈5 mm, au-dessus du seuil, pas de changement à
+faire sur ce chemin.
+
 ```
 (version 1)
 
+(rule "meme_composant"
+  (condition "A.Reference == B.Reference")
+  (constraint clearance (min 0.2mm)))
+
 (rule "barriere_controle"
   (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL')")
-  (constraint clearance (min 8.5mm)))
+  (constraint clearance (min 4mm)))
 
 (rule "barriere_primaire_secondaire"
   (condition "(A.hasNetclass('SEC') || A.hasNetclass('SEC_PWR')) && (B.hasNetclass('PRI') || B.hasNetclass('PRI_PWR'))")
@@ -296,8 +333,23 @@ contrainte `creepage` ignore les conditions de zone (anomalie 24853,
 corroborée par un second rapport en février 2026). Ici `clearance` suffit,
 la ligne de fuite n'étant jamais la contrainte sur une carte plane.
 
-Les sept isolateurs violeront forcément ces règles à leurs propres broches :
-les déclarer en exception explicite, pas en baissant le seuil.
+**Exception « même composant » (`meme_composant`)** : les sept isolateurs
+violeraient sinon la barrière à leurs propres broches, puisque leurs deux
+côtés sont nécessairement à quelques mm l'un de l'autre. KiCad évalue les
+règles **dans l'ordre du fichier, la première qui correspond gagne** — la
+règle d'exception doit donc être déclarée **avant** `barriere_controle`,
+sinon elle n'est jamais atteinte pour les broches concernées.
+`A.Reference`/`B.Reference` résolvent bien au repère du footprint parent
+d'une pastille (confirmé par un exemple d'usage réel, pas supposé), mais
+je n'ai pas trouvé de confirmation officielle aussi directe pour la forme
+comparative `A.Reference == B.Reference` (une comparaison entre deux
+pastilles, pas une pastille contre un repère fixe) — **à tester dans
+KiCad avant de s'y fier** : lancer un DRC juste après avoir écrit le
+fichier, un isolateur doit cesser de violer la barrière sans qu'aucune
+autre violation n'apparaisse ailleurs. Vérifier aussi que la contrainte
+de dégagement minimum globale (Board Setup → Design Rules → Constraints)
+n'est pas réglée au-dessus de `0,2 mm` : cette valeur prévaut toujours
+sur une règle personnalisée qui tenterait de descendre plus bas.
 
 ---
 
