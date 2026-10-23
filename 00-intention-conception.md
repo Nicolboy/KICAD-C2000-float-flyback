@@ -1393,7 +1393,43 @@ dans `doc/plan-isolation-4couches.md`. Repères réellement libres pour la
 suite : `D8` (TVS directe sur `VIN`, chemin 1 restant) et `R35`–`R37`
 (résistances de référence inter-domaines, §3 du plan).
 
-**Reste ouvert** : calibre exact de `F1` (plan : 3–4 A temporisé, à
-confirmer contre le courant moyen d'entrée réel), TVS directe sur `VIN`
-(`D8`), résistances de référence inter-domaines (`R35`–`R37`), classes de
-nets et fichier `.kicad_dru` (aucun des deux n'existe encore).
+**Mise à jour 2026-10-23** :
+
+- **`F1` = 3 A** (décidé par l'utilisateur, `Value` mis à jour dans
+  `alim.kicad_sch` ; type temporisé/rapide et tension de service non
+  encore précisés).
+- **TVS directe sur `VIN`** : ne sera **pas** posée sur `KICAD-HT` — elle
+  existe déjà sur la carte `KICAD-C2000-powershield`, en amont au niveau
+  système. Cohérent avec le §2 du plan (« le convertisseur isolé du C2000
+  prend `VIN` en amont du fusible de cette carte »). `D8` retiré de la
+  liste des ajouts pour ce projet.
+- **Résistances de référence inter-domaines (§3 du plan)** : posées dans
+  `isolation.kicad_sch`, en **chaîne de 3×1 MΩ par barrière** (pas une
+  seule résistance — un seul 0805 n'a que 0,8 mm d'écart cuivre entre ses
+  pastilles, bien en-deçà des 8,5 mm visés) :
+  - `R35`/`R6`/`R36` : `GND_CTRL` ↔ `VOUT_N` (barrière contrôle↔secondaire,
+    traversée par `U7`).
+  - `R37`/`R38`/`R39` : `GND_CTRL` ↔ `GND` (barrière contrôle↔primaire,
+    traversée par `U3`/`U5`/`U8`/`U9`/`U10`/`U11`).
+  - `R42`/`R41`/`R40` : `GND` ↔ `VOUT_N` (barrière primaire↔secondaire —
+    non exigée par le plan, qui notait qu'aucun composant ne la traverse
+    électriquement, mais ajoutée par cohérence entre les trois domaines).
+    Impédance 3 MΩ, 30× celle du pont `R9`/`R10` (100k/100k,
+    `flyback.kicad_sch`) qui fixe déjà le biais de `VOUT_N` depuis
+    `HV_BIAS` — influence négligeable sur ce point de fonctionnement,
+    vérifié par comparaison d'impédance.
+  - Nomenclature revérifiée sur tout le projet après ajout : aucune
+    collision (`R6` était libre — son usage d'origine, `100k` sur
+    `PWM_SEC_IN`, a disparu d'une réorganisation antérieure du schéma
+    secondaire).
+  - **Point d'attention pour le passage en 4 couches** : la disposition
+    actuelle (feuille `isolation.kicad_sch`) n'est qu'un agencement
+    *schématique*, sans rapport avec le placement PCB réel. Au placement,
+    les trois résistances de chaque chaîne doivent être **physiquement
+    espacées** le long des 8,5 mm de la barrière correspondante (pas
+    regroupées), sans qu'aucune autre piste/via/remplissage n'approche les
+    deux nœuds intermédiaires à moins de cette distance — sinon la chaîne
+    ne protège rien de plus qu'une résistance unique.
+
+Reste ouvert : type/tension de service de `F1`, classes de nets et
+fichier `.kicad_dru` (aucun des deux n'existe encore).

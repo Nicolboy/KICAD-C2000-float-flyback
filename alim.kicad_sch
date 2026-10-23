@@ -3177,7 +3177,7 @@
 				)
 			)
 		)
-		(property "Value" "Fuse"
+		(property "Value" "3A"
 			(at 46.228 41.91 90)
 			(show_name no)
 			(do_not_autoplace no)

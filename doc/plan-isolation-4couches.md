@@ -20,16 +20,22 @@
 > proposés ici :
 > - **Chemin 2, premier étage (RAIL_8V25)** : fait — `D2` (`Device:D_TVS`,
 >   SMCJ10A) entre `RAIL_8V25` et `GND`, dans `alim.kicad_sch`.
-> - **Chemin 1 (fusible `VIN`)** : fait — `F1` (`Device:Fuse`, calibre non
->   encore choisi, valeur `Fuse` provisoire) en série entre J1 et le net
->   `VIN`, dans `alim.kicad_sch`.
+> - **Chemin 1 (fusible `VIN`)** : fait — `F1` (`Device:Fuse`, **3 A**) en
+>   série entre J1 et le net `VIN`, dans `alim.kicad_sch`. Type
+>   temporisé/rapide et tension de service encore à préciser.
 > - **Chemin 2, second étage (RAIL_3V3_PRI)** : déjà fait *avant* ce plan —
 >   `D7` (`Device:D_TVS`, SMCJ04A) entre `RAIL_3V3_PRI` et `GND`, présent
 >   dès `c535024`.
-> - Restent ouverts : TVS directe sur `VIN` (ici nommée `D5` au §8,
->   collision — utiliser `D8`), calibre précis de `F1`, et les résistances
->   de référence inter-domaines du §3 (ici `R30`–`R32`, collision —
->   utiliser `R35`–`R37`).
+> - **TVS directe sur `VIN`** : ne sera **pas** posée sur `KICAD-HT` —
+>   déjà présente sur `KICAD-C2000-powershield`, en amont au niveau
+>   système (cohérent avec le §2 ci-dessous). Repère `D5`/`D8` abandonné.
+> - **Résistances de référence inter-domaines (§3)** : faites, en
+>   **chaîne de 3×1 MΩ par barrière** (motif, pas une seule résistance —
+>   voir note sous le §3). Repères réels : `R35`/`R6`/`R36`
+>   (contrôle↔secondaire), `R37`/`R38`/`R39` (contrôle↔primaire),
+>   `R42`/`R41`/`R40` (primaire↔secondaire, ajoutée par cohérence bien que
+>   non exigée par le §2 ci-dessous). Détail dans le §20 de
+>   `00-intention-conception.md`.
 
 ---
 
@@ -138,9 +144,20 @@ condensateur de classe Y ferait le même travail en continu mais augmenterait
 la capacité de barrière, donc dégraderait la CMTI — à éviter ici, d'autant
 que tu as choisi un DC/DC à 3 pF pour la minimiser.
 
-Ces résistances se placent **sous le corps de l'isolateur ou à son
-immédiate proximité**, pour ne pas réduire la distance ailleurs qu'au seul
-endroit où elle est déjà franchie.
+~~Ces résistances se placent sous le corps de l'isolateur ou à son
+immédiate proximité, pour ne pas réduire la distance ailleurs qu'au seul
+endroit où elle est déjà franchie.~~ **Corrigé (2026-10-23)** : cette
+recommandation était insuffisante. Le footprint `R_0805_2012Metric` n'a
+que 0,8 mm entre ses deux pastilles (mesuré directement dans le
+`.kicad_mod`) — une seule résistance, où qu'elle soit posée, re-court-
+circuite la barrière à 0,8 mm au lieu des 8,5 mm visés ; elle n'hérite en
+rien de la distance interne certifiée de l'isolateur. Solution retenue :
+une **chaîne de 3×1 MΩ physiquement espacée sur toute la largeur de la
+barrière** (pas sous un seul composant), de façon que le chemin
+cuivre-à-cuivre cumulé atteigne bien les 8,5 mm, et que les deux nœuds
+intermédiaires ne soient approchés par aucune autre piste/via/
+remplissage. Détail et repères réels au §20 de
+`00-intention-conception.md`.
 
 ---
 
