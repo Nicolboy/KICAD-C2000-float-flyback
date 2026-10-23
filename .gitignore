@@ -21,6 +21,10 @@ fp-info-cache
 *-erc.rpt
 *-drc.rpt
 
+# Export BOM (Generate BOM / export netlist XML), régénéré à chaque passage
+/*.txt
+/*.xml
+
 # Sorties de fabrication
 /plt/
 /gerber/

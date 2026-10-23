@@ -1360,3 +1360,40 @@ mm) laissés par l'édition manuelle, autour de la zone `U15`/`R31`/`R32`
 (pont `V_TH`) et de `D5` — à probablement nettoyer (re-snapper ces
 bouts de fil sur leur pastille) si l'utilisateur veut un ERC stable ;
 non traité ici, hors périmètre de la demande (« juste la LED »).
+
+## §20 — Confinement de défaut : fusible VIN et TVS RAIL_8V25
+
+Ajouté le 2026-10-23, suite à `doc/plan-isolation-4couches.md` (revue
+d'isolation 3 domaines + analyse de confinement de défaut, §8 du
+document). Deux composants posés par l'utilisateur dans `alim.kicad_sch` :
+
+- **`F1`** (`Device:Fuse`, valeur provisoire `Fuse` — calibre non encore
+  choisi) en série entre `J1` et le net `VIN`. Ferme le « Chemin 1 » du
+  plan : un défaut sur cette carte (ex. `Q1` en court-circuit) ne tire
+  plus `VIN` vers le bas pour le reste du système, dont le convertisseur
+  isolé qui alimente le C2000.
+- **`D2`** (`Device:D_TVS`, SMCJ10A) entre `RAIL_8V25` et `GND`. Ferme le
+  premier étage du « Chemin 2 » (cascade `Reg1`→`Reg2`) : borne
+  `RAIL_8V25` avant que `Reg1` en défaut ne pousse son entrée sur sa
+  sortie au-delà de ce que `Reg2` encaisse. Le second étage
+  (`RAIL_3V3_PRI`, `D7`/SMCJ04A) était déjà posé avant ce plan.
+
+Vérifié par calcul de position de broche (pas seulement par label) :
+`F1` relie bien `J1` pin 1 (brut, non étiqueté) à l'étiquette `VIN`
+post-fusible ; `D2` relie bien `RAIL_8V25` à `GND`, aucun des deux ne
+flotte. Fichier `alim.kicad_sch` revérifié (équilibre parenthèses
+conscient des chaînes, chargement standalone, export hiérarchie
+complète) après l'incident du §19 — même discipline désormais
+systématique après tout ajout de composant.
+
+**Nomenclature** : les repères `D5`/`D6`/`D7`/`R30`–`R32` suggérés par le
+plan collisionnent avec `limitation-courant.kicad_sch` (§19), rédigé
+après le commit sur lequel le plan se base. Table corrigée directement
+dans `doc/plan-isolation-4couches.md`. Repères réellement libres pour la
+suite : `D8` (TVS directe sur `VIN`, chemin 1 restant) et `R35`–`R37`
+(résistances de référence inter-domaines, §3 du plan).
+
+**Reste ouvert** : calibre exact de `F1` (plan : 3–4 A temporisé, à
+confirmer contre le courant moyen d'entrée réel), TVS directe sur `VIN`
+(`D8`), résistances de référence inter-domaines (`R35`–`R37`), classes de
+nets et fichier `.kicad_dru` (aucun des deux n'existe encore).
