@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| Révision | v0.8 — redressement synchrone secondaire réel : UCC24612 (U12) remplace U2/U4, clamp D4 ajouté |
-| Établi le | 2026-09-28, mis à jour 2026-10-04 |
+| Révision | v0.9 — secondaire plus isolé/flottant du primaire dans le montage final (§20bis) ; v0.8 — redressement synchrone secondaire réel : UCC24612 (U12) remplace U2/U4, clamp D4 ajouté |
+| Établi le | 2026-09-28, mis à jour 2026-10-25 |
 | Statut | duty cycle et courants inductance vérifiés ; clamp TVS SMC et filtrage de sortie 50mV tranchés (§6, §7) ; retour ADC isolé AMC0311S ajouté (§13) ; UCC5304 essayé puis abandonné côté secondaire, marge UVLO insuffisante pour un filament réglable (§13bis) ; retours température MOSFET/transfo et courant primaire ajoutés, isolateurs migrés vers la famille ratiométrique AMC03x1R/AMC03x2R (§14) ; isolation C2000 rendue réelle — U3/U4/U5/U7/U8/U9 migrés sur GND_CTRL/3V3_CTRL, connecteur scindé CpuOut/CpuIn (§15) ; nouvelle feuille Polarisation — HV_BIAS piloté activement 0-78V utiles depuis une source 80V externe fixe, connecteurs C2000 agrandis à 16 broches (§16) ; cible 18,9W validée par simulation sous réserve d'un clamp secondaire, U2(UCC27517)+U4(ISO7710) remplacés par U12(UCC24612, détection Vds) + D4(SMCJ54A) (§17) |
 
 Convention reprise de `composants-datasheets/CLAUDE.md` : `spec` = exigence
@@ -12,9 +12,13 @@ sa formule et sa source.
 
 ## 1. Fonction
 
-Flyback isolé flottant, 200kHz, alimentant un filament de chauffage tube +
-étage de préamplification bas bruit. Secondaire flottant, élevable de 0 à
-90V par pont 2×100k symétrique (Vout+/Vout- vers la source HV externe).
+Flyback 200kHz, alimentant un filament de chauffage tube + étage de
+préamplification bas bruit. Secondaire élevable de 0 à 90V par pont 2×100k
+symétrique (Vout+/Vout- vers la source HV externe). **Depuis le
+2026-10-25, le secondaire n'est plus isolé galvaniquement du primaire**
+dans le montage final — voir §20bis. La barrière isolée réelle du système
+est désormais uniquement contrôle (C2000) ↔ puissance (primaire +
+secondaire), via les AMC03xx/ISO7710/DPC817.
 
 ## 2. Grandeurs par nœud
 
@@ -1431,5 +1435,48 @@ suite : `D8` (TVS directe sur `VIN`, chemin 1 restant) et `R35`–`R37`
     deux nœuds intermédiaires à moins de cette distance — sinon la chaîne
     ne protège rien de plus qu'une résistance unique.
 
-Reste ouvert : type/tension de service de `F1`, classes de nets et
-fichier `.kicad_dru` (aucun des deux n'existe encore).
+Reste ouvert : type/tension de service de `F1`. Les classes de nets
+(`CTRL`/`PRI`/`SEC`, dans `KICAD-HT.kicad_pro`) et le fichier
+`KICAD-HT.kicad_dru` existent désormais — voir §20bis pour l'état actuel
+et une correction importante sur la portée des barrières.
+
+## §20bis — Le secondaire n'est plus isolé du primaire (2026-10-25)
+
+Décision utilisateur : dans le montage final, le secondaire de puissance
+(`VOUT_N`/`VOUT_P`, classe de nets `SEC`) **ne sera plus flottant ni isolé
+galvaniquement du primaire** (`GND`, classe `PRI`). Ça contredit la
+prémisse posée tout au long de ce document et du `README.md` (« secondaire
+flottant », repris dans le titre anglais « floating-secondary ») — les
+deux ont été corrigés pour refléter le nouvel état, mais les sections
+antérieures de ce document (notamment §1, les tableaux U4/U7 vers les
+lignes 660-662, et §16-17 sur `HV_BIAS`) décrivent encore l'ancienne
+architecture à titre historique ; ne pas les prendre pour l'état actuel.
+
+**Ce qui change concrètement** :
+- La règle `.kicad_dru` `barriere_primaire_secondaire` (2,5 mm entre les
+  classes `PRI` et `SEC`, ajoutée au §20 pour fermer ce qui semblait être
+  la seule barrière restante après `T1`) est **retirée** — commentée dans
+  `KICAD-HT.kicad_dru`, pas supprimée, pour garder une trace de pourquoi
+  elle a existé.
+- La classe de nets `SEC` est **conservée** dans `KICAD-HT.kicad_pro` à
+  titre d'organisation/documentation (elle identifie toujours le
+  sous-circuit secondaire), mais ne porte plus de contrainte de barrière
+  vis-à-vis de `PRI`.
+- La seule barrière réellement isolée qui reste sur cette carte est
+  **contrôle (C2000, classe `CTRL`) ↔ puissance (`PRI`+`SEC`)**, via les
+  sept isolateurs (`AMC0302R`/`AMC0311R`/`ISO7710`/`DPC817`) — la règle
+  `barriere_controle` (4 mm) n'est pas affectée par ce changement, elle
+  s'applique toujours à `CTRL` contre tout le reste, `SEC` inclus.
+
+**Ce qui n'a pas été vérifié dans cette passe** : la conséquence
+électrique précise du décloisonnement primaire/secondaire (quel nœud
+relie désormais `GND` et `VOUT_N` dans le schéma — tie-point direct,
+composant intermédiaire, ou autre — et l'impact sur `D1`/`D4`/les calculs
+de surtension du §17, établis en supposant un secondaire flottant). À
+vérifier avant de considérer la conception électrique close, pas seulement
+la règle DRC retirée.
+
+Non traité ici, hors périmètre de cette passe : réécriture complète des
+sections historiques (§1, tableaux U4/U7, §16-17) pour refléter la
+nouvelle architecture — elles restent lisibles comme journal de
+conception, mais un lecteur pressé doit partir de ce §20bis, pas du §1.

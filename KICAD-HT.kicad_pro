@@ -528,16 +528,6 @@
         "wire_width": 10
       },
       {
-        "bus_width": 20,
-        "line_style": 0,
-        "name": "mon dessin",
-        "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 0,
-        "schematic_color": "rgb(0, 255, 0)",
-        "tuning_profile": "",
-        "wire_width": 10
-      },
-      {
         "bus_width": 15,
         "clearance": 0.2,
         "name": "CTRL",
@@ -555,12 +545,35 @@
         "clearance": 0.2,
         "name": "PRI",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
-        "priority": 1,
+        "priority": 2,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.25,
         "tuning_profile": "",
         "via_diameter": 0.6,
         "via_drill": 0.3,
+        "wire_width": 10
+      },
+      {
+        "bus_width": 15,
+        "clearance": 0.2,
+        "name": "SEC",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 3,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.25,
+        "tuning_profile": "",
+        "via_diameter": 0.6,
+        "via_drill": 0.3,
+        "wire_width": 10
+      },
+      {
+        "bus_width": 20,
+        "line_style": 0,
+        "name": "mon dessin",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 0,
+        "schematic_color": "rgb(0, 255, 0)",
+        "tuning_profile": "",
         "wire_width": 10
       }
     ],
@@ -729,6 +742,78 @@
       {
         "netclass": "PRI",
         "pattern": "Net-(U1-OUT)"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "VOUT_N"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "VOUT_P"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "RAIL_3V3_SEC"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "SW_SEC"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "GATE_Q2"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "HV_BIAS"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "HV80_IN"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "BIAS_SENSE"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "CS_EMIT"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "CS_GATE"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "CS_TOP"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "VAR_GATE"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "REG_SR"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "VOUT_FBACK_RAW"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "VOUT_SENSE"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "Net-(U10-OUT)"
+      },
+      {
+        "netclass": "SEC",
+        "pattern": "Net-(U12-VG)"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "TEMP"
       }
     ]
   },
@@ -885,7 +970,7 @@
         "uuid": "c8449ac7-87b3-4a93-889f-06dd686c5aff"
       }
     ],
-    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,C57,R6,R9-12,R35-42,Reg3,CpuIn1,CpuOut1,D2,D7,F1",
+    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,C27,C42-43,C57,R6,R9-12,R35-42,Reg3,CpuIn1,CpuOut1,D2,D7,F1,U12",
     "variants": []
   },
   "sheets": [

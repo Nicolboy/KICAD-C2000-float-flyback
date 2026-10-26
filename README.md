@@ -4,21 +4,30 @@
 - **+5 points** efficiency from synchronous rectification (UCC24612) vs. body-diode
 - **106.8V → 61–65V** — secondary overvoltage, resolved by a TVS clamp sized through simulation (×1.5 margin vs. the 100V MOSFET rating)
 
-Isolated, floating-secondary flyback power supply for vacuum-tube filament
-heating and a low-noise preamp stage, designed in KiCad 10. 200kHz,
-11–25V in → 5.5–13V/3A out, secondary floating and liftable 0–90V for
+Flyback power supply for vacuum-tube filament heating and a low-noise
+preamp stage, designed in KiCad 10, with the control side (C2000)
+galvanically isolated from the power stage. **Update 2026-10-25**: the
+secondary is no longer floating/galvanically isolated from the primary
+in the final assembly — only the control↔power barrier remains isolated;
+see `doc/plan-isolation-4couches.md` for the current barrier scope.
+200kHz, 11–25V in → 5.5–13V/3A out, secondary liftable 0–90V for
 cathode/filament stress reduction. Synchronous secondary rectification
 (UCC24612, direct Vds sensing — no firmware timing) validated by SPICE at
 the real 18.9W target, including a secondary-side overvoltage finding and
 the clamp that fixes it — see *Validation* below for the figures and
 `doc/sim-vs-mesure.md` for the full data.
 
-Alimentation flyback isolée et flottante pour le chauffage d'un filament de
-tube à vide et un étage de préamplification bas bruit, conçue sous KiCad 10.
+Alimentation flyback pour le chauffage d'un filament de tube à vide et un
+étage de préamplification bas bruit, conçue sous KiCad 10 — le côté
+contrôle (C2000) reste isolé galvaniquement de l'étage de puissance.
+**Mise à jour 2026-10-25** : le secondaire n'est plus flottant/isolé
+galvaniquement du primaire dans le montage final — seule la barrière
+contrôle↔puissance reste isolée ; voir `doc/plan-isolation-4couches.md`
+pour le périmètre actuel des barrières.
 
 Convertisseur flyback 200kHz, 11-25V en entrée → 5,5-13V/3A en sortie.
-Secondaire entièrement flottant, élevable de 0 à 90V par un pont symétrique
-2×100kΩ (une résistance vers Vout+, une vers Vout-) — pour réduire le stress
+Secondaire élevable de 0 à 90V par un pont symétrique 2×100kΩ (une
+résistance vers Vout+, une vers Vout-) — pour réduire le stress
 cathode/chauffage sur un préamplificateur à tubes bas bruit (montage cascode).
 
 <p align="center">
@@ -60,7 +69,7 @@ Le détail (formules, marges, historique des choix) est dans
 |---|---|
 | Primaire | Cin, MOSFET N (TO-252), clamp TVS D1 (boîtier SMC), UCC27517 + ISO7710 (PWM) |
 | Isolation | ISO7710 (PWM primaire) + DPC817 (EN) — plus de canal PWM dédié au secondaire |
-| Secondaire (flottant) | MOSFET N potentiel bas (rectification synchrone), UCC24612 (détection Vds, alimenté direct depuis Vout) + clamp TVS D4, banc Cout, pont bias 2×100kΩ |
+| Secondaire (non isolé du primaire depuis 2026-10-25) | MOSFET N potentiel bas (rectification synchrone), UCC24612 (détection Vds, alimenté direct depuis Vout) + clamp TVS D4, banc Cout, pont bias 2×100kΩ |
 | Couplage | Coilcraft MSD1514, 1:1 (k≈0,99), 10µH par enroulement |
 | Limitation de courant (§19) | TSV791 (×10,09) + LMV7219 (comparateur) + 74LVC1G132/74LVC1G74 (blanking/verrou) + ISO7710F, 100% primaire sauf le retour isolé `I_Shunt_ht_comp` — coupe Q1 en ~100ns sur défaut, indépendant du C2000 |
 
@@ -68,9 +77,12 @@ Ce tableau n'a pas suivi toutes les évolutions depuis §13 (U8/U9, feuille
 `polarisation.kicad_sch`, connecteur `J2`) — `00-intention-conception.md`
 reste la source de vérité pour l'architecture actuelle.
 
-L'isolation fonctionnelle est dimensionnée pour l'écart réel présent sur la
-carte (~100V avec le bias), pas pour la tenue diélectrique complète des
-isolateurs (5000V) — pas de slot d'isolation dans le PCB.
+L'isolation fonctionnelle (barrière contrôle↔puissance, via les AMC03xx/
+ISO7710/DPC817) est dimensionnée pour l'écart réel présent sur la carte,
+pas pour la tenue diélectrique complète des isolateurs (5000V) — pas de
+slot d'isolation dans le PCB. Le primaire et le secondaire de puissance,
+eux, ne sont plus traités comme deux domaines isolés (2026-10-25) : voir
+`doc/plan-isolation-4couches.md`.
 
 ---
 

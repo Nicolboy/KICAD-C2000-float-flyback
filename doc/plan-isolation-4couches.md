@@ -3,6 +3,19 @@
 Établi le 2026-10-23, à partir du commit `c535024`, du fichier
 `KICAD-HT.kicad_pcb` et de `00-intention-conception.md`.
 
+> **Correction majeure 2026-10-25 — la barrière primaire↔secondaire est
+> retirée.** Décision utilisateur : dans le montage final, le secondaire
+> de puissance ne sera plus flottant ni isolé galvaniquement du primaire.
+> Toute la section « Primaire ↔ secondaire : 2,5 mm » du §2, la ligne
+> correspondante du récapitulatif, et la règle `barriere_primaire_secondaire`
+> du §6 **ne s'appliquent plus** — laissées ci-dessous à titre historique
+> (pourquoi cette distance avait été calculée), mais `KICAD-HT.kicad_dru`
+> ne la contient plus (commentée, pas supprimée, dans le fichier réel).
+> Seule la barrière **contrôle ↔ {primaire, secondaire}** reste une
+> isolation galvanique réelle sur cette carte — voir le §20bis de
+> `00-intention-conception.md` pour le détail et ce qui reste à vérifier
+> électriquement (le nœud qui relie désormais `GND` et `VOUT_N`).
+
 > **Révision 2, même jour.** La première version ramenait contrôle et
 > primaire à un seul domaine, en supposant `GND_CTRL` reliée à `GND` par la
 > masse du shield. C'est faux : le C2000 est alimenté par un convertisseur

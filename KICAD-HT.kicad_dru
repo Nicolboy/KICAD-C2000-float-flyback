@@ -3,3 +3,11 @@
 (rule "barriere_controle"
   (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL') && A.Reference != B.Reference")
   (constraint clearance (min 4mm)))
+
+; barriere_primaire_secondaire retiree le 2026-10-25 : le secondaire
+; (VOUT_N/VOUT_P, classe SEC) ne sera plus flottant/isole du primaire
+; dans le montage final -- decision utilisateur, contredit la premisse
+; du plan doc/plan-isolation-4couches.md et du README (secondaire
+; flottant). Seule la barriere controle<->{primaire,secondaire} reste
+; reelle. La classe SEC est conservee pour organisation/documentation,
+; sans contrainte de barriere avec PRI.
