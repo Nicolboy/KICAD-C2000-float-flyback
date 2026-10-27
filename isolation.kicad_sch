@@ -8507,7 +8507,7 @@
 				)
 			)
 		)
-		(property "Value" "NAPPE_FILAMENT_HT"
+		(property "Value" "DC_HT"
 			(at 399.288 190.5 0)
 			(show_name no)
 			(do_not_autoplace no)

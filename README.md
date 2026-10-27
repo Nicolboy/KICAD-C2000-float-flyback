@@ -185,16 +185,33 @@ plusieurs millisecondes :
   <img src="simulation/plots/hv_bias_oscillation_decouverte.png" alt="Oscillation auto-entretenue trouvee en simulation, consigne VAR_GATE figee" width="100%">
 </p>
 
-La simulation a aussi servi à trouver le correctif et à le vérifier avant
-de toucher au vrai schéma : une résistance de dégénérescence sur la source
-de Q6 (330Ω) supprime l'oscillation sans sacrifier l'accès à
+La simulation a aussi servi à trouver un premier correctif et à le vérifier
+avant de toucher au vrai schéma : une résistance de dégénérescence sur la
+source de Q6 (330Ω) supprime l'oscillation sans sacrifier l'accès à
 `HV_BIAS`=0V, et un condensateur de compensation autour de l'ampli-op
 (1nF, sortie → entrée inverseuse) élimine le dépassement en échelon, même
-au pire cas (front de commande 10ns). Les deux correctifs ont été reportés
-sur le schéma réel, puis revérifiés directement dans LTspice :
+au pire cas (front de commande 10ns).
+
+Ce correctif n'a été validé qu'avec un signal d'entrée déjà filtré
+(échelon analogique propre) — pas avec le vrai PWM du C2000. En rejouant
+la boucle avec le PWM réel, il a fallu élargir le filtre d'entrée
+(1kΩ/1nF → 100kΩ/100nF) pour écraser l'ondulation résiduelle avant
+l'ampli-op, ce qui a réintroduit une oscillation auto-entretenue
+différente — ~700kHz cette fois, confirmée indépendante du PWM par un
+échelon direct avant le filtre (l'oscillation persiste à l'identique sans
+aucun PWM : c'est la boucle elle-même qui devient instable avec ce
+nouveau filtre, pas une fuite du signal de commande). Le premier
+correctif n'avait jamais été vérifié pour ce filtre élargi.
+
+Reporté : résistance de dégénérescence à 1kΩ (au lieu de 330Ω) et
+condensateur de compensation à 100pF (au lieu de 1nF) stabilisent la
+boucle avec le nouveau filtre d'entrée — vérifié sur le profil complet de
+commande PWM (rapport cyclique 1%→60%→palier→99%→palier→40%→1%, 3,5s),
+ondulation résiduelle en sortie sous le mV grâce au filtre de sortie déjà
+en place :
 
 <p align="center">
-  <img src="simulation/plots/simulation-manuelle-final.png" alt="Simulation finale dans LTspice apres correctifs, schema et reponse en echelon" width="100%">
+  <img src="simulation/plots/final-pwm.png" alt="Validation finale sous excitation PWM reelle sur le profil complet de rapport cyclique" width="100%">
 </p>
 
 ---
