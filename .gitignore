@@ -1,6 +1,11 @@
 # Environnement et cache
 .venv/
+.venv312/
 __pycache__/
+
+# Simulation LTspice — sorties volumineuses et régénérables (scripts/modèles/
+# plots versionnés, pas les .raw/.csv/.asc de résultats)
+simulation/results/
 
 # Boîte de réception : rien de versionné ne doit en dépendre
 imports/

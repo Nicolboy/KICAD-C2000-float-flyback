@@ -169,6 +169,34 @@ mesure : [`doc/sim-vs-mesure.md`](doc/sim-vs-mesure.md) (§7/§7bis pour le
 passage 18,9W) ; l'implémentation KiCad correspondante :
 [`00-intention-conception.md`](00-intention-conception.md) §16.
 
+### Linéarisation HV_BIAS (`polarisation.kicad_sch`)
+
+La boucle qui linéarise la polarisation flottante du secondaire (MCP6001 +
+Q6/Q7, contre-réaction sur HV_BIAS) a d'abord été validée avec des modèles
+idéaux, puis rejouée avec les composants réels (MMBF170, MCP6001 paramétré
+depuis sa datasheet) une fois le schéma modifié. Ce passage aux modèles
+réels a révélé un défaut invisible sur le schéma seul : à consigne figée,
+la boucle part en oscillation auto-entretenue — un cycle limite qui
+grandit puis se stabilise en amplitude constante, pas du bruit de
+simulation, confirmé en figeant `VAR_GATE` et en observant le régime sur
+plusieurs millisecondes :
+
+<p align="center">
+  <img src="simulation/plots/hv_bias_oscillation_decouverte.png" alt="Oscillation auto-entretenue trouvee en simulation, consigne VAR_GATE figee" width="100%">
+</p>
+
+La simulation a aussi servi à trouver le correctif et à le vérifier avant
+de toucher au vrai schéma : une résistance de dégénérescence sur la source
+de Q6 (330Ω) supprime l'oscillation sans sacrifier l'accès à
+`HV_BIAS`=0V, et un condensateur de compensation autour de l'ampli-op
+(1nF, sortie → entrée inverseuse) élimine le dépassement en échelon, même
+au pire cas (front de commande 10ns). Les deux correctifs ont été reportés
+sur le schéma réel, puis revérifiés directement dans LTspice :
+
+<p align="center">
+  <img src="simulation/plots/simulation-manuelle-final.png" alt="Simulation finale dans LTspice apres correctifs, schema et reponse en echelon" width="100%">
+</p>
+
 ---
 
 ## Licence

@@ -1,0 +1,58 @@
+* BSS127I -- proxy construit sur les points sources de la datasheet
+* Infineon BSS127 Rev 2.1 (10-fev-2016), confirme applicable au grade
+* BSS127I (meme VGS(th) 1,4-2,0-2,6V cite sur la page produit BSS127I,
+* infineon.com/cms/.../bss127i/ -- le "I" est une qualification, pas un
+* binning electrique different). Aucun sous-circuit SPICE fondeur publie
+* trouve (contrairement a l'IPD050N10N5) -- meme methode que le proxy
+* RD3P04BBKHRB deja utilise dans gen_asc.py : NMOS level=1 construit sur
+* les points typ de la datasheet, diode de corps et capacites EXPLICITES
+* en elements separes (IS du coeur M1 desactive pour eviter un double
+* compte avec la diode explicite).
+*
+* Derivation des parametres (tous "typ", Tj=25 C) :
+*   VTO = 2,0 V -- VGS(th) typ, p.2, conditions VDS=VGS, ID=8uA.
+*   KP : tire de gfs typ=0,015 S a ID=10mA, p.2 (|VDS|>2|ID|RDS(on)max).
+*     Loi carree : ID=0,5*KP*(VGS-VTO)^2 => gfs=KP*(VGS-VTO)
+*       => (VGS-VTO) = 2*ID/gfs = 2*0,01/0,015 = 1,333V
+*       => KP = gfs/(VGS-VTO) = 0,015/1,333 = 0,01125 A/V^2
+*     Verification : 0,5*0,01125*1,333^2 = 10,0mA. OK.
+*   Diode de corps (caracteristiques directes du corps, p.3, VGS=0V,
+*   IF=16mA, Tj=25C : VSD typ=0,82V) :
+*     Shockley V=N*Vt*ln(I/IS), Vt=25,85mV, N=1
+*       => IS = 0,016*exp(-0,82/0,02585) = 2,69e-16 A
+*     RS=0.1 (ajout numerique pour la convergence, non une valeur
+*     datasheet -- meme pratique que DCLAMP_SMCJ43A dans gen_asc.py ;
+*     reste <<Vt/I meme a plusieurs dizaines de mA, donc n'affecte pas
+*     la verification VSD@16mA ci-dessous : un RS trop grand decale
+*     silencieusement le courant simule a VSD fixe, piege rencontre et
+*     corrige lors de la validation de ce modele).
+*     BV=600V (V(BR)DSS min, p.2), IBV=1m (choix generique, meme
+*     pratique que les autres clamps de ce projet).
+*   Capacites dynamiques, p.3, VGS=0V VDS=25V f=1MHz Tj=25C :
+*     Ciss=21pF typ, Coss=2,4pF typ, Crss=1,0pF typ
+*       => Cgd = Crss = 1,0pF
+*       => Cgs = Ciss - Crss = 20,0pF
+*       => Cds = Coss - Crss = 1,4pF
+*     (mesurees globalement sur toute la plage VDS -- traitees ici comme
+*     des capacites FIXES, pas de loi C=f(VDS) -- simplification, la
+*     vraie capacite decroit avec VDS, cf. graphe 11 p.6 de la
+*     datasheet).
+*
+* LIMITE CONNUE (meme remarque que pour les MOSFET ideaux utilises plus
+* haut dans ce projet) : un modele niveau 1 n'a aucune conduction
+* sous le seuil (ID=0 exactement en dessous de VTO, pas de decroissance
+* exponentielle comme un vrai MOSFET) -- or le point de fonctionnement
+* de Q6/Q7 dans HV_BIAS est justement PRES du seuil (R50=100k tire vers
+* 80V, ID typiquement <1mA, bien en dessous des 10mA ou gfs/VTO ont ete
+* mesures). Cette zone est la plus sensible a l'ecart modele/realite --
+* a garder en tete en comparant aux resultats du modele ideal.
+*
+.SUBCKT MBSS127I D G S
+M1 D G S S MBSS127I_CORE
+.MODEL MBSS127I_CORE NMOS(VTO=2.0 KP=0.01125 IS=1e-18)
+Cgs G S 20.0p
+Cgd G D 1.0p
+Cds D S 1.4p
+Dbody S D DBSS127I_BODY
+.MODEL DBSS127I_BODY D(IS=2.69e-16 N=1 RS=0.1 BV=600 IBV=1m)
+.ENDS MBSS127I

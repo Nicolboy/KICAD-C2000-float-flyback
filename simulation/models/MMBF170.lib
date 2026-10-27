@@ -1,0 +1,31 @@
+* MMBF170 -- modele SPICE officiel Diodes Inc., source :
+* https://www.diodes.com/spice/download/1857/MMBF170.spice.txt
+* (telecharge le 2026-10-27). N-channel enhancement, 60V/0,5A/2,10ohm,
+* SOT-23 -- meme famille que le BS170 (classique, tres repandu).
+*
+* Choisi comme SUBSTITUT DE MODELISATION pour Q6/Q7 (vrai composant sur
+* la carte : BSS127I) a la demande explicite de l'utilisateur, pour
+* disposer d'un MOSFET a seuil bas REEL/SOURCE (pas invente) et comparer
+* au proxy BSS127I.lib (voir ce fichier pour le contexte : oscillation
+* large observee avec le proxy BSS127I, confirmee non liee a la bande
+* passante de l'ampli-op par un test de controle). VTO=2,10V ici est tres
+* proche du VTO=2,0V du proxy BSS127I -- bon candidat pour verifier si
+* l'oscillation est une caracteristique generale des modeles MOSFET
+* niveau 1 a seuil dur dans cette boucle (ce modele EST un niveau 1 lui
+* aussi, LEVEL=1, meme absence de conduction sous le seuil), ou si elle
+* venait specifiquement des parametres que j'avais choisis pour le proxy.
+*
+* ATTENTION tension : MMBF170 n'est qu'un 60V (BVDSS), alors que node_raw
+* (Drain Q6) et hv80_in (Drain Q7) voient jusqu'a ~80V dans ce circuit --
+* idem le proxy BSS127I. Un modele SPICE .MODEL simple sans parametre BV
+* ne "casse" pas numeriquement au-dela de 60V (pas de claquage modelise),
+* donc la simulation reste utilisable, mais ce n'est PAS un composant
+* utilisable tel quel sur la vraie carte a cette tension -- substitut de
+* modelisation uniquement, pas une proposition de BOM.
+*
+* "Assumes default L=100U W=100U" (commentaire du fichier vendeur) --
+* instancier avec L=100u W=100u explicite pour respecter cette hypothese.
+.MODEL DI_MMBF170  NMOS( LEVEL=1 VTO=2.10 KP=18.8m  GAMMA=2.60
++ PHI=.75  LAMBDA=1.04m RD=0.294 RS=0.294
++ IS=250f  PB=0.800 MJ=0.460 CBD=29.8p
++ CBS=35.8p  CGSO=24.0n CGDO=20.0n CGBO=176n  )
