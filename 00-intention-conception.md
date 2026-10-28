@@ -1513,7 +1513,7 @@ plutôt que juste à son bord). Protocole complet, incidents vécus et
 script de référence dans `KICAD-EDITION-GROUPEE-KIPY.md` (racine de
 l'atelier) — pas répété ici.
 
-## §22 — Via-stitching VOUT_N, zone F.Cu vers zone In1.Cu (2026-10-28)
+## §22 — Via-stitching VOUT_N, zone F.Cu vers zone In1.Cu — tentative initiale retirée (2026-10-28)
 
 **Pourquoi.** Les deux coulées `VOUT_N` (une sur `F.Cu`, une sur
 `In1.Cu`) qui se recouvrent autour de x=125-134/y=82-89 n'étaient reliées
@@ -1521,32 +1521,85 @@ par aucun via à cet endroit — deux plans de cuivre superposés, même net,
 mais électriquement disjoints localement tant qu'aucune liaison
 traversante ne les joint.
 
-**Fait.** 1 via (0,6mm/perçage 0,3mm, valeurs par défaut projet `FAB-01`)
-posé en (131,0 ; 84,0) — décalé d'environ 6mm par rapport au point
-indiqué (125,82), qui tombe en réalité 0,5mm en dehors du contour réel de
-la zone `F.Cu` (son bord haut est à y=82,5, pas y=82 — l'écart visuel
-vient probablement de la zone `SW_SEC` voisine, qui s'arrête juste à
-y=82,0) et, surtout, à moins de 0,6mm d'une pastille `VOUT_SENSE`
-(1,0×1,45mm) : aucune marge de dégagement correcte à cet endroit précis.
-Vérifié par DRC : la violation `via_dangling` initiale (via posé mais
-zone `In1.Cu` pas encore remplie à ce moment-là) a disparu après un
-`refill_zones()` explicite ; diff complet des deux rapports DRC avant/
-après confirmant une seule violation supprimée, aucune ajoutée.
+**Tentative initiale (retirée).** 1 via (0,6mm/perçage 0,3mm) posé en
+(131,0 ; 84,0) — décalé d'environ 6mm par rapport au point indiqué par
+l'utilisateur (125,82), qui tombe en réalité 0,5mm en dehors du contour
+réel de la zone `F.Cu` (son bord haut est à y=82,5, pas y=82). Ce
+positionnement ponctuel était **mauvais** : signalé par l'utilisateur
+("il mord sur un pad de la diode") — à 1,64mm du pad 2 de `D4`, même net
+donc aucune violation DRC levée (pas de règle de clearance entre
+éléments du même net), mais un via posé physiquement sur/contre un pad
+existant n'est pas une pose propre. **Retiré.**
 
-**Point technique découvert** : la zone `VOUT_N` sur `In1.Cu` existait
-dans le fichier (contour défini) mais n'était **pas remplie**
-(`filled=False` côté API kipy) au moment de la pose du via — un via
-posé dans une zone non remplie ne "voit" aucun cuivre réel sur cette
-couche, d'où la violation `via_dangling` au premier DRC. Un appel à
+**Clarification de méthode reçue à cette occasion** : le via-stitching
+entre deux zones n'est pas « un via au point demandé », mais **une
+répartition uniforme de vias sur toute la surface commune aux deux
+zones, en évitant systématiquement tout pad et toute piste existants**
+(pas seulement ceux d'un autre net). Méthode corrigée appliquée et
+validée au §23 ci-dessous (grille `GND_CTRL`) — **le redo de ce
+stitching `VOUT_N` avec la même méthode (grille sur la surface commune
+F.Cu∩In1.Cu, pas encore choisi) reste à faire**, pas encore reposé au
+moment de la rédaction de ce paragraphe.
+
+**Point technique découvert au passage** (toujours valable, indépendant
+du retrait ci-dessus) : la zone `VOUT_N` sur `In1.Cu` existait dans le
+fichier (contour défini) mais n'était **pas remplie** (`filled=False`
+côté API kipy) à ce moment — un via posé dans une zone non remplie ne
+"voit" aucun cuivre réel sur cette couche, d'où une violation
+`via_dangling` au premier DRC de cette tentative. Un appel à
 `board.refill_zones()` (méthode kipy, pas de régénération manuelle)
-avant le DRC final a suffi à résoudre l'incohérence.
+a résolu l'incohérence — zones désormais remplies et à jour.
 
-**Méthode** : posé par script kipy, un seul via pilote (demande ponctuelle
-à un endroit précis, pas un dimensionnement en courant comme pour Q5/
-§21) — recherche de l'emplacement par anneaux depuis le point demandé,
-rejeté par manque de dégagement, élargi jusqu'à (131,84) où tous les
-obstacles (pastilles/pistes d'autres nets `VOUT_SENSE`/`RAIL_3V3_SEC`/
-`GATE_Q2`, zone `SW_SEC`) sont à plus de 3mm. Protocole de recherche
-d'emplacement déjà documenté dans `KICAD-EDITION-GROUPEE-KIPY.md` — pas
-répété ici ; la découverte du piège `filled=False`/`refill_zones()` y a
-été ajoutée pour les prochaines sessions.
+**Méthode (tentative initiale, incomplète)** : posé par script kipy, un
+seul via pilote au point demandé — recherche par anneaux, rejeté par
+manque de dégagement, élargi jusqu'à (131,84). C'est cette approche
+« un seul point » qui était la mauvaise méthode, corrigée au §23.
+Protocole de recherche par anneaux et piège `filled=False`/
+`refill_zones()` documentés dans `KICAD-EDITION-GROUPEE-KIPY.md`.
+
+## §23 — Via-stitching en grille : GND_CTRL, F.Cu∩In1.Cu∩B.Cu (2026-10-28/29)
+
+**Pourquoi.** Trois coulées `GND_CTRL` (F.Cu, In1.Cu, B.Cu, même emprise
+x:95-114,6/y:47-117, ≈20×70mm) se superposent sans via les reliant entre
+elles dans cette zone — méthode demandée explicitement : grille
+régulière de pas 5mm sur toute la surface commune, pas un point isolé
+(voir correction de méthode au §22).
+
+**Fait.** 13 vias (0,6mm/perçage 0,3mm, `FAB-01`) posés sur une grille
+5mm alignée sur des coordonnées rondes (x∈{100,105,110}, y multiples de
+5), dans l'intersection des trois contours de zone `GND_CTRL`, avec une
+marge intérieure de 0,4mm par rapport au bord de cette intersection. 14
+points candidats trouvés initialement sur toute l'emprise (≈39 points de
+grille bruts, 25 écartés pour collision avec des pastilles/pistes
+existantes, toutes nets confondus) ; un 14ᵉ (100,95) écarté *après*
+pose — trop proche (1,66mm centre à centre) du pad 1 de `J2` (net
+`3V3_ISO`) sur `In2.Cu`, en violation de l'isolement de la classe
+`CTRL` (0,2mm requis, 0,1664mm réel) : l'approximation de taille de
+pastille (plus grande dimension de `copper_layers[0]`) sous-estimait la
+vraie empreinte sur cette couche interne. **Retiré**, grille finale à 13
+vias. Vérifié par DRC : diff complet avant/après rigoureusement
+identique au relevé de départ (164 violations, aucune ajoutée/retirée),
+nombre d'éléments non connectés passé de 75 à 74.
+
+**Point technique découvert** : les zones d'**autres nets** ne sont des
+obstacles réels que sur les couches **partagées** avec les zones que
+l'on relie. Une zone `3V3_ISO` sur `In2.Cu` recouvre exactement la même
+emprise que `GND_CTRL` (F.Cu/In1.Cu/B.Cu) mais n'est **pas** un obstacle
+pour un via traversant : KiCad pose un anti-pad automatique autour du
+via lors du remplissage sur toute couche où le net diffère — ignorer
+cette distinction avait d'abord fait tomber le compte de candidats à 0
+(l'intersection entière était classée "occupée" par erreur).
+
+**Méthode** : script kipy, grille uniforme (pas demandé explicitement,
+5mm) sur l'intersection `shapely` des contours des zones de même net,
+pastilles/pistes/vias de **tous nets confondus** traités comme
+obstacles (pas seulement ceux d'un autre net — consigne explicite),
+zones d'autres nets traitées comme obstacles seulement sur les couches
+partagées (voir ci-dessus). Compte de candidats présenté avant la pose
+(règle `07-stitching.md`/STI-02 de `regles-pcb`, pas par défaut 6,35mm
+remplacé ici par le pas demandé de 5mm). Préalable « routage
+terminé/gelé » de `07-stitching.md` non respecté ici (routage encore en
+cours sur d'autres feuilles) — pose effectuée quand même sur demande
+explicite de l'utilisateur, à reposer si `GND_CTRL` est redessiné
+ensuite. Script de référence et piège `3V3_ISO`/couches-partagées ajoutés
+à `KICAD-EDITION-GROUPEE-KIPY.md`.
