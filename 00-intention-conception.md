@@ -962,7 +962,8 @@ grille cosmétiques que chaque ajout précédent) et mise à jour du PCB
 **Pourquoi.** `KICAD-C2000-powershield` a évolué (décision #26 de son
 `doc/decisions.md`) : la carte Filament/HT ne partage plus un signal à
 la fois sur les nappes génériques du devkit, elle reçoit désormais un
-connecteur IDC 2×10 dédié, `J21` (`NAPPE_FILAMENT_HT`). `KICAD-HT`
+connecteur IDC 2×10 dédié, `J21` (symbole `NAPPE_FILAMENT_HT`, valeur
+affichée renommée `DC_HT` depuis, 2026-10-28). `KICAD-HT`
 utilisait encore deux connecteurs génériques 16 broches point-à-point
 (`CpuOut1`/`CpuIn1`, `isolation.kicad_sch`), avec un jeu de noms de net
 différent de celui du shield.
@@ -976,7 +977,7 @@ différent de celui du shield.
 |---|---|---|---|
 | 1 | `3V3_ISO` | 11 | `Vht` |
 | 2 | `GND_CTRL` | 12 | `GND_CTRL` |
-| 3 | `PWM_ht` | 13 | `Temp_ht` |
+| 3 | `PWM_ht` | 13 | `I_Out_ht` |
 | 4 | `GND_CTRL` | 14 | `GND_CTRL` |
 | 5 | `PWM_EN` | 15 | `I_Shunt_ht` |
 | 6 | `GND_CTRL` | 16 | `GND_CTRL` |
@@ -998,6 +999,14 @@ a convergé vers le drapeau système partagé du shield),
 `PWM_BIAS_IN`→`PWM_bias`, `VOUT_FBACK`→`Vht`, `TEMP_PRI_FBACK`→`Temp_ht`,
 `ISENSE_PRI_FBACK`→`I_Shunt_ht`, `BIAS_FBACK`→`V_bias`,
 `3V3_CTRL`→`3V3_ISO`.
+
+**`Temp_ht`→`I_Out_ht` (2026-10-28).** La mesure de température primaire
+(TH1 + U8/AMC0311R) est retirée — remplacée par une mesure de courant de
+sortie réel (nouveau shunt R25=10mΩ dans le retour `VOUT_N`, vers le
+connecteur de sortie, + U22/AMC0302R, même topologie différentielle que
+U9/R19 côté primaire). Le pin 13 de `J2` porte désormais `I_Out_ht` au
+lieu de `Temp_ht` — renommé partout où il apparaît, y compris le motif
+de netclasse `CTRL` dans `KICAD-HT.kicad_pro`.
 
 **Deux broches posées mais non câblées en interne, par décision
 explicite** (pas une fonction devinée) :
@@ -1480,3 +1489,64 @@ Non traité ici, hors périmètre de cette passe : réécriture complète des
 sections historiques (§1, tableaux U4/U7, §16-17) pour refléter la
 nouvelle architecture — elles restent lisibles comme journal de
 conception, mais un lecteur pressé doit partir de ce §20bis, pas du §1.
+
+## §21 — Via-stitching Q5 (VOUT_P) vers le plan de cuivre F.Cu (2026-10-28)
+
+**Pourquoi.** Le tab de Q5 (TO-252, drain=`VOUT_P`) n'était relié à la
+zone de cuivre `VOUT_P` sur `F.Cu` que par l'empreinte elle-même — aucune
+liaison de cuivre explicite entre le `B.Cu` du composant et la zone top,
+dimensionnement en courant jamais vérifié pour les 3A de sortie visés.
+
+**Fait.** 18 vias (0,6mm/perçage 0,3mm, valeurs par défaut projet `FAB-01`
+de `regles-pcb`) posés en couronne autour du pad `VOUT_P` de Q5, chacun
+relié par un stub court (0,5mm, 0,3-0,8mm du bord du pad). Dimensionné
+pour 3A à ~200mA/via (`ALI-03`) : 15 vias nécessaires, 18 posés (marge).
+Vérifié par DRC : zéro erreur sur la zone concernée ; compteur
+d'éléments non connectés passé de 153 à 152, confirmant la liaison
+électrique réelle (pas seulement l'absence d'erreur).
+
+**Méthode** : posé par script kipy, pas à la main — deux tentatives
+ratées avant la bonne (court-circuit sur les pastilles `GND`/`HV_BIAS_IN`
+de `J1`, puis piste de liaison traversant des pistes existantes
+`V_HT_OUT`/`U15_OUTP` en cherchant un emplacement trop éloigné du pad
+plutôt que juste à son bord). Protocole complet, incidents vécus et
+script de référence dans `KICAD-EDITION-GROUPEE-KIPY.md` (racine de
+l'atelier) — pas répété ici.
+
+## §22 — Via-stitching VOUT_N, zone F.Cu vers zone In1.Cu (2026-10-28)
+
+**Pourquoi.** Les deux coulées `VOUT_N` (une sur `F.Cu`, une sur
+`In1.Cu`) qui se recouvrent autour de x=125-134/y=82-89 n'étaient reliées
+par aucun via à cet endroit — deux plans de cuivre superposés, même net,
+mais électriquement disjoints localement tant qu'aucune liaison
+traversante ne les joint.
+
+**Fait.** 1 via (0,6mm/perçage 0,3mm, valeurs par défaut projet `FAB-01`)
+posé en (131,0 ; 84,0) — décalé d'environ 6mm par rapport au point
+indiqué (125,82), qui tombe en réalité 0,5mm en dehors du contour réel de
+la zone `F.Cu` (son bord haut est à y=82,5, pas y=82 — l'écart visuel
+vient probablement de la zone `SW_SEC` voisine, qui s'arrête juste à
+y=82,0) et, surtout, à moins de 0,6mm d'une pastille `VOUT_SENSE`
+(1,0×1,45mm) : aucune marge de dégagement correcte à cet endroit précis.
+Vérifié par DRC : la violation `via_dangling` initiale (via posé mais
+zone `In1.Cu` pas encore remplie à ce moment-là) a disparu après un
+`refill_zones()` explicite ; diff complet des deux rapports DRC avant/
+après confirmant une seule violation supprimée, aucune ajoutée.
+
+**Point technique découvert** : la zone `VOUT_N` sur `In1.Cu` existait
+dans le fichier (contour défini) mais n'était **pas remplie**
+(`filled=False` côté API kipy) au moment de la pose du via — un via
+posé dans une zone non remplie ne "voit" aucun cuivre réel sur cette
+couche, d'où la violation `via_dangling` au premier DRC. Un appel à
+`board.refill_zones()` (méthode kipy, pas de régénération manuelle)
+avant le DRC final a suffi à résoudre l'incohérence.
+
+**Méthode** : posé par script kipy, un seul via pilote (demande ponctuelle
+à un endroit précis, pas un dimensionnement en courant comme pour Q5/
+§21) — recherche de l'emplacement par anneaux depuis le point demandé,
+rejeté par manque de dégagement, élargi jusqu'à (131,84) où tous les
+obstacles (pastilles/pistes d'autres nets `VOUT_SENSE`/`RAIL_3V3_SEC`/
+`GATE_Q2`, zone `SW_SEC`) sont à plus de 3mm. Protocole de recherche
+d'emplacement déjà documenté dans `KICAD-EDITION-GROUPEE-KIPY.md` — pas
+répété ici ; la découverte du piège `filled=False`/`refill_zones()` y a
+été ajoutée pour les prochaines sessions.

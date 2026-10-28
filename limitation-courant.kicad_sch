@@ -2358,7 +2358,7 @@
 	)
 	(global_label "LED_Q_A"
 		(shape bidirectional)
-		(at 65.532 176.53 270)
+		(at 58.166 175.768 270)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2368,7 +2368,7 @@
 		)
 		(uuid "4267aaef-d2ea-4484-a2ea-8b945fa51486")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 65.532 188.4279 90)
+			(at 58.166 187.6659 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2382,7 +2382,7 @@
 	)
 	(global_label "LED_Q_A"
 		(shape bidirectional)
-		(at 56.896 171.958 90)
+		(at 49.53 171.196 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2392,7 +2392,7 @@
 		)
 		(uuid "435c125b-3192-43f1-a67b-6b75e786d5a8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 56.896 160.0601 90)
+			(at 49.53 159.2981 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2569,7 +2569,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 56.896 179.578 270)
+		(at 49.53 178.816 270)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2579,7 +2579,7 @@
 		)
 		(uuid "60339bd4-fe6f-4b40-8b0d-0579bdf77e0f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 56.896 187.545 90)
+			(at 49.53 186.783 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3453,7 +3453,7 @@
 	)
 	(global_label "Q_TRIP"
 		(shape bidirectional)
-		(at 65.532 168.91 90)
+		(at 58.166 168.148 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3463,7 +3463,7 @@
 		)
 		(uuid "e8a38a9b-0e42-45f2-bb14-7fb285343e03")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 65.532 158.403 90)
+			(at 58.166 157.641 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3641,7 +3641,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 56.896 175.768 180)
+		(at 49.53 175.006 180)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3651,7 +3651,7 @@
 		(dnp no)
 		(uuid "127992cc-393b-49a7-a5ec-b5a69deab89d")
 		(property "Reference" "R34"
-			(at 52.832 174.498 0)
+			(at 45.466 173.736 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3661,7 +3661,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 53.086 176.53 0)
+			(at 45.72 175.768 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3671,7 +3671,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 56.896 175.768 0)
+			(at 49.53 175.006 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3682,7 +3682,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 56.896 175.768 0)
+			(at 49.53 175.006 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3693,7 +3693,7 @@
 			)
 		)
 		(property "Description" "LED de defaut Q_TRIP (D6) -- resistance de limitation de courant"
-			(at 56.896 175.768 0)
+			(at 49.53 175.006 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4208,7 +4208,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 65.532 172.72 90)
+		(at 58.166 171.958 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4218,7 +4218,7 @@
 		(dnp no)
 		(uuid "7c6a1506-e7b2-4bee-bd3e-ea610eaf52f5")
 		(property "Reference" "D6"
-			(at 70.612 174.244 90)
+			(at 63.246 173.482 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4227,8 +4227,8 @@
 				)
 			)
 		)
-		(property "Value" "LED"
-			(at 70.358 172.212 90)
+		(property "Value" "CURRENT_LIMIT"
+			(at 67.056 168.91 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4238,7 +4238,7 @@
 			)
 		)
 		(property "Footprint" "LED_THT:LED_D3.0mm"
-			(at 65.532 172.72 0)
+			(at 58.166 171.958 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4249,7 +4249,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 65.532 172.72 0)
+			(at 58.166 171.958 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4260,7 +4260,7 @@
 			)
 		)
 		(property "Description" "LED rouge 3mm, defaut latche (Q_TRIP)"
-			(at 65.532 172.72 0)
+			(at 58.166 171.958 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

@@ -525,7 +525,8 @@ Sept des neuf signaux ont leur résistance série et leur filtre :
 
 | Signal | Protection série |
 |---|---|
-| `Vht`, `Temp_ht`, `I_Shunt_ht`, `V_bias` | 100 Ω + 1 nF |
+| `Vht`, `I_Shunt_ht`, `V_bias` | 100 Ω + 1 nF |
+| `I_Out_ht` | 1 kΩ + 47 nF (R26/C60, filtre moyenneur fc≈3,4kHz — même gabarit que R18/C33 sur `I_Shunt_ht`, pas le simple 100Ω+1nF des autres voies, 2026-10-28) |
 | `PWM_EN` | 470 Ω |
 | `PWM_ht`, `PWM_bias` | passent par un ISO7710 |
 | **`Vht_EN`** | **aucune — net orphelin** |

@@ -1907,12 +1907,6 @@
 		(uuid "26d400bc-c305-4ed7-9346-72d8048e5103")
 	)
 	(junction
-		(at 163.068 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "35636668-ae91-4c87-bb7b-fcc8fbb6fe5c")
-	)
-	(junction
 		(at 75.692 132.588)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2040,7 +2034,7 @@
 	)
 	(wire
 		(pts
-			(xy 156.718 113.03) (xy 163.068 113.03)
+			(xy 156.718 113.03) (xy 180.34 113.03)
 		)
 		(stroke
 			(width 0)
@@ -2267,16 +2261,6 @@
 			(type default)
 		)
 		(uuid "7b726b91-d566-4272-9a39-dc8ab22dd410")
-	)
-	(wire
-		(pts
-			(xy 163.068 160.02) (xy 163.068 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7e42869a-bb75-4d02-b5ea-442fa5d7e372")
 	)
 	(wire
 		(pts
@@ -2570,16 +2554,6 @@
 	)
 	(wire
 		(pts
-			(xy 163.068 113.03) (xy 180.34 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f2572065-91b9-451d-8447-b25559a3db3a")
-	)
-	(wire
-		(pts
 			(xy 113.538 135.128) (xy 117.602 135.128)
 		)
 		(stroke
@@ -2751,7 +2725,7 @@
 			)
 		)
 	)
-	(global_label "HV80_IN"
+	(global_label "HV_BIAS_IN"
 		(shape bidirectional)
 		(at 199.644 102.362 0)
 		(fields_autoplaced yes)
@@ -2763,7 +2737,7 @@
 		)
 		(uuid "1c2fcae7-5adc-459f-b35f-48e17032d999")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 199.644 102.362 0)
+			(at 214.203 102.362 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2771,10 +2745,11 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 	)
-	(global_label "HV80_IN"
+	(global_label "HV_BIAS_IN"
 		(shape bidirectional)
 		(at 48.26 31.242 270)
 		(fields_autoplaced yes)
@@ -2786,7 +2761,7 @@
 		)
 		(uuid "1fd2b9f6-8445-494c-b594-a3c14ba37d28")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 48.26 43.0795 90)
+			(at 48.26 45.801 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2821,7 +2796,7 @@
 			)
 		)
 	)
-	(global_label "HV80_IN"
+	(global_label "HV_BIAS_IN"
 		(shape bidirectional)
 		(at 48.514 59.944 180)
 		(fields_autoplaced yes)
@@ -2833,7 +2808,7 @@
 		)
 		(uuid "230acdfa-78dc-4cf6-b500-62b00e6f5343")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 36.6765 59.944 0)
+			(at 33.955 59.944 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2845,7 +2820,7 @@
 			)
 		)
 	)
-	(global_label "HV80_IN"
+	(global_label "HV_BIAS_IN"
 		(shape bidirectional)
 		(at 43.18 51.308 180)
 		(fields_autoplaced yes)
@@ -2857,7 +2832,7 @@
 		)
 		(uuid "269e643d-23ad-48da-85df-db56db66addc")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 31.3425 51.308 0)
+			(at 28.621 51.308 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3002,30 +2977,6 @@
 		(uuid "3c0ca9b1-dbdf-479b-b6df-829de9100a90")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 278.6297 143.002 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape bidirectional)
-		(at 163.068 167.64 270)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "3e57d616-e90a-4864-bce2-44d389c10111")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 163.068 175.607 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3299,7 +3250,7 @@
 			)
 		)
 	)
-	(global_label "HV_BIAS"
+	(global_label "HV_BIAS_OUT"
 		(shape bidirectional)
 		(at 208.28 132.08 0)
 		(fields_autoplaced yes)
@@ -3311,7 +3262,7 @@
 		)
 		(uuid "90abf7cd-8857-45de-bf98-f5bad80bafca")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 208.28 132.08 0)
+			(at 224.5323 132.08 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3319,6 +3270,7 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 	)
@@ -3393,7 +3345,7 @@
 			)
 		)
 	)
-	(global_label "HV_BIAS"
+	(global_label "HV_BIAS_OUT"
 		(shape bidirectional)
 		(at 93.726 198.882 0)
 		(fields_autoplaced yes)
@@ -3405,7 +3357,7 @@
 		)
 		(uuid "ad2538d7-c929-4564-8e56-cf58fefb2ee8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 93.726 198.882 0)
+			(at 109.9783 198.882 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3413,6 +3365,7 @@
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 	)
@@ -4125,83 +4078,6 @@
 			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/94a61bea-1545-4ab4-b296-7d1dc7a0de10"
 					(reference "C36")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 163.068 163.83 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "25e42706-300d-4cff-aa56-931545366c42")
-		(property "Reference" "C60"
-			(at 156.21 165.354 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "10n"
-			(at 156.464 162.814 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0805_2012Metric"
-			(at 163.068 163.83 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 163.068 163.83 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 163.068 163.83 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "dc083862-d750-40d3-bdc3-d2221784c98d")
-		)
-		(pin "2"
-			(uuid "23d7d5a9-ffe8-4629-a1b3-aeab999c3111")
-		)
-		(instances
-			(project "KICAD-HT"
-				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/94a61bea-1545-4ab4-b296-7d1dc7a0de10"
-					(reference "C60")
 					(unit 1)
 				)
 			)
@@ -5703,7 +5579,7 @@
 				)
 			)
 		)
-		(property "Value" "HV80_IN"
+		(property "Value" "HV_BIAS_IN"
 			(at 55.372 54.102 0)
 			(show_name no)
 			(do_not_autoplace no)

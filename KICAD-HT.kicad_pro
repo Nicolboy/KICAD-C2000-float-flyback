@@ -39,9 +39,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.8,
-          "height": 1.27,
-          "width": 1.27
+          "drill": 0.0,
+          "height": 1.4,
+          "width": 1.025
         },
         "silk_line_width": 0.15,
         "silk_text_italic": false,
@@ -970,7 +970,7 @@
         "uuid": "c8449ac7-87b3-4a93-889f-06dd686c5aff"
       }
     ],
-    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,C27,C42-43,C49,C57-62,R6,R9-12,R35-54,Reg3,CpuIn1,CpuOut1,D2,D7-10,F1,U12,U20-21,Q6-7",
+    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,C27,C37,C42-43,C49,C57-71,R6,R9-12,R21,R25-26,R35-54,Reg3,CpuIn1,CpuOut1,D2,D7-10,F1,U12,U20-23,Q4-7",
     "variants": []
   },
   "sheets": [

@@ -3157,7 +3157,7 @@
 				)
 			)
 		)
-		(property "Value" "3A"
+		(property "Value" "2A-T"
 			(at 41.148 46.99 90)
 			(show_name no)
 			(do_not_autoplace no)
