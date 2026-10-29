@@ -641,6 +641,10 @@
       },
       {
         "netclass": "CTRL",
+        "pattern": "VOUT_FBACK_RAW"
+      },
+      {
+        "netclass": "CTRL",
         "pattern": "Net-(R3-Pad2)"
       },
       {
@@ -806,10 +810,6 @@
       {
         "netclass": "SEC",
         "pattern": "REG_SR"
-      },
-      {
-        "netclass": "SEC",
-        "pattern": "VOUT_FBACK_RAW"
       },
       {
         "netclass": "SEC",
