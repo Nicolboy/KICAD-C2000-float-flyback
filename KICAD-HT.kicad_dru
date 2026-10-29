@@ -10,6 +10,37 @@
   (condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Parent == B.Parent")
   (constraint clearance (min 0mm)))
 
+# Distance haute tension, HT-02 (IPC-9592B, formule convertisseurs,
+# 0,1+0,01*V) a 100V -- marge au-dessus des 90V reels du secondaire
+# elevable (regles-pcb/06-haute-tension.md). Frontiere par NETCLASSE
+# (SEC vs non-SEC), pas par une liste de nets -- memes motif que
+# barriere_controle. Corrige le 2026-10-29 : une premiere version
+# nommait 5 nets (V_HT_OUT, HV_BIAS, HV80_IN, VOUT_P, VOUT_N) et les
+# comparait a TOUT le reste, y compris leurs propres voisins du meme
+# domaine flottant (REG_SR, VOUT_SENSE, Net-(U12-VG), ISNS_*,
+# RAIL_3V3_SEC -- deja classe SEC) : quelques volts d'ecart reel entre
+# eux, pas 90V, et ca declenchait des faux positifs pastille-contre-
+# pastille-du-meme-composant (ex. U12, broches VOUT_N et REG_SR a 1mm
+# l'une de l'autre). V_HT_OUT ajoute a la netclasse SEC dans
+# KICAD-HT.kicad_pro (oubli, meme defaut que Temp_ht en #26) pour que
+# la frontiere netclasse le couvre aussi.
+# Externe uniquement (F.Cu/B.Cu) : en interne, le plancher projet
+# 0,2mm du net_settings par defaut couvre deja HT-02 (0,2mm en
+# interne). Exclu meme composant pour les pastilles (meme motif que
+# pastilles_meme_composant -- A.Parent != B.Parent). Exclu aussi, par
+# nom explicite, T1 (transformateur MSD1514) : ses 4 broches (VIN/
+# SW_PRI cote primaire, SW_SEC/VOUT_P cote secondaire) sont a l'ecart
+# fixe par le boitier -- meme logique que pastilles_meme_composant,
+# mais etendue a une pastille vs la zone d'une AUTRE broche du meme
+# composant, cas que A.Parent ne couvre pas (une zone n'a pas de
+# Parent de footprint). Pas de condition generique trouvee pour ce cas
+# (pas de "A.Parent" cote zone) -- exemption nominative par T1/ses 4
+# nets, a refaire a la main si un autre composant transformateur
+# rencontre le meme probleme.
+(rule "HT_distance_90V"
+  (condition "A.hasNetclass('SEC') && !B.hasNetclass('SEC') && A.Parent != B.Parent && (A.Layer == 'F.Cu' || A.Layer == 'B.Cu') && !((A.Reference == 'T1' || B.Reference == 'T1') && (A.NetName == 'VIN' || A.NetName == 'SW_PRI' || A.NetName == 'SW_SEC' || A.NetName == 'VOUT_P') && (B.NetName == 'VIN' || B.NetName == 'SW_PRI' || B.NetName == 'SW_SEC' || B.NetName == 'VOUT_P'))")
+  (constraint clearance (min 1.1mm)))
+
 (rule "barriere_controle"
   (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL') && A.Reference != B.Reference && B.Pin_Type != 'no_connect'")
   (constraint clearance (min 4mm)))

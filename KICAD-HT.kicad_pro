@@ -765,6 +765,10 @@
       },
       {
         "netclass": "SEC",
+        "pattern": "V_HT_OUT"
+      },
+      {
+        "netclass": "SEC",
         "pattern": "VOUT_P"
       },
       {
