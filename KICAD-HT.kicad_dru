@@ -1,5 +1,15 @@
 (version 1)
 
+# Exemption clearance pour les pastilles d'un MEME composant (meme motif
+# que KICAD-HV, trouve le 2026-10-19 sur U13 : pas de raison electrique
+# d'exiger une clearance de routage entre pastilles d'un seul boitier --
+# leur ecart est fixe par le pas du boitier, pas par le placement/routage.
+# Vecu ici sur U18 (VSSOP-8, pas 0,65mm) : 0,15mm reel entre broches
+# adjacentes contre 0,2mm exige par la netclasse PRI.
+(rule "pastilles_meme_composant"
+  (condition "A.Type == 'Pad' && B.Type == 'Pad' && A.Parent == B.Parent")
+  (constraint clearance (min 0mm)))
+
 (rule "barriere_controle"
   (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL') && A.Reference != B.Reference")
   (constraint clearance (min 4mm)))
