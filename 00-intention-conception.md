@@ -1666,3 +1666,53 @@ de plan de masse → 4mm confirmé, marge du bord ajustée de 2mm à 2mm en
 repassant par une fausse alerte à 2mm de pas avant confirmation finale)
 — ne pas supposer qu'un chiffre donné en premier reste valide sans
 confirmation explicite en cas d'échanges successifs contradictoires.
+
+## §25 — Contour silkscreen SOIC-8 DWV corrigé (U7/U9/U11/U22) (2026-10-29)
+
+**Pourquoi.** 48% des violations DRC de la carte (68/141) étaient du
+silkscreen ; 32 d'entre elles venaient d'une seule cause géométrique :
+l'empreinte partagée `SOIC_DWV` (`lib_fp_commun/SOIC_DWV.pretty/
+SOIC-8_DWV_5.85x11.5mm_P1.27mm.kicad_mod`, utilisée par U7/U9/U11/U22)
+dessine un contour de corps à x=±5,75mm alors que les pastilles (1,8mm
+de large, bord à x=±6,35mm) débordent **des deux côtés** de ce contour —
+le trait vertical du contour traverse donc les 4 pastilles de chaque
+côté.
+
+**Fait.** Contour corrigé dans le fichier source partagé : les 2 arêtes
+verticales (qui traversaient les pastilles) remplacées par 4 courtes
+amorces de coin (0,5mm), les 2 arêtes horizontales (haut/bas, qui ne
+croisent rien) conservées. Répercuté sur les 4 instances posées dans ce
+projet (empreintes **embarquées** dans le `.kicad_pcb`, pas de lien
+live vers la bibliothèque — correction du fichier source seule
+insuffisante, chaque instance éditée individuellement). **-32
+violations DRC** (141→109), zéro nouvelle violation (diff DRC complet
+avant/après).
+
+**Deuxième cause, plus petite, trouvée au passage** : le point de
+broche 1 (cercle silkscreen rempli, rayon 0,3mm, épaisseur de trait
+0,3mm) empiétait aussi sur la pastille 1 — **l'épaisseur du trait
+s'ajoute au rayon nominal** (rayon effectif = rayon + épaisseur/2 =
+0,45mm, pas 0,3mm), ce qui n'était pas évident au premier essai (un
+décalage de 0,2mm s'est révélé insuffisant, tout juste à la limite).
+Décalé de 0,3mm au total (position finale : centre à -6,9mm au lieu de
+-6,6mm) pour un dégagement réel. **-4 violations** supplémentaires sur
+cette carte (109→105).
+
+**Partagé avec KICAD-HV** (même empreinte, 5 instances posées) : même
+correction appliquée là-bas, **-9 violations** (139→... puis -5 pour le
+cercle), avec **1 nouvelle violation mineure résiduelle** signalée, pas
+corrigée : le point de broche 1 de son `U9` se retrouve trop proche du
+champ référence du composant voisin `R22` une fois décalé — propre à
+cette carte (placement non figé, `R22` très proche), pas à l'empreinte
+elle-même ; pas réduit en deçà de 0,3mm de décalage (testé), toujours
+présent. Laissé tel quel : c'est un avertissement mineur sur une carte
+dont le placement n'est explicitement pas encore figé (`CLAUDE.md` de
+`KICAD-HV`), pas une empreinte à retoucher pour un seul voisinage.
+
+**Méthode** : édition texte directe des 3 fichiers (bibliothèque
+partagée + 2 `.kicad_pcb`), KiCad fermé pendant toute l'opération
+(vérifié par `tasklist`, cf. le risque documenté dans
+`KICAD-EDITION-GROUPEE-KIPY.md` sur l'édition texte d'un `.kicad_pcb`
+ouvert). UUID des segments retirés réutilisés pour 2 des 4 nouvelles
+amorces par instance, nouveaux UUID générés pour les 2 autres — pas de
+collision constatée.
