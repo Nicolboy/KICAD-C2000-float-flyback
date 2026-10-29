@@ -58,6 +58,24 @@
   (condition "(A.NetName == 'V_HT_OUT' || A.NetName == 'HV_BIAS' || A.NetName == 'HV80_IN' || A.NetName == 'VOUT_P' || A.NetName == 'VOUT_N' || A.NetName == 'HV_BIAS_OUT') && !B.hasNetclass('SEC') && A.Parent != B.Parent && (A.Layer == 'F.Cu' || A.Layer == 'B.Cu') && !((A.Reference == 'T1' || B.Reference == 'T1') && (A.NetName == 'VIN' || A.NetName == 'SW_PRI' || A.NetName == 'SW_SEC' || A.NetName == 'VOUT_P') && (B.NetName == 'VIN' || B.NetName == 'SW_PRI' || B.NetName == 'SW_SEC' || B.NetName == 'VOUT_P')) && !((A.Reference == 'R9' || B.Reference == 'R9') && (A.NetName == 'HV_BIAS_OUT' || A.NetName == 'VOUT_P') && (B.NetName == 'HV_BIAS_OUT' || B.NetName == 'VOUT_P')) && !((A.Reference == 'R10' || B.Reference == 'R10') && (A.NetName == 'HV_BIAS_OUT' || A.NetName == 'VOUT_N') && (B.NetName == 'HV_BIAS_OUT' || B.NetName == 'VOUT_N')) && !((A.Reference == 'R54' || B.Reference == 'R54') && (A.NetName == 'HV_BIAS_OUT' || A.NetName == 'Net-(Q7-S)') && (B.NetName == 'HV_BIAS_OUT' || B.NetName == 'Net-(Q7-S)'))")
   (constraint clearance (min 1.1mm)))
 
+# Essai (2026-10-29) : retour de masse J2 -- les 10 broches GND_CTRL de J2
+# sont en grande partie isolees du plan principal (relief thermique sur les
+# broches GND, pas de grosse pastille voisine sur la colonne signal qui
+# laisse assez de place). Toutes les broches de J2 (GND_CTRL, 3V3_ISO,
+# PWM_EN/_bias/_ht, I_Shunt_ht(_comp), I_Out_ht, V_bias, Vht, Vht_EN) sont
+# dans la netclasse CTRL (0,2mm de clearance par defaut) -- barriere_controle
+# ne s'applique pas ici (CTRL vs CTRL, condition !B.hasNetclass('CTRL')
+# fausse). Essai : abaisser ce clearance a 0,15mm (plancher de conception
+# Multi-CB, FAB-01 -- pas le plancher brut fabricant) seulement entre la
+# zone GND_CTRL et les broches signal de J2, pour liberer le passage sans
+# toucher aux pastilles (evite le risque de couronne sous le plancher
+# couronne/trou de composant, rencontre avec une reduction de pastille a
+# 1,2mm testee avant). A verifier : largeur reelle du pont de cuivre apres
+# ce changement seul, sans reduction de pastille.
+(rule "J2_clearance_reduite_essai"
+  (condition "A.NetName == 'GND_CTRL' && B.Reference == 'J2' && B.NetName != 'GND_CTRL'")
+  (constraint clearance (min 0.15mm)))
+
 (rule "barriere_controle"
   (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL') && A.Reference != B.Reference && B.Pin_Type != 'no_connect'")
   (constraint clearance (min 4mm)))
