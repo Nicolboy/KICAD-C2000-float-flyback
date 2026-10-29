@@ -1629,3 +1629,40 @@ cours sur d'autres feuilles) — pose effectuée quand même sur demande
 explicite de l'utilisateur, à reposer si `GND_CTRL` est redessiné
 ensuite. Script de référence, piège `3V3_ISO`/couches-partagées et
 ancrage de grille par le bord ajoutés à `KICAD-EDITION-GROUPEE-KIPY.md`.
+
+## §24 — Via-stitching GND, toute la carte, pas 4mm ancré au bord réel (2026-10-29)
+
+**Pourquoi.** Trois coulées `GND` (F.Cu, In1.Cu, B.Cu, x:118,9-180/
+y:47-117, moitié droite de la carte) sans via les reliant entre elles —
+demande explicite : "beaucoup de courant sur certaines zones", pas de
+grille 4mm (plus serré que le 5/4mm de `GND_CTRL` au §23), ancré à 2mm
+du **bord réel de la carte** (`Edge.Cuts`, un simple rectangle
+95≤x≤180/47≤y≤117 — pas du bord de la zone, cette fois, contrairement au
+§23) côté x=180mm nommé explicitement par l'utilisateur.
+
+**Fait.** 36 vias (0,6mm/perçage 0,3mm, `FAB-01`) posés sur une grille
+4mm, origine ancrée à (x=180−2=178, y=47+2=49) — colonne x la plus à
+droite à 178, décroissant par pas de 4mm vers la gauche ; rangée y la
+plus haute à 49, croissant par pas de 4mm. 255 points de grille bruts
+sur l'emprise commune des 3 zones réduite au rectangle de la carte
+moins 2mm ; seuls 36 dégagés de tout pad/piste/via (tous nets confondus)
+et de toute zone d'un autre net partageant une couche — confirme la
+remarque de l'utilisateur sur la forte densité de cette zone (8,5% de
+taux de passage contre 59% et 60% pour les deux grilles `GND_CTRL`).
+Vérifié par DRC contre un relevé pris juste avant la pose (lui-même déjà
+à 170 violations/10 non-connectés, après les vias manuels ajoutés par
+l'utilisateur entre-temps dans les zones denses) : **0 violation
+ajoutée, 2 résolues en prime** (ratsnest comblés), non-connectés 10→8.
+
+**Méthode** : même protocole que §23 (intersection `shapely`, obstacles
+tous nets sur pads/pistes/vias, zones d'autres nets filtrées par couche
+partagée), avec une différence clé — l'ancrage de grille se fait cette
+fois sur le **contour de la carte** (`Edge.Cuts`, récupéré via
+`board.get_shapes()` filtré par couche, un simple rectangle ici) et non
+sur le contour de la zone elle-même, parce que la demande nommait
+explicitement "le bord de la carte", pas le bord de la zone. Paramètres
+clarifiés en plusieurs échanges (1mm jugé trop serré pour du stitching
+de plan de masse → 4mm confirmé, marge du bord ajustée de 2mm à 2mm en
+repassant par une fausse alerte à 2mm de pas avant confirmation finale)
+— ne pas supposer qu'un chiffre donné en premier reste valide sans
+confirmation explicite en cas d'échanges successifs contradictoires.
