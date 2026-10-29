@@ -110,8 +110,10 @@ ERC sur la hiérarchie complète des 3 feuilles : 0 erreur. Empreintes custom
 condensateur KEMET A786MW (V-chip), toutes construites à partir des cotes
 mécaniques des datasheets plutôt que d'une empreinte générique approximative.
 
-Placement et routage du PCB restent manuels, comme pour les autres cartes de
-ce workspace.
+Placement et routage du PCB faits à la main, comme pour les autres cartes de
+ce workspace. **Routage terminé (2026-10-29)**, DRC à 0 violation (voir
+§29 de [`00-intention-conception.md`](00-intention-conception.md)) — reste
+la revue de placement/routage finale et l'envoi en fabrication.
 
 ---
 
@@ -123,6 +125,7 @@ ce workspace.
 | Simulation LTspice (diode, 10W)       | étapes 1-4 faites, modèles réels (MOSFET Infineon, clamp D1) |
 | Simulation LTspice (18,9W, synchrone) | faite — proxy UCC24612, clamp secondaire dimensionné |
 | Redressement synchrone (KiCad)        | implémenté — UCC24612 (U12) + clamp D4 |
+| Placement + routage PCB     | fait (DRC : 0 violation, 2026-10-29)   |
 | Prototype                   | à fabriquer                            |
 | Mesures au banc             | à faire                                |
 

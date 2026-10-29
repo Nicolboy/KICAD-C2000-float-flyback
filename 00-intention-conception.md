@@ -416,9 +416,10 @@ vers Flyback, `J2→Cpu1` déplacé vers Isolation_Drivers, `C1` déplacé vers
 Alimentation — connectivité inchangée (les étiquettes globales ignorent la
 feuille physique), seule l'organisation visuelle a bougé.
 
-PCB généré avec contour de carte (70×55mm, à ajuster) — placement et
-routage sont les étapes manuelles suivantes, comme pour les autres cartes
-de ce workspace.
+PCB généré avec contour de carte initial (70×55mm) puis ajusté à
+85×70mm au fil du placement — placement et routage faits à la main,
+comme pour les autres cartes de ce workspace. **Routage terminé
+(2026-10-29, voir §29)**, DRC à 0 violation.
 
 Fichiers : `KICAD-HT.kicad_pro/.kicad_sch/.kicad_pcb`,
 `lib/custom_parts.kicad_sym`, `kicad_gen.py`, `gen_symboles.py`,
@@ -1775,3 +1776,68 @@ explicitement d'un autre domaine (`SEC`, signal "RAW"/pré-isolement) ou
 sur un composant conçu pour franchir la barrière (résistance de
 référence inter-domaines), c'est un écart réel de placement à traiter
 comme tel.
+
+## §27 — Fin du nettoyage DRC silkscreen : TO252, MSD1514, A786MW_VChip, VODA1275 (2026-10-29)
+
+**Pourquoi.** Suite de §25 (SOIC_DWV) : les 41 violations restantes après
+le nettoyage de zones (`filled=False`, remplissage figé) se répartissaient
+en 8 causes distinctes, dont 3 du même type — contour de corps F.SilkS
+tracé directement sur des pastilles dans une empreinte partagée.
+
+**Fait — 3 empreintes partagées corrigées** (`lib_fp_commun`) :
+- `TO252-3_TabPin2` (Q1/Q2/Q5) : bord gauche (tab) sorti de -5,3 vers
+  -5,5mm (le tab s'étend jusqu'à -5,3mm, le contour devait s'écarter, pas
+  s'en approcher — première tentative dans le mauvais sens, corrigée
+  après re-vérification DRC), bord droit raccourci de ±3,15 à ±1,5mm
+  pour dégager les pastilles gate/source.
+- `MSD1514` (T1) : bords verticaux troués face aux 2 pastilles empilées
+  de chaque côté (le pas X du boîtier dépasse le corps, gull-wing
+  documenté dans la descr depuis l'origine de l'empreinte).
+- `A786MW_VChip` (C1) : cercle (can) remplacé par 2 arcs, polygone
+  (implantation) troué aux 2 extrémités — les pastilles 1×3mm débordent
+  du cercle et du carré le long de l'axe Y.
+- `VODA1275` (U20) : bibliothèque présente sur disque mais jamais
+  enregistrée dans `fp-lib-table` de ce projet (déjà présente dans
+  KICAD-HV) — ajoutée.
+
+**Découverte méthodologique** : éditer le fichier librairie seul ne
+suffit jamais — le `.kicad_pcb` garde sa propre copie complète de chaque
+empreinte posée (même mécanisme que le cache des symboles schéma, voir
+`KICAD-EDITION-GROUPEE-KIPY.md`). Le DRC n'a bougé qu'après avoir aussi
+patché les 5 copies embarquées dans ce fichier (`lib_footprint_mismatch`
+signalait l'écart entre librairie et copie posée).
+
+**Résultat** : 41 → 23 violations sur cette carte, propagé à KICAD-HV
+(4 instances `TO252-3_TabPin2` concernées, 46→34, 0 régression).
+
+## §28 — Pointe de cuivre VOUT_N/GND et modèle 3D de F1 (2026-10-29)
+
+**Pourquoi.** Dernière catégorie DRC sans coordonnées dans le rapport
+(`copper_sliver`, absentes du JSON/texte `kicad-cli` pour ce type) —
+localisée en reconstruisant la géométrie des zones remplies
+(`filled_polygon`) avec shapely plutôt qu'en devinant.
+
+**Fait.** Pointe de cuivre `VOUT_N` (~0,75mm, sous le seuil de 0,25mm de
+largeur mini) trouvée à (167,0 ; 80,7)mm sur `In1.Cu`, entre C21 et R9 —
+un sommet du contour de la zone `VOUT_N` trop proche du contour `GND`
+voisin. Corrigé par l'utilisateur directement dans KiCad (sommet de zone
+écarté, zones re-remplies).
+
+Au passage : modèle 3D de F1 (`Fuseholder_Clip-5x20mm_Littelfuse_111_
+Lateral...`) jamais résolu dans le visualiseur 3D — vérifié sur le dépôt
+officiel `kicad-packages3D` (404 direct sur le chemin exact), ce fichier
+n'a jamais fait partie de la distribution KiCad standard. Repointé (copie
+embarquée du `.kicad_pcb` uniquement — le fichier librairie stock dans
+`Program Files` a refusé l'écriture, permissions) vers
+`Fuseholder_Cylinder-5x20mm_Schurter_0031_8201_Horizontal_Open.step`
+(modèle réellement présent sur disque), mis à l'échelle ×0,836 pour coller
+au pas de 18,8mm des pastilles existantes — aucune pastille ni routage
+touché.
+
+## §29 — Routage terminé (2026-10-29)
+
+**DRC final : 0 erreur, 0 avertissement, 0 élément non connecté.** Carte
+85×70mm (contour Edge.Cuts), clôture la série de nettoyage silkscreen/
+zones entamée en §25 (141 violations de départ → 0). Prototype prêt pour
+fabrication — reste la revue de placement/routage finale
+(`regles-pcb/09-placement-revue.md`) à faire avant envoi fab.
