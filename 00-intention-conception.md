@@ -1841,3 +1841,53 @@ touché.
 zones entamée en §25 (141 violations de départ → 0). Prototype prêt pour
 fabrication — reste la revue de placement/routage finale
 (`regles-pcb/09-placement-revue.md`) à faire avant envoi fab.
+
+## §30 — Retour de masse J2 isolé : `remove_unused_layers` sur les broches signal (2026-10-29)
+
+**Constat, suite à la revue de placement (§29)** : les 10 broches GND_CTRL
+de J2 (connecteur 2×10, pas 2,54mm) étaient en grande partie isolées du
+plan principal sur F.Cu/In1.Cu/B.Cu — mesuré directement sur les polygones
+`filled_polygon` du `.kicad_pcb`, pas visuellement (un relevé visuel
+antérieur sur une zone voisine s'était révélé faux, cf. §23). Double cause :
+le relief thermique par défaut (`connect_pads`/`thermal_gap` 0,5mm) sur
+chaque broche GND elle-même, combiné à l'absence de place laissée par la
+grosse pastille signal voisine (même rangée, 2,54mm de pas, pastilles
+1,7mm).
+
+**Pistes écartées, par la mesure :**
+- Réduction manuelle de la pastille signal sur In1.Cu seul (1,2mm) :
+  fonctionne (0,3mm de pont réel), mais couronne resultante 0,1mm — sous le
+  plancher DRC du projet (0,15mm) et sous celui de Multi-CB pour un trou de
+  composant (0,125mm, `regles-pcb/08-fabrication-multicb.md` [S11]).
+- Réduction isolée du clearance GND_CTRL↔signal de J2 à 0,15mm (règle
+  `J2_clearance_reduite_essai`, conservée dans le `.kicad_dru` à titre
+  documentaire) : aucun effet mesuré seule — le relief thermique (0,5mm)
+  domine largement un gain de clearance de 0,05mm par côté.
+
+**Solution retenue** : `remove_unused_layers yes` + `keep_end_layers yes`
+sur les 10 broches signal de J2 (aucune n'a de piste ni de zone sur
+In1.Cu, vérifié net par net avant d'appliquer). KiCad retire le cuivre
+des broches signal sur les couches internes inutilisées tout en forçant
+la conservation de F.Cu/B.Cu (soudabilité du connecteur traversant
+préservée). Effet secondaire observé et non totalement expliqué : les
+couches F.Cu/B.Cu gagnent aussi en connectivité (probable passage en
+connexion pleine plutôt que relief thermique sur les couches conservées),
+sans qu'une documentation KiCad 10 précise ait été trouvée pour le
+confirmer — à vérifier si l'occasion se présente.
+
+Résultat mesuré : In1.Cu unifié (10/10 broches GND dans le même plan),
+F.Cu 9/10 (broche 8 encore isolée), B.Cu majoritairement connecté (une
+scission préexistante du plan B.Cu ailleurs sur le board, sans rapport
+avec J2, reste à investiguer séparément). DRC 0 erreur.
+
+**Limite connue de l'outillage** : l'API kipy (IPC scripting) de cette
+version ne gère pas ce nouveau modèle de pastille par couche — ni lecture
+(`copper_layers` renvoie une vue simplifiée) ni écriture fiable
+(`unconnected_layer_removal`, `zone_settings.zone_connection` rapportent un
+succès sans rien changer). Ce réglage doit se faire à la main dans
+l'interface pour l'instant.
+
+**À réutiliser** : tout connecteur traversant dense (pas fin, pastilles
+signal/GND imbriquées) isolant son propre retour de masse du plan
+principal — vérifier d'abord qu'aucun net signal concerné n'a de piste/zone
+sur la couche visée avant d'appliquer `remove_unused_layers`.

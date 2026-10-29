@@ -2414,6 +2414,307 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Transistor_FET:Q_NMOS_GSD"
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "Q"
+				(at 5.08 1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "Q_NMOS_GSD"
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "N-MOSFET transistor, gate/source/drain"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "transistor NMOS N-MOS N-MOSFET"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Q_NMOS_GSD_0_1"
+				(polyline
+					(pts
+						(xy 0.254 1.905) (xy 0.254 -1.905)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 0) (xy -2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 2.286) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 0.508) (xy 0.762 -0.508)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.27) (xy 0.762 -2.286)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.778) (xy 3.302 -1.778) (xy 3.302 1.778) (xy 0.762 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 0) (xy 2.032 0.381) (xy 2.032 -0.381) (xy 1.016 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(circle
+					(center 1.651 0)
+					(radius 2.794)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 2.54) (xy 2.54 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.54 1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(circle
+					(center 2.54 -1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 -2.54) (xy 2.54 0) (xy 0.762 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.921 0.381) (xy 3.683 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.302 0.381) (xy 2.921 -0.254) (xy 3.683 -0.254) (xy 3.302 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Q_NMOS_GSD_1_1"
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "G"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 -5.08 90)
+					(length 2.54)
+					(name "S"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 5.08 270)
+					(length 2.54)
+					(name "D"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "custom_parts:AMC0302R"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -3923,6 +4224,12 @@
 		(uuid "747b552a-6649-44f5-9e40-6952a7846ae6")
 	)
 	(junction
+		(at 86.868 71.374)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "789e479e-9eda-431f-b0d5-0b88f63a455a")
+	)
+	(junction
 		(at 363.22 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4154,6 +4461,16 @@
 	)
 	(wire
 		(pts
+			(xy 96.52 64.262) (xy 96.52 66.294)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "248ae0ae-5ba0-41fa-a4aa-d216ea948b28")
+	)
+	(wire
+		(pts
 			(xy 366.014 66.04) (xy 363.22 66.04)
 		)
 		(stroke
@@ -4354,6 +4671,16 @@
 	)
 	(wire
 		(pts
+			(xy 80.772 71.374) (xy 86.868 71.374)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "481e9da3-5421-42ba-b685-a83dd4242003")
+	)
+	(wire
+		(pts
 			(xy 117.094 100.076) (xy 117.094 94.996)
 		)
 		(stroke
@@ -4391,6 +4718,16 @@
 			(type default)
 		)
 		(uuid "4c03ac08-0476-4a26-a355-ba37bd579c10")
+	)
+	(wire
+		(pts
+			(xy 86.868 71.374) (xy 88.9 71.374)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4d76a7a3-1b0a-4272-b5c8-2f8c2432dadc")
 	)
 	(wire
 		(pts
@@ -4554,6 +4891,16 @@
 	)
 	(wire
 		(pts
+			(xy 86.868 73.152) (xy 86.868 71.374)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6bdb7a48-f156-4685-bb68-8d2e0ce471d6")
+	)
+	(wire
+		(pts
 			(xy 138.938 50.292) (xy 141.478 50.292)
 		)
 		(stroke
@@ -4661,16 +5008,6 @@
 			(type default)
 		)
 		(uuid "807251ac-6e4c-4652-8939-0c614cf74cb3")
-	)
-	(wire
-		(pts
-			(xy 97.028 59.182) (xy 93.218 59.182)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8254b811-90cb-4fdb-83ec-e9cc730b7a00")
 	)
 	(wire
 		(pts
@@ -4841,6 +5178,16 @@
 			(type default)
 		)
 		(uuid "a7cc1b75-7686-40ae-9922-af1b557f88d6")
+	)
+	(wire
+		(pts
+			(xy 112.268 64.262) (xy 96.52 64.262)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a843bbc1-1e10-4486-839c-a466c0770002")
 	)
 	(wire
 		(pts
@@ -5127,7 +5474,7 @@
 	)
 	(global_label "PWM_EN"
 		(shape bidirectional)
-		(at 93.218 59.182 180)
+		(at 80.772 71.374 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5137,7 +5484,7 @@
 		)
 		(uuid "01b465f6-7b99-475f-8528-ffe49f0d8799")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 79.6267 59.182 0)
+			(at 67.1807 71.374 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5244,6 +5591,30 @@
 	)
 	(global_label "GND_CTRL"
 		(shape bidirectional)
+		(at 96.52 76.454 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0bc7c3c9-63b6-43b2-a7cd-533da105da25")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 96.52 89.9243 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
+	(global_label "GND_CTRL"
+		(shape bidirectional)
 		(at 251.678 223.122 270)
 		(fields_autoplaced yes)
 		(effects
@@ -5302,6 +5673,29 @@
 		(uuid "0f8e3a9b-ba92-40da-bc86-8a213440b523")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 121.92 207.518 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "3V3_ISO"
+		(shape bidirectional)
+		(at 97.028 59.182 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "11d70c75-13fb-4e73-b1df-5f8f52276baf")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 97.028 59.182 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5803,29 +6197,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-			)
-		)
-	)
-	(global_label "GND_CTRL"
-		(shape bidirectional)
-		(at 112.268 64.262 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "4d9adb5f-b906-4436-9c42-9ae1fdcd501d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 112.268 64.262 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
 			)
 		)
 	)
@@ -6923,6 +7294,30 @@
 			)
 		)
 	)
+	(global_label "GND_CTRL"
+		(shape bidirectional)
+		(at 86.868 80.772 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d29b60f7-f748-460b-b0c3-1448dc41385c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 86.868 94.2423 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+	)
 	(global_label "PWM_ht"
 		(shape bidirectional)
 		(at 383.032 172.72 180)
@@ -7422,6 +7817,83 @@
 			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
 					(reference "C65")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 86.868 76.962 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "195de347-98e6-4828-a063-6fa6aea7a121")
+		(property "Reference" "R37"
+			(at 82.296 75.184 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "100k"
+			(at 81.788 78.232 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 86.868 76.962 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 86.868 76.962 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 86.868 76.962 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "76bffef2-2c6d-45c3-af19-b508857d5b5f")
+		)
+		(pin "2"
+			(uuid "cab0d26d-4f4c-45b3-9819-611d7f2730ad")
+		)
+		(instances
+			(project "KICAD-HT"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
+					(reference "R37")
 					(unit 1)
 				)
 			)
@@ -9410,6 +9882,86 @@
 			(project "KICAD-HT"
 				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
 					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Transistor_FET:Q_NMOS_GSD")
+		(at 93.98 71.374 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "aea4bf5a-b6cb-4b7f-bc17-e68a23d2db5a")
+		(property "Reference" "Q8"
+			(at 89.662 66.294 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "MMBF170"
+			(at 86.868 63.5 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 93.98 71.374 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 93.98 71.374 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 93.98 71.374 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "c40cc84e-24f7-4b3b-ba6c-038f8832e6f0")
+		)
+		(pin "2"
+			(uuid "fee574e7-b03a-4ffe-9393-620b5ba369a6")
+		)
+		(pin "3"
+			(uuid "1c6b7311-2468-40af-b88b-d249c6284904")
+		)
+		(instances
+			(project "KICAD-HT"
+				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
+					(reference "Q8")
 					(unit 1)
 				)
 			)
