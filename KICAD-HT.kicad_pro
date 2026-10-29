@@ -629,6 +629,10 @@
       },
       {
         "netclass": "CTRL",
+        "pattern": "Q5_LED_K"
+      },
+      {
+        "netclass": "CTRL",
         "pattern": "Net-(R3-Pad2)"
       },
       {
