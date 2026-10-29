@@ -613,7 +613,7 @@
       },
       {
         "netclass": "CTRL",
-        "pattern": "Temp_ht"
+        "pattern": "I_Out_ht"
       },
       {
         "netclass": "CTRL",
