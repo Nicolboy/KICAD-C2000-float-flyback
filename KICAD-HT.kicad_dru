@@ -12,33 +12,50 @@
 
 # Distance haute tension, HT-02 (IPC-9592B, formule convertisseurs,
 # 0,1+0,01*V) a 100V -- marge au-dessus des 90V reels du secondaire
-# elevable (regles-pcb/06-haute-tension.md). Frontiere par NETCLASSE
-# (SEC vs non-SEC), pas par une liste de nets -- memes motif que
-# barriere_controle. Corrige le 2026-10-29 : une premiere version
-# nommait 5 nets (V_HT_OUT, HV_BIAS, HV80_IN, VOUT_P, VOUT_N) et les
-# comparait a TOUT le reste, y compris leurs propres voisins du meme
-# domaine flottant (REG_SR, VOUT_SENSE, Net-(U12-VG), ISNS_*,
-# RAIL_3V3_SEC -- deja classe SEC) : quelques volts d'ecart reel entre
-# eux, pas 90V, et ca declenchait des faux positifs pastille-contre-
-# pastille-du-meme-composant (ex. U12, broches VOUT_N et REG_SR a 1mm
-# l'une de l'autre). V_HT_OUT ajoute a la netclasse SEC dans
-# KICAD-HT.kicad_pro (oubli, meme defaut que Temp_ht en #26) pour que
-# la frontiere netclasse le couvre aussi.
+# elevable (regles-pcb/06-haute-tension.md).
+#
+# Cote A : les nets qui portent reellement la haute tension -- PAS toute
+# la netclasse SEC (corrige le 2026-10-29, 2e passe : A.hasNetclass('SEC')
+# couvrait aussi du petit signal du meme domaine flottant et rendait le
+# routage impossible). Chaque net ci-dessous verifie par tracage du
+# circuit, pas suppose par le nom :
+#   V_HT_OUT, HV_BIAS, HV80_IN, VOUT_P, VOUT_N -- sorties/bus principaux.
+#   HV_BIAS_OUT -- PAS la meme chose que HV_BIAS_IN malgre le nom : piloté
+#     activement par la boucle de linearisation (Q7/MCP6001) et couple a
+#     VOUT_P/VOUT_N par le pont 2x100kOhm (R9/R10) qui fait monter le
+#     secondaire -- atteint reellement ~90V. Son seul lien GND (C59,
+#     decouplage HF) ne l'empeche pas de monter en continu. A tort exclu
+#     entierement lors de la 3e passe (2026-10-29) avant tracage complet.
+#
+# Cote B : !hasNetclass('SEC') (toute la classe, pas une liste de noms)
+# -- evite de comparer les nets A a leurs propres voisins du meme domaine
+# flottant. Netclasse SEC completee au passage (nets verifies par
+# tracage, pas par le nom) dans KICAD-HT.kicad_pro :
+#   V_HT_OUT (oubli, meme defaut que Temp_ht en #26).
+#   Net-(U22-INP)/Net-(U22-INN) -- U22 (AMC0302R) a sa broche GND1
+#     (cote 1) sur VOUT_N litteralement : ses entrees differentielles
+#     sont bien dans le meme domaine flottant.
+#   ISNS_P -- R40 relie ISNS_P a Net-(U22-INP) (ci-dessus), meme reseau
+#     de mesure, meme domaine.
+# HV_BIAS_IN (J1) verifie et PAS ajoute : decouple vers GND reel (C62,
+#   J1 broche 2 = GND directement) -- entree brute avant regulation,
+#   domaine different de HV_BIAS_OUT malgre le nom proche.
+#
 # Externe uniquement (F.Cu/B.Cu) : en interne, le plancher projet
 # 0,2mm du net_settings par defaut couvre deja HT-02 (0,2mm en
 # interne). Exclu meme composant pour les pastilles (meme motif que
 # pastilles_meme_composant -- A.Parent != B.Parent). Exclu aussi, par
-# nom explicite, T1 (transformateur MSD1514) : ses 4 broches (VIN/
-# SW_PRI cote primaire, SW_SEC/VOUT_P cote secondaire) sont a l'ecart
-# fixe par le boitier -- meme logique que pastilles_meme_composant,
-# mais etendue a une pastille vs la zone d'une AUTRE broche du meme
-# composant, cas que A.Parent ne couvre pas (une zone n'a pas de
-# Parent de footprint). Pas de condition generique trouvee pour ce cas
-# (pas de "A.Parent" cote zone) -- exemption nominative par T1/ses 4
-# nets, a refaire a la main si un autre composant transformateur
-# rencontre le meme probleme.
+# nom explicite (pas de condition generique trouvee pour pastille-vs-
+# zone-de-l'autre-broche-du-meme-composant, une zone n'a pas de Parent
+# de footprint) :
+#   T1 (transformateur MSD1514, 4 broches VIN/SW_PRI/SW_SEC/VOUT_P).
+#   R9 (HV_BIAS_OUT/VOUT_P) et R10 (HV_BIAS_OUT/VOUT_N) -- le pont
+#     2x100kOhm lui-meme, meme logique.
+#   R54 (HV_BIAS_OUT/Net-(Q7-S)) -- la resistance de la boucle de
+#     linearisation elle-meme, meme logique.
+# A refaire a la main si un autre composant rencontre le meme probleme.
 (rule "HT_distance_90V"
-  (condition "A.hasNetclass('SEC') && !B.hasNetclass('SEC') && A.Parent != B.Parent && (A.Layer == 'F.Cu' || A.Layer == 'B.Cu') && !((A.Reference == 'T1' || B.Reference == 'T1') && (A.NetName == 'VIN' || A.NetName == 'SW_PRI' || A.NetName == 'SW_SEC' || A.NetName == 'VOUT_P') && (B.NetName == 'VIN' || B.NetName == 'SW_PRI' || B.NetName == 'SW_SEC' || B.NetName == 'VOUT_P'))")
+  (condition "(A.NetName == 'V_HT_OUT' || A.NetName == 'HV_BIAS' || A.NetName == 'HV80_IN' || A.NetName == 'VOUT_P' || A.NetName == 'VOUT_N' || A.NetName == 'HV_BIAS_OUT') && !B.hasNetclass('SEC') && A.Parent != B.Parent && (A.Layer == 'F.Cu' || A.Layer == 'B.Cu') && !((A.Reference == 'T1' || B.Reference == 'T1') && (A.NetName == 'VIN' || A.NetName == 'SW_PRI' || A.NetName == 'SW_SEC' || A.NetName == 'VOUT_P') && (B.NetName == 'VIN' || B.NetName == 'SW_PRI' || B.NetName == 'SW_SEC' || B.NetName == 'VOUT_P')) && !((A.Reference == 'R9' || B.Reference == 'R9') && (A.NetName == 'HV_BIAS_OUT' || A.NetName == 'VOUT_P') && (B.NetName == 'HV_BIAS_OUT' || B.NetName == 'VOUT_P')) && !((A.Reference == 'R10' || B.Reference == 'R10') && (A.NetName == 'HV_BIAS_OUT' || A.NetName == 'VOUT_N') && (B.NetName == 'HV_BIAS_OUT' || B.NetName == 'VOUT_N')) && !((A.Reference == 'R54' || B.Reference == 'R54') && (A.NetName == 'HV_BIAS_OUT' || A.NetName == 'Net-(Q7-S)') && (B.NetName == 'HV_BIAS_OUT' || B.NetName == 'Net-(Q7-S)'))")
   (constraint clearance (min 1.1mm)))
 
 (rule "barriere_controle"
