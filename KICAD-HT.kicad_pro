@@ -982,7 +982,7 @@
         "uuid": "c8449ac7-87b3-4a93-889f-06dd686c5aff"
       }
     ],
-    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,C27,C37,C42-43,C49,C57-71,R6,R9-12,R21,R25-26,R35-54,Reg3,CpuIn1,CpuOut1,D2,D7-10,F1,U12,U20-23,Q4-7",
+    "used_designators": "#FLGGND1,Bias1,Cpu1,#FLGVBOOT1,#FLGVIN1,In1,#FLGVOUT_N1,Out1,C1,C11-12,C15-22,C27,C37,C42-43,C49,C57-71,R6,R9-12,R21,R25-26,R35-54,Reg3,CpuIn1,CpuOut1,D2,D7-10,F1,U12,U20-23,Q4-7,H1-4",
     "variants": []
   },
   "sheets": [

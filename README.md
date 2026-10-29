@@ -31,7 +31,7 @@ résistance vers Vout+, une vers Vout-) — pour réduire le stress
 cathode/chauffage sur un préamplificateur à tubes bas bruit (montage cascode).
 
 <p align="center">
-  <img src="doc/KICAD-HT.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">
+  <img src="doc/KICAD-HT-pcbway.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">
 </p>
 
 ---
