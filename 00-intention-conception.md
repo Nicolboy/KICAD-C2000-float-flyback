@@ -1716,3 +1716,62 @@ partagée + 2 `.kicad_pcb`), KiCad fermé pendant toute l'opération
 ouvert). UUID des segments retirés réutilisés pour 2 des 4 nouvelles
 amorces par instance, nouveaux UUID générés pour les 2 autres — pas de
 collision constatée.
+
+## §26 — Nettoyage de la classe CTRL et de la règle barriere_controle (2026-10-29)
+
+**Pourquoi.** 70 violations `barriere_controle` (4mm entre classe `CTRL` et
+le reste) signalées par l'utilisateur comme suspectes : beaucoup
+opposaient des composants qu'il savait être du même côté de la barrière.
+Tracé le circuit pour trancher au cas par cas plutôt que de deviner.
+
+**Fait — 3 corrections de classification (motif manquant, pas un vrai
+écart physique)** :
+- `I_Out_ht` : motif resté sur l'ancien nom `Temp_ht` (renommage jamais
+  répercuté). **-10 violations.**
+- `Q5_LED_K` : pastille drain de `Q4` (MOSFET, source sur `GND_CTRL`,
+  grille sur `Vht_EN`) qui pilote la cathode LED de l'optocoupleur `U20`
+  (VODA1275) — tout ce sous-circuit est référencé `GND_CTRL`/`3V3_ISO`
+  (confirmé via `R21`/`R35`), jamais classé. **-8 violations.**
+- `Net-(U20-A)` (anode LED de U20, même sous-circuit) et `Net-(U22-OUT)`
+  (sortie brute de U22 avant filtre vers `I_Out_ht`) : noms **auto-générés**
+  (pas de vraie étiquette schéma), mêmes motif que ci-dessus. **-23
+  violations** supplémentaires (comptait aussi des paires entre ces deux
+  nets eux-mêmes). **Fragile** : un renommage de composant (comme celui
+  qui a rendu `Net-(U8-OUT)`/`Net-(U9-OUT)`/`Net-(U11-OUT)` obsolètes et
+  silencieusement inopérants) cassera ces motifs sans avertissement — une
+  vraie étiquette dans le schéma serait plus robuste, pas fait ici.
+
+**Au passage** : ajout d'une exemption `pastilles_meme_composant`
+(`A.Type=='Pad' && B.Type=='Pad' && A.Parent==B.Parent`, clearance 0mm) —
+même motif que `KICAD-HV`/`U13` (2026-10-19) : `U18` (VSSOP-8, pas
+0,65mm) a 0,15mm réel entre broches voisines contre 0,2mm exigé par la
+netclasse `PRI`, aucune raison électrique de l'interdire. **-5
+violations.**
+
+**Restant (19 violations), confirmé réel par l'utilisateur, pas une
+classification à corriger** :
+- `R37`/`R38` (résistances 1M de référence inter-domaines, chaîne de 3×1MΩ
+  par barrière décidée le 2026-10-23, voir plus haut) :
+  "n'appartiennent à aucun domaine, ou plutôt entre 2 domaines" — une de
+  leurs deux pastilles reste à ≤3mm de `U3` (`CTRL`) à plusieurs
+  endroits. Vrai écart de placement si la fonction de ces résistances
+  (tenue de l'isolement renforcé) doit être garantie à l'extérieur du
+  composant aussi, pas seulement dans sa propre tenue diélectrique interne.
+- `VOUT_FBACK_RAW` (classe `SEC`, signal de retour HT avant isolement) à
+  moins de 4mm de plusieurs pastilles `CTRL` (`R15`/`C28`/`C24`/`U7`) —
+  rapprochement physique réel entre deux domaines différents.
+- 1 pastille NC (`unconnected-(U19-NC-Pad7)`) trop proche de `C56` —
+  mineur, broche non connectée.
+
+**Résultat global de la session de nettoyage DRC (silkscreen + CTRL)** :
+141 → **57** violations.
+
+**Règle générale retenue pour trier une violation `barriere_controle`** :
+tracer les DEUX pastilles jusqu'à leur référence de tension locale
+(quel GND/quelle alim les ramène). Si les deux retombent réellement sur
+`GND_CTRL`/`3V3_ISO` (ou équivalent), c'est un motif de netclasse
+manquant — corriger `.kicad_pro`. Si l'une des deux est sur un net
+explicitement d'un autre domaine (`SEC`, signal "RAW"/pré-isolement) ou
+sur un composant conçu pour franchir la barrière (résistance de
+référence inter-domaines), c'est un écart réel de placement à traiter
+comme tel.
