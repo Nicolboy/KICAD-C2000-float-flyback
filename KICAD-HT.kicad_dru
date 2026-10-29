@@ -11,7 +11,7 @@
   (constraint clearance (min 0mm)))
 
 (rule "barriere_controle"
-  (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL') && A.Reference != B.Reference")
+  (condition "A.hasNetclass('CTRL') && !B.hasNetclass('CTRL') && A.Reference != B.Reference && B.Pin_Type != 'no_connect'")
   (constraint clearance (min 4mm)))
 
 # barriere_primaire_secondaire retiree le 2026-10-25 : le secondaire
