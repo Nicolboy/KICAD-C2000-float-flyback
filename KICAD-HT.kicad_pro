@@ -633,6 +633,14 @@
       },
       {
         "netclass": "CTRL",
+        "pattern": "Net-(U20-A)"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "Net-(U22-OUT)"
+      },
+      {
+        "netclass": "CTRL",
         "pattern": "Net-(R3-Pad2)"
       },
       {
