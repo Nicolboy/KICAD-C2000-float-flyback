@@ -1565,21 +1565,44 @@ elles dans cette zone — méthode demandée explicitement : grille
 régulière de pas 5mm sur toute la surface commune, pas un point isolé
 (voir correction de méthode au §22).
 
-**Fait.** 13 vias (0,6mm/perçage 0,3mm, `FAB-01`) posés sur une grille
-5mm alignée sur des coordonnées rondes (x∈{100,105,110}, y multiples de
-5), dans l'intersection des trois contours de zone `GND_CTRL`, avec une
-marge intérieure de 0,4mm par rapport au bord de cette intersection. 14
-points candidats trouvés initialement sur toute l'emprise (≈39 points de
-grille bruts, 25 écartés pour collision avec des pastilles/pistes
-existantes, toutes nets confondus) ; un 14ᵉ (100,95) écarté *après*
-pose — trop proche (1,66mm centre à centre) du pad 1 de `J2` (net
-`3V3_ISO`) sur `In2.Cu`, en violation de l'isolement de la classe
-`CTRL` (0,2mm requis, 0,1664mm réel) : l'approximation de taille de
-pastille (plus grande dimension de `copper_layers[0]`) sous-estimait la
-vraie empreinte sur cette couche interne. **Retiré**, grille finale à 13
-vias. Vérifié par DRC : diff complet avant/après rigoureusement
-identique au relevé de départ (164 violations, aucune ajoutée/retirée),
-nombre d'éléments non connectés passé de 75 à 74.
+**Fait (v1, insuffisant).** 13 vias (0,6mm/perçage 0,3mm, `FAB-01`)
+posés sur une grille 5mm alignée sur des coordonnées rondes
+(x∈{100,105,110}, y multiples de 5), dans l'intersection des trois
+contours de zone `GND_CTRL`, avec une marge intérieure de 0,4mm par
+rapport au bord de cette intersection. 14 points candidats trouvés
+initialement sur toute l'emprise (≈39 points de grille bruts, 25
+écartés pour collision avec des pastilles/pistes existantes, toutes
+nets confondus) ; un 14ᵉ (100,95) écarté *après* pose — trop proche
+(1,66mm centre à centre) du pad 1 de `J2` (net `3V3_ISO`) sur `In2.Cu`,
+en violation de l'isolement de la classe `CTRL` (0,2mm requis, 0,1664mm
+réel) : l'approximation de taille de pastille (plus grande dimension de
+`copper_layers[0]`) sous-estimait la vraie empreinte sur cette couche
+interne. Retiré, grille à 13 vias, DRC propre — mais jugé **mal
+couvert** par l'utilisateur : la grille alignée sur des multiples
+absolus de 5mm démarrait à x=100/y=50, laissant une bande de ~4,5mm non
+couverte le long du bord gauche (x=95-100) et du bord haut.
+
+**Correction (v2, pas 5mm).** Les 13 vias v1 retirés, grille recalculée
+en ancrant l'origine à 1mm du bord réel de l'intersection plutôt que sur
+des coordonnées rondes (x₀=95+1=96, y₀=47+1=48, pas 5mm dans les deux
+cas), toujours filtrée par la même intersection `shapely` et les mêmes
+obstacles. Résultat : **31 vias** (plus du double), colonnes
+x∈{96,101,106,111} au lieu de {100,105,110} — la colonne la plus proche
+du bord (x=96) s'est révélée presque entièrement dégagée sur toute la
+hauteur (14 vias), les composants du secteur étant plutôt groupés au
+centre de la zone. Vérifié par DRC : diff complet contre un relevé pris
+juste après le retrait de la v1, rigoureusement identique (164
+violations, aucune ajoutée/retirée), non-connectés 75→73. **Confirmé
+bon par l'utilisateur.**
+
+**Resserré (v3, pas 4mm).** Même ancrage au bord (1mm), même
+intersection et mêmes obstacles, pas réduit de 5mm à 4mm sur demande
+explicite : 52 vias (contre 31), même grille de colonnes x∈{96,100,104,
+108,112} (5 colonnes au lieu de 4, la dernière à x=112 encore à 1,5mm du
+bord droit x=114,5). Vérifié par DRC contre un relevé pris juste après
+le retrait de la v2 : rigoureusement identique au départ (164
+violations, aucune ajoutée/retirée), non-connectés 75→73. Version
+retenue à ce stade.
 
 **Point technique découvert** : les zones d'**autres nets** ne sont des
 obstacles réels que sur les couches **partagées** avec les zones que
@@ -1595,11 +1618,14 @@ cette distinction avait d'abord fait tomber le compte de candidats à 0
 pastilles/pistes/vias de **tous nets confondus** traités comme
 obstacles (pas seulement ceux d'un autre net — consigne explicite),
 zones d'autres nets traitées comme obstacles seulement sur les couches
-partagées (voir ci-dessus). Compte de candidats présenté avant la pose
+partagées (voir ci-dessus). Origine de grille ancrée à 1mm du bord réel
+de l'intersection (v2), pas sur des coordonnées rondes arbitraires (v1)
+— correction reçue de l'utilisateur après constat visuel d'une
+couverture insuffisante. Compte de candidats présenté avant la pose
 (règle `07-stitching.md`/STI-02 de `regles-pcb`, pas par défaut 6,35mm
 remplacé ici par le pas demandé de 5mm). Préalable « routage
 terminé/gelé » de `07-stitching.md` non respecté ici (routage encore en
 cours sur d'autres feuilles) — pose effectuée quand même sur demande
 explicite de l'utilisateur, à reposer si `GND_CTRL` est redessiné
-ensuite. Script de référence et piège `3V3_ISO`/couches-partagées ajoutés
-à `KICAD-EDITION-GROUPEE-KIPY.md`.
+ensuite. Script de référence, piège `3V3_ISO`/couches-partagées et
+ancrage de grille par le bord ajoutés à `KICAD-EDITION-GROUPEE-KIPY.md`.
