@@ -5896,7 +5896,7 @@
 	)
 	(symbol
 		(lib_id "Device:D_TVS")
-		(at 156.718 132.842 90)
+		(at 156.718 132.842 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -5906,7 +5906,7 @@
 		(dnp no)
 		(uuid "db303112-bad5-489e-93ff-0f2753ec4ef6")
 		(property "Reference" "D8"
-			(at 165.608 129.54 270)
+			(at 163.576 135.382 270)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5915,8 +5915,8 @@
 				)
 			)
 		)
-		(property "Value" "SMCJ100A"
-			(at 165.354 134.112 270)
+		(property "Value" "SMBJ100"
+			(at 163.83 130.81 270)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5925,7 +5925,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Diode_SMD:D_SMC"
+		(property "Footprint" "Diode_SMD:D_SMB"
 			(at 156.718 132.842 0)
 			(hide yes)
 			(show_name no)
