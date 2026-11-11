@@ -54,8 +54,8 @@ sortie) est sourcé avec sa propre fiche datasheet dans `composants-datasheets/d
 (dépôt interne, non public — pas de lien)
 — page citée, base (absolue / recommandée / typique / calculée), jamais de
 valeur choisie à l'oeil. Ce sourcing a d'ailleurs fait revenir deux fois sur
-le choix de Cin et Cout : le premier calcul prenait le coin 13V/3A (39W)
-comme pire cas, avant d'être recorrigé sur les vrais coins d'usage — deux
+le choix de Cin et Cout : le premier calcul prenait le cas 13V/3A (39W)
+comme pire cas, avant d'être recorrigé sur les vrais cas d'usage — deux
 câblages de filament qui tombent à **la même puissance réelle** (18,9W) et
 divisent par deux la contrainte de courant et d'ondulation retenue au départ.
 Le détail (formules, marges, historique des choix) est dans
@@ -153,8 +153,8 @@ composant réel) pour chiffrer la perte dans le clamp D1 :
 </p>
 
 Rejoué à la cible réelle (**18,9W**) avec un proxy de redressement
-synchrone : le dépassement empire (dès Vin=20V au coin 12,6V ; les deux
-coins dépassent à partir de 25V, jusqu'à 107,2V) — indépendant du
+synchrone : le dépassement empire (dès Vin=20V au point 12,6V ; les deux
+points dépassent à partir de 25V, jusqu'à 107,2V) — indépendant du
 redresseur, c'est une résonance de l'inductance de fuite. Le passage en
 synchrone (UCC24612) apporte +4,6 à +10,7 points de rendement selon le
 point, mais ne corrige pas la surtension :
@@ -166,7 +166,7 @@ point, mais ne corrige pas la surtension :
 D'où le clamp secondaire **D4 (SMCJ54A)**, qui ramène Vds_Q2 à 58,4-63,5V
 (marge ×1,6) pour 0-0,76W de dissipation (marge ×6,6 vs les 5W du
 composant) — comparé au SMCJ43A (même réf. que D1, déjà au BOM) qui tient
-aussi mais coûte jusqu'à 3,5 points de rendement de plus au pire cas :
+aussi mais coûte jusqu'à 3,5 points de rendement de plus au pire point :
 
 <p align="center">
   <img src="simulation/plots/clamp_comparison_18w9.png" alt="Comparaison clamp secondaire SMCJ43A vs SMCJ54A, dissipation et tenue en tension" width="100%">

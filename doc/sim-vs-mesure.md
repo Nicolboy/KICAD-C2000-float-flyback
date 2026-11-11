@@ -236,8 +236,8 @@ n'était utilisé nulle part.
 
 Méthode (conforme à la discipline « simple d'abord, un changement à la
 fois ») : D trouvé par `find_duty.py` (modèle Schottky rapide déjà
-validé) aux mêmes 6 coins Vin×Vout que l'enveloppe 10W mais à
-Rload=Vout²/18,9 (2,1Ω au coin 6,3V, 8,4Ω au coin 12,6V) ; D réutilisé tel
+validé) aux mêmes 6 points Vin×Vout que l'enveloppe 10W mais à
+Rload=Vout²/18,9 (2,1Ω au point 6,3V, 8,4Ω au point 12,6V) ; D réutilisé tel
 quel pour la passe `sync_ideal` (pas re-résolu pour le modèle réel — la
 puissance réellement délivrée dérive donc de 19,7 à 21,6W selon le point,
 voir tableaux). `simulation/run_envelope_18w9.py`,
@@ -290,21 +290,21 @@ Ipk=6,73A vs Isat 10%-drop=13,4A (marge ×2,0, et toujours sous le
 puissance.** Comparaison aux mêmes D/Vin/Vout (ex. 20V→12,6V) :
 84,8%→89,4% (+4,6 points), perte redresseur secondaire 0,69W→0,20W.
 Le gain mesuré varie de +4,6 à +10,7 points selon le point (plus fort aux
-coins 25V, où le body-diode seul perd le plus) — confirme la motivation
+points 25V, où le body-diode seul perd le plus) — confirme la motivation
 initiale (la diode de corps seule, à 18-20W, dissiperait trop pour rester
 un choix raisonnable).
 
 **⚠ Vds_Q2 — le redressement synchrone NE règle PAS le dépassement
 100V.** Avec le modèle réel + grille synchrone, Vds_Q2 dépasse 100V
 (tenue IPD050N10N5, `ipd050n10n5.yaml` vds_max) **dès Vin=20V, mais
-seulement au coin 12,6V** (107,2V) — le coin 6,3V à la même tension reste
-juste sous la limite (92,7V). **À Vin=25V, les deux coins dépassent**
+seulement au point 12,6V** (107,2V) — le point 6,3V à la même tension reste
+juste sous la limite (92,7V). **À Vin=25V, les deux points dépassent**
 (107,2V chacun). Plafond observé une fois la résonance établie : ~107,2V,
-quasi identique au coin 20V/12,6V et aux deux coins 25V — suggère une
+quasi identique au point 20V/12,6V et aux deux points 25V — suggère une
 butée (saturation de la résonance plutôt qu'une croissance continue avec
 la puissance) plus qu'une simple proportionnalité à Ipk². Seul Vin=11V
 reste largement sous la limite (57,4-81,5V). Conclusion inchangée malgré
-le changement de détail par coin : c'est un phénomène de résonance
+le changement de détail par point : c'est un phénomène de résonance
 d'inductance de fuite, **indépendant du mode de redressement** —
 l'UCC24612 améliore le rendement mais ne change rien au risque de
 claquage de Q2.
@@ -318,7 +318,7 @@ la simulation précédente — à garder à l'œil si d'autres paramètres
 (Lmesh_pri réel, par exemple) réduisent encore cette marge plus tard.
 
 **Conclusion : 18-20W n'est pas tenable en l'état (sans clamp secondaire),
-même avec l'UCC24612** — inchangé par la correction : 3 des 6 coins
+même avec l'UCC24612** — inchangé par la correction : 3 des 6 points
 (20V/12,6V, 25V/6,3V, 25V/12,6V) dépassent toujours 100V. Le point ouvert
 déjà identifié en `00-intention-conception.md` §10 (« Snubber/clamp
 éventuel côté secondaire ... pas encore traité ») reste **bloquant** pour
@@ -380,7 +380,7 @@ de résonance), la dissipation réelle reste modeste.
 
 **Où part l'énergie non dissipée dans le SMCJ54A ?** Décomposition
 complète (mêmes 6 points, log LTspice relus en entier, pas juste
-Ploss_D2sec) au pire coin (25V→12,6V) :
+Ploss_D2sec) au pire point (25V→12,6V) :
 
 | | SMCJ43A | SMCJ54A | Δ |
 |---|---|---|---|
@@ -420,10 +420,10 @@ clamp) :
 **Recommandation révisée, inchangée malgré le fix : SMCJ54A**, pas
 SMCJ43A — mais le tableau n'est plus uniformément favorable comme avant
 (5 points sur 6 ; désormais **4 sur 6**, les deux négatifs restant petits
-:  -0,02 et -0,51 pt au coin 6,3V). Le pire coin (25V→12,6V), celui qui
+:  -0,02 et -0,51 pt au point 6,3V). Le pire point (25V→12,6V), celui qui
 compte le plus pour le dimensionnement, montre un gain **encore plus
 marqué qu'avant** (+3,54 pt contre +2,03 pt avec l'ancienne fuite) — ce
-coin seul suffit à trancher. La marge de tension reste confortable
+point seul suffit à trancher. La marge de tension reste confortable
 (×1,6 vs 100V, contre ×1,9 pour le SMCJ43A, les deux largement
 suffisants ; marges quasi inchangées par la correction, contre ×1,5/×1,9
 avant). La dissipation du composant lui-même n'était de toute façon un
