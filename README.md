@@ -18,8 +18,7 @@ the real 18.9W target, including a secondary-side overvoltage finding and
 the clamp that fixes it — see *Validation* below for the figures and
 `doc/sim-vs-mesure.md` for the full data.
 
-Alimentation flyback pour le chauffage d'un filament de tube à vide et un
-étage de préamplification bas bruit, conçue sous KiCad 10 — le côté
+Alimentation flyback pour le chauffage de filaments de chauffage de tubes à vide, conçue sous KiCad 10 — le côté
 contrôle (C2000) reste isolé galvaniquement de l'étage de puissance.
 **Mise à jour 2026-10-25** : le secondaire n'est plus flottant/isolé
 galvaniquement du primaire dans le montage final — seule la barrière
@@ -28,8 +27,8 @@ pour le périmètre actuel des barrières.
 
 Convertisseur flyback 200kHz, 11-25V en entrée → 5,5-13V/3A en sortie.
 Secondaire élevable de 0 à 90V par un pont symétrique 2×100kΩ (une
-résistance vers Vout+, une vers Vout-) — pour réduire le stress
-cathode/chauffage sur un préamplificateur à tubes bas bruit (montage cascode).
+résistance vers Vout+, une vers Vout-) — pour réduire le stress 
+cathode/chauffage et le bruit de fond sur un préamplificateur à tubes bas bruit (montage cascode).
 
 <p align="center">
   <img src="doc/KICAD-HT-pcbway.png" alt="Rendu 3D de la carte d'alimentation flyback KiCad" width="700px">
@@ -68,15 +67,14 @@ Le détail (formules, marges, historique des choix) est dans
 
 | Bloc | Rôle |
 |---|---|
-| Primaire | Cin, MOSFET N (TO-252), clamp TVS D1 (boîtier SMC), UCC27517 + ISO7710 (PWM) |
-| Isolation | ISO7710 (PWM primaire) + DPC817 (EN) — plus de canal PWM dédié au secondaire |
-| Secondaire (non isolé du primaire depuis 2026-10-25) | MOSFET N potentiel bas (rectification synchrone), UCC24612 (détection Vds, alimenté direct depuis Vout) + clamp TVS D4, banc Cout, pont bias 2×100kΩ |
-| Couplage | Coilcraft MSD1514, 1:1 (k≈0,98, fuite 0,40µH typ.), 10µH par enroulement |
-| Limitation de courant (§19) | TSV791 (×10,09) + LMV7219 (comparateur) + 74LVC1G132/74LVC1G74 (blanking/verrou) + ISO7710F, 100% primaire sauf le retour isolé `I_Shunt_ht_comp` — coupe Q1 en ~100ns sur défaut, indépendant du C2000 |
-
-Ce tableau n'a pas suivi toutes les évolutions depuis §13 (U8/U9, feuille
-`polarisation.kicad_sch`, connecteur `J2`) — `00-intention-conception.md`
-reste la source de vérité pour l'architecture actuelle.
+| Primaire | Cin, Q1 (MOSFET N TO-252), clamp TVS D1 (boîtier SMC), U1 (UCC27517) + U3 (ISO7710, PWM) |
+| Isolation — commande | U3 (ISO7710, PWM primaire) + U5 (DPC817, EN) + U10 (ISO7710, PWM de polarisation HV_BIAS) — plus de canal PWM dédié au secondaire |
+| Isolation — retours mesure vers C2000 | U7 (AMC0311R, `Vht`/Vout), U9 + U22 (AMC0302R, `I_Shunt_ht`/`I_Shunt_ht_comp`, voie directe + voie comparateur), U11 (AMC0311R, `V_bias`) — famille ratiométrique, isolée |
+| Secondaire (non isolé du primaire depuis 2026-10-25) | Q2 (MOSFET N potentiel bas, rectification synchrone), U12 (UCC24612, détection Vds, alimenté direct depuis Vout) + clamp TVS D4 (SMCJ54A), banc Cout, pont bias 2×100kΩ |
+| Polarisation (`polarisation.kicad_sch`, §16) | `HV_BIAS` piloté activement 0-78V depuis une source 80V externe dédiée (`J1`) : source de courant régulée (Q3/Q4/R25/R26), protection TVS D3, résistance variable Q5 pilotée en PWM isolé (U10), boucle de linéarisation U21 (MCP6001) + Q6/Q7 |
+| Couplage | Coilcraft MSD1514-103ME, 1:1 (k=0,9798, fuite 0,40µH typ. datasheet), 10µH par enroulement |
+| Limitation de courant (§19) | U14 (TSV791, ×10,09) + U16 (LMV7219, comparateur) + U17/U18 (SN74LVC1G132/74, blanking/verrou) + U13 (SN74LVC1G08, porte ET) + U19 (ISO7710F), 100% primaire sauf le retour isolé `I_Shunt_ht_comp` — coupe Q1 en ~100ns sur défaut, indépendant du C2000 |
+| Connecteur C2000 | `J2` (`COM_HT`, IDC 2×10), aligné broche à broche sur `J21` du shield — remplace les anciens `CpuOut1`/`CpuIn1` (§18) |
 
 L'isolation fonctionnelle (barrière contrôle↔puissance, via les AMC03xx/
 ISO7710/DPC817) est dimensionnée pour l'écart réel présent sur la carte,
@@ -110,8 +108,7 @@ ERC sur la hiérarchie complète des 6 feuilles (`alim`, `flyback`,
 `isolation`, `limitation-courant`, `polarisation` + racine) : 0 erreur
 (label `nQ_TRIP` sur `isolation.kicad_sch` corrigé en `~{Q_TRIP}`, deux
 conventions de nom différentes pour le même signal faisaient deux nets
-séparés — `U13` broche B était orpheline). Le reste en avertissements
-`endpoint_off_grid`, de la même famille que le reste de l'atelier.
+séparés — `U13` broche B était orpheline).
 Empreintes custom
 (`lib_fp/*.pretty/`) pour l'inductance couplée MSD1514, le MOSFET TO-252 et le
 condensateur KEMET A786MW (V-chip), toutes construites à partir des cotes
@@ -169,7 +166,7 @@ point, mais ne corrige pas la surtension :
 D'où le clamp secondaire **D4 (SMCJ54A)**, qui ramène Vds_Q2 à 58,4-63,5V
 (marge ×1,6) pour 0-0,76W de dissipation (marge ×6,6 vs les 5W du
 composant) — comparé au SMCJ43A (même réf. que D1, déjà au BOM) qui tient
-aussi mais coûte jusqu'à 3,5 points de rendement de plus au pire coin :
+aussi mais coûte jusqu'à 3,5 points de rendement de plus au pire cas :
 
 <p align="center">
   <img src="simulation/plots/clamp_comparison_18w9.png" alt="Comparaison clamp secondaire SMCJ43A vs SMCJ54A, dissipation et tenue en tension" width="100%">
