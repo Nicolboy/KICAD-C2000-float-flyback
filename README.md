@@ -3,6 +3,7 @@
 - **18.9W** — real-world target power, simulated efficiency up to 94.8%
 - **+5 points** efficiency from synchronous rectification (UCC24612) vs. body-diode
 - **106.8V → 61–65V** — secondary overvoltage, resolved by a TVS clamp sized through simulation (×1.5 margin vs. the 100V MOSFET rating)
+- PCB **routed 100% on 4 layers**, DRC clean
 
 Flyback power supply for vacuum-tube filament heating and a low-noise
 preamp stage, designed in KiCad 10, with the control side (C2000)
