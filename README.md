@@ -111,7 +111,7 @@ condensateur KEMET A786MW (V-chip), toutes construites à partir des cotes
 mécaniques des datasheets plutôt que d'une empreinte générique approximative.
 
 Placement et routage du PCB faits à la main, comme pour les autres cartes de
-ce workspace. **Routage terminé (2026-10-29)**, DRC à 0 violation (voir
+ce workspace. **Routé à 100 % (2026-10-29)**, DRC à 0 violation (voir
 §29 de [`00-intention-conception.md`](00-intention-conception.md)) — reste
 la revue de placement/routage finale et l'envoi en fabrication.
 
