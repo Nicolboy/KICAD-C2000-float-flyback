@@ -115,10 +115,12 @@ devient un **fichier de travail permanent** : les générateurs ne sont plus
 rejoués dessus.
 
 ERC sur la hiérarchie complète des 6 feuilles (`alim`, `flyback`,
-`isolation`, `limitation-courant`, `polarisation` + racine) : 1 erreur
-(`U13` broche 2, entrée non pilotée — à vérifier), le reste en
-avertissements `endpoint_off_grid`, de la même famille que le reste de
-l'atelier. Empreintes custom
+`isolation`, `limitation-courant`, `polarisation` + racine) : 0 erreur
+(label `nQ_TRIP` sur `isolation.kicad_sch` corrigé en `~{Q_TRIP}`, deux
+conventions de nom différentes pour le même signal faisaient deux nets
+séparés — `U13` broche B était orpheline). Le reste en avertissements
+`endpoint_off_grid`, de la même famille que le reste de l'atelier.
+Empreintes custom
 (`lib_fp/*.pretty/`) pour l'inductance couplée MSD1514, le MOSFET TO-252 et le
 condensateur KEMET A786MW (V-chip), toutes construites à partir des cotes
 mécaniques des datasheets plutôt que d'une empreinte générique approximative.

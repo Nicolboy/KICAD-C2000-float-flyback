@@ -7199,7 +7199,7 @@
 			)
 		)
 	)
-	(global_label "nQ_TRIP"
+	(global_label "~{Q_TRIP}"
 		(shape bidirectional)
 		(at 200.914 114.046 180)
 		(fields_autoplaced yes)
