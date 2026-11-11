@@ -8,10 +8,16 @@ Modeles utilises (tous sources, voir composants-datasheets/data/carte-flyback/) 
   - D1 (clamp primaire) : modele zener/TVS construit sur 2 points sources
     de la datasheet SMCJ43A (Vbr=47,8V@1mA, Vc=69,4V@21,7A) --
     composants-datasheets/data/carte-flyback/smcj43a.yaml.
-  - Transformateur MSD1514-103ME : L=10uH, DCR=15mOhm typ, k=0,99
-    (datasheets/inductors/msd1514.pdf). Capacite inter-enroulements :
-    AUCUNE valeur publiee -> .param ESTIME, a ne jamais traiter comme
-    une valeur sourcee.
+  - Transformateur MSD1514-103ME : L=10uH, DCR=15mOhm typ
+    (datasheets/inductors/msd1514.pdf). K1 derive de la fuite typ
+    publiee (0,40uH @ L=10uH/enroulement, meme tableau) via
+    k = sqrt(1 - L_fuite/L) = 0,9798 -- PAS la colonne "coupling
+    coefficient" du tableau (0,99 arrondi), qui impliquerait 0,20uH de
+    fuite et contredirait la fuite directement publiee pour cette piece
+    (deja utilisee telle quelle dans 00-intention-conception.md §5/§6
+    pour l'energie de clamp -- ces deux usages doivent rester coherents).
+    Capacite inter-enroulements : AUCUNE valeur publiee -> .param ESTIME,
+    a ne jamais traiter comme une valeur sourcee.
   - Cin/Cout : ESR reels (A786MW 10mOhm, 2x16SVPG330M 6,5mOhm chacun).
   - Parasites de routage (mailles primaire/secondaire) : .param ESTIME,
     aucune mesure reelle disponible avant le routage du PCB.
@@ -234,7 +240,9 @@ def build(point_name, vin, vout_target, pout, d, dead, period, out_path,
         rload = (vout_target ** 2) / pout
     two_pin(s, "res", 1280, 700, "Rload", f"{rload:.4f}", "vout", "0")
 
-    s.directive(40, 640, "K1 L1 L2 0.99")
+    # k = sqrt(1 - L_fuite/L) = sqrt(1 - 0.40/10), L_fuite=0,40uH typ
+    # publiee pour le MSD1514-103ME -- voir docstring en tete de fichier.
+    s.directive(40, 640, "K1 L1 L2 0.9798")
 
     tstop = settle_periods * period
     tstart = (settle_periods - measure_periods) * period

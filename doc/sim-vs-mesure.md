@@ -21,13 +21,28 @@ redressement synchrone UCC24612).
 | Paramètre       | Valeur                                                          |
 | ---------------- | ---------------------------------------------------------------- |
 | f_sw             | 200 kHz                                                          |
-| Couplage         | Coilcraft MSD1514-103ME, 1:1, 10µH, k=0,99 (datasheet)          |
+| Couplage         | Coilcraft MSD1514-103ME, 1:1, 10µH, k=0,9798 (fuite 0,40µH typ., datasheet — corrigé 2026-11-11, voir note sous ce tableau) |
 | MOSFET Q1/Q2     | IPD050N10N5 réel (Infineon, sous-circuit SPICE officiel OptiMOS5, `simulation/models/IPD050N10N5.lib`) |
 | Redresseur       | Diode de corps de Q2 (gate à 0V) — pas de Schottky discret dans le vrai chemin de puissance |
 | Clamp primaire   | D1 = SMCJ43A réel (Vbr=47,8V@1mA, Vc=69,4V@21,7A, `smcj43a.yaml`) |
 | Clamp secondaire | **aucun modélisé** — voir §2, c'est la limite la plus importante de cette passe |
 | Puissance visée  | 10W (6V et 12V), + un point à charge légère (~1W, mêmes duty cycle/Rload trouvés par itération) |
 | Charge           | Rload = Vout_cible² / Pout_cible                                 |
+
+> **Note (2026-11-11)** : jusqu'ici, `K1 L1 L2` dans `simulation/gen_asc.py`
+> prenait la colonne « coupling coefficient » arrondie du tableau
+> `msd1514.pdf` (0,99), ce qui implique L_fuite = L×(1-k²) ≈ 0,20µH — la
+> **moitié** de la fuite typique *directement publiée* pour ce modèle
+> (0,40µH, même tableau), déjà celle utilisée telle quelle dans
+> `00-intention-conception.md` §5/§6 pour l'énergie de clamp D1. Corrigé :
+> k = sqrt(1-0,40/10) = 0,9798, dérivé de la fuite publiée plutôt que de la
+> colonne arrondie (qui ne lui correspond pas exactement, les deux colonnes
+> du tableau Coilcraft étant chacune une mesure « typ » arrondie
+> indépendamment, pas une relation algébrique exacte entre elles).
+> **Seules les sections §7/§7bis (18,9W) ont été rejouées avec la valeur
+> corrigée** — §2/§2bis/§6 (10W) ci-dessous restent telles que simulées
+> sous l'ancien k=0,99, non revalidées, à ne pas comparer directement à
+> une future repasse 10W sans les rejouer aussi.
 
 ## 2. Résultats (étapes 1-4)
 
@@ -224,7 +239,7 @@ fois ») : D trouvé par `find_duty.py` (modèle Schottky rapide déjà
 validé) aux mêmes 6 coins Vin×Vout que l'enveloppe 10W mais à
 Rload=Vout²/18,9 (2,1Ω au coin 6,3V, 8,4Ω au coin 12,6V) ; D réutilisé tel
 quel pour la passe `sync_ideal` (pas re-résolu pour le modèle réel — la
-puissance réellement délivrée dérive donc de 18,8 à 22,3W selon le point,
+puissance réellement délivrée dérive donc de 19,7 à 21,6W selon le point,
 voir tableaux). `simulation/run_envelope_18w9.py`,
 `simulation/results/envelope_18w9_schottky.csv`,
 `simulation/results/envelope_18w9_sync.csv`.
@@ -234,14 +249,14 @@ la puissance change) :**
 
 | Point | Vin | D | Vout | Pout | η | Ipk pri | Irms pri | Vds Q1 max | Vds Q2 max |
 |---|---|---|---|---|---|---|---|---|---|
-| 11V→6,3V  | 11V | 0,4006 | 6,38V | 19,38W | 85,6% | 6,19A | 3,29A | 54,9V | 20,0V |
-| 11V→12,6V | 11V | 0,5502 | 12,60V | 18,89W | 90,7% | 4,90A | 2,64A | 53,5V | 25,5V |
-| 20V→6,3V  | 20V | 0,2602 | 6,29V | 18,82W | 86,1% | 5,40A | 2,17A | 54,2V | 30,0V |
-| 20V→12,6V | 20V | 0,4006 | 12,76V | 19,39W | 89,8% | 4,61A | 1,85A | 53,4V | 47,2V |
-| 25V→6,3V  | 25V | 0,2194 | 6,33V | 19,09W | 85,3% | 5,30A | 1,92A | 54,3V | 35,3V |
-| 25V→12,6V | 25V | 0,3462 | 12,70V | 19,20W | 87,9% | 4,57A | 1,64A | 53,5V | 44,2V |
+| 11V→6,3V  | 11V | 0,4006 | 6,07V | 17,57W | 81,2% | 5,96A | 3,14A | 55,0V | 18,9V |
+| 11V→12,6V | 11V | 0,5502 | 12,33V | 18,11W | 86,5% | 4,89A | 2,64A | 53,8V | 26,1V |
+| 20V→6,3V  | 20V | 0,2602 | 6,07V | 17,52W | 81,2% | 5,28A | 2,12A | 54,4V | 28,6V |
+| 20V→12,6V | 20V | 0,4006 | 12,56V | 18,79W | 84,8% | 4,63A | 1,88A | 53,6V | 35,1V |
+| 25V→6,3V  | 25V | 0,2194 | 6,15V | 17,99W | 79,7% | 5,23A | 1,91A | 54,4V | 34,4V |
+| 25V→12,6V | 25V | 0,3462 | 12,55V | 18,74W | 81,5% | 4,61A | 1,69A | 53,7V | 43,0V |
 
-Vds_Q2 reste modéré partout (≤47V) — **comme au §2bis**, le modèle Schottky
+Vds_Q2 reste modéré partout (≤44V) — **comme au §2bis**, le modèle Schottky
 idéal ne reproduit pas la résonance non-linéaire du MOSFET réel, ces
 chiffres ne disent rien sur le risque de dépassement 100V.
 
@@ -250,61 +265,66 @@ UCC24612) :**
 
 | Point | Vin | D | Vout | Pout | η | Ipk pri | Irms pri | Vds Q1 max | Vds Q2 max | Perte redresseur |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 11V→6,3V  | 11V | 0,4006 | 6,80V | 22,04W | 91,2% | 7,07A | 3,54A | 54,9V | **63,2V** | 0,32W |
-| 11V→12,6V | 11V | 0,5502 | 13,09V | 20,41W | 94,2% | 5,30A | 2,81A | 52,3V | 86,3V | 0,20W |
-| 20V→6,3V  | 20V | 0,2602 | 6,73V | 21,56W | 91,8% | 6,74A | 2,42A | 54,4V | **100,6V** ⚠ | 0,31W |
-| 20V→12,6V | 20V | 0,4006 | 13,31V | 21,08W | 94,8% | 5,13A | 2,02A | 51,7V | **106,7V** ⚠ | 0,23W |
-| 25V→6,3V  | 25V | 0,2194 | 6,85V | 22,32W | 92,8% | 7,01A | 2,17A | 52,2V | **106,7V** ⚠ | 0,44W |
-| 25V→12,6V | 25V | 0,3462 | 13,22V | 20,80W | 93,5% | 5,04A | 1,78A | 52,4V | **106,8V** ⚠ | 0,29W |
+| 11V→6,3V  | 11V | 0,4006 | 6,44V | 19,72W | 85,9% | 6,73A | 3,35A | 55,5V | 57,4V | 0,27W |
+| 11V→12,6V | 11V | 0,5502 | 12,86V | 19,70W | 91,4% | 5,40A | 2,77A | 52,8V | 81,5V | 0,16W |
+| 20V→6,3V  | 20V | 0,2602 | 6,64V | 20,98W | 90,7% | 6,56A | 2,34A | 52,8V | 92,7V | 0,25W |
+| 20V→12,6V | 20V | 0,4006 | 13,07V | 20,33W | 89,4% | 5,31A | 2,01A | 53,1V | **107,2V** ⚠ | 0,20W |
+| 25V→6,3V  | 25V | 0,2194 | 6,74V | 21,61W | 90,4% | 6,71A | 2,12A | 52,4V | **107,2V** ⚠ | 0,34W |
+| 25V→12,6V | 25V | 0,3462 | 13,22V | 20,82W | 92,1% | 5,35A | 1,77A | 51,9V | **107,2V** ⚠ | 0,28W |
 
-(Point 11V→6,3V : première tentative non convergente — `results/
-point18w9_sync_ideal_11V_6V3.log` coupe net après les warnings de
-largeur de MOSFET, aucun résultat — même symptôme intermittent que §6.
-Relancé à l'identique, convergé sans autre changement.)
+(Deux points non convergents à la première tentative — `schottky 25V→6,3V`
+et `sync_ideal 20V→6,3V`, même symptôme intermittent déjà documenté au §6
+et déjà vu avant le fix K1. Relancés à l'identique, convergés sans autre
+changement — pas un effet de la correction de fuite.)
 
 ### Verdict
 
 **Courant/saturation — pas un facteur limitant, confirme le calcul à la
-main (§3/§4 du document d'intention).** Pire cas réel observé (11V→6,3V,
-retenté) : Ipk=7,07A vs Isat 10%-drop=13,4A (marge ×1,9, et toujours sous
-le 20%-drop=15,0A) ; Irms=3,54A vs 7,6A one-winding (marge ×2,15) —
-`msd1514.pdf` p.2. Même avec la puissance réellement délivrée dérivant
-jusqu'à 22,3W (au-dessus du haut de la fourchette demandée), aucune marge
-courant n'est entamée.
+main (§3/§4 du document d'intention).** Pire cas réel observé (11V→6,3V) :
+Ipk=6,73A vs Isat 10%-drop=13,4A (marge ×2,0, et toujours sous le
+20%-drop=15,0A) ; Irms=3,35A vs 7,6A one-winding (marge ×2,27) —
+`msd1514.pdf` p.2. Même avec la puissance réellement délivrée dérivant de
+19,7 à 21,6W selon le point, aucune marge courant n'est entamée.
 
 **Rendement — l'UCC24612 apporte un gain réel et substantiel à cette
 puissance.** Comparaison aux mêmes D/Vin/Vout (ex. 20V→12,6V) :
-89,8%→94,8% (+5,0 points), perte redresseur secondaire 0,70W→0,23W.
-Confirme la motivation initiale (la diode de corps seule, à 18-20W,
-dissiperait trop pour rester un choix raisonnable).
+84,8%→89,4% (+4,6 points), perte redresseur secondaire 0,69W→0,20W.
+Le gain mesuré varie de +4,6 à +10,7 points selon le point (plus fort aux
+coins 25V, où le body-diode seul perd le plus) — confirme la motivation
+initiale (la diode de corps seule, à 18-20W, dissiperait trop pour rester
+un choix raisonnable).
 
 **⚠ Vds_Q2 — le redressement synchrone NE règle PAS le dépassement
-100V, et la situation est PIRE qu'à 10W.** Avec le modèle réel + grille
-synchrone, Vds_Q2 dépasse déjà 100V (tenue IPD050N10N5, `ipd050n10n5.yaml`
-vds_max) **dès Vin=20V** (100,6V) — pas seulement Vin≥23V comme à 10W
-(§2) — et plafonne vers 106,7-106,8V sur tout le haut de la plage Vin
-(20-25V), quel que soit le coin Vout. Seul Vin=11V reste largement sous
-la limite (63,2V). Cohérent avec l'hypothèse posée en entrant dans cette
-passe : c'est un phénomène de résonance d'inductance de fuite
-(proportionnel à Ipk², donc à la puissance), **indépendant du mode de
-redressement** — l'UCC24612 améliore le rendement mais ne change rien au
-risque de claquage de Q2.
+100V.** Avec le modèle réel + grille synchrone, Vds_Q2 dépasse 100V
+(tenue IPD050N10N5, `ipd050n10n5.yaml` vds_max) **dès Vin=20V, mais
+seulement au coin 12,6V** (107,2V) — le coin 6,3V à la même tension reste
+juste sous la limite (92,7V). **À Vin=25V, les deux coins dépassent**
+(107,2V chacun). Plafond observé une fois la résonance établie : ~107,2V,
+quasi identique au coin 20V/12,6V et aux deux coins 25V — suggère une
+butée (saturation de la résonance plutôt qu'une croissance continue avec
+la puissance) plus qu'une simple proportionnalité à Ipk². Seul Vin=11V
+reste largement sous la limite (57,4-81,5V). Conclusion inchangée malgré
+le changement de détail par coin : c'est un phénomène de résonance
+d'inductance de fuite, **indépendant du mode de redressement** —
+l'UCC24612 améliore le rendement mais ne change rien au risque de
+claquage de Q2.
 
-**D1 (clamp primaire) — toujours large marge.** Pire cas observé (passe
-sync_ideal, 11V→6,3V) : 0,91W vs 5W (`smcj43a.yaml` P_av) — pas un point
-dur, même conclusion qu'au §2bis.
+**D1 (clamp primaire) — marge toujours confortable, mais nettement plus
+réduite qu'estimé avant correction.** Pire cas observé (passe sync_ideal,
+11V→6,3V) : 2,15W vs 5W (`smcj43a.yaml` P_av) — marge ×2,3, contre ×5,5
+avec l'ancienne fuite sous-estimée (0,91W). Toujours pas un point dur,
+mais la marge réelle est environ moitié moindre que ce que laissait penser
+la simulation précédente — à garder à l'œil si d'autres paramètres
+(Lmesh_pri réel, par exemple) réduisent encore cette marge plus tard.
 
 **Conclusion : 18-20W n'est pas tenable en l'état (sans clamp secondaire),
-même avec l'UCC24612.** Le point ouvert déjà identifié en
-`00-intention-conception.md` §10 (« Snubber/clamp éventuel côté
-secondaire ... pas encore traité ») passe de souhaitable à
-**bloquant** pour viser cette puissance — l'UCC24612 reste pertinent pour
-le rendement mais ne peut pas se substituer à un clamp sur Q2. Avant toute
-décision matérielle : dimensionner ce clamp (TVS ou RCD, à partir de
-l'énergie de fuite au nouveau Ipk, cf. méthode déjà utilisée pour D1 en
-`00-intention-conception.md` §6) et le valider par une nouvelle passe
-SPICE avec ce clamp réellement modélisé, avant de modifier le schéma
-KiCad.
+même avec l'UCC24612** — inchangé par la correction : 3 des 6 coins
+(20V/12,6V, 25V/6,3V, 25V/12,6V) dépassent toujours 100V. Le point ouvert
+déjà identifié en `00-intention-conception.md` §10 (« Snubber/clamp
+éventuel côté secondaire ... pas encore traité ») reste **bloquant** pour
+viser cette puissance — l'UCC24612 reste pertinent pour le rendement mais
+ne peut pas se substituer à un clamp sur Q2. Voir §7bis pour le
+dimensionnement de ce clamp, lui aussi rejoué avec la fuite corrigée.
 
 **Réserves à garder en tête** (mêmes limites que §3, §6 ci-dessus,
 inchangées par cette passe) : `Lmesh_sec`/`Cinter_ESTIME` toujours
@@ -313,7 +333,7 @@ quasi nuls (non sourcés) — la résonance réelle sur PCB est probablement
 pessimistes par excès de prudence. Proxy `sync_ideal` ≠ UCC24612 réel (pas
 de modèle du comparateur/des seuils réels de détection Vds, pas de
 dynamique VDD/REG). D non re-résolu pour la passe réelle (Pout dérive de
-18,8 à 22,3W selon le point, cf. tableau) — lecture qualitative valable,
+19,7 à 21,6W selon le point, cf. tableau) — lecture qualitative valable,
 pas un point de fonctionnement pinné exactement à 18,9W.
 
 ## 7bis. Clamp secondaire — SMCJ43A (même réf. que D1) vs SMCJ54A, dissipation chiffrée
@@ -336,48 +356,53 @@ cathode=drain Q2), modèle réel + synchrone idéal (proxy UCC24612), mêmes
 
 | Point | Vin | SMCJ43A : Vds_Q2 clampé | SMCJ43A : P(D2sec) | SMCJ54A : Vds_Q2 clampé | SMCJ54A : P(D2sec) |
 |---|---|---|---|---|---|
-| 11V→6,3V  | 11V | 50,0V | 0,12W | 61,0V | 0,03W |
-| 11V→12,6V | 11V | 51,3V | 0,33W | 63,0V | 0,21W |
-| 20V→6,3V  | 20V | 52,0V | 0,49W | 63,7V | 0,34W |
-| 20V→12,6V | 20V | 52,5V | 0,81W | 64,4V | 0,53W |
-| 25V→6,3V  | 25V | 52,8V | 0,86W | 64,7V | 0,59W |
-| 25V→12,6V | 25V | 52,9V | **1,29W** | 64,9V | **0,76W** |
+| 11V→6,3V  | 11V | 49,1V | 0,07W | 58,4V | 0,00W |
+| 11V→12,6V | 11V | 50,2V | 0,28W | 62,0V | 0,17W |
+| 20V→6,3V  | 20V | 50,6V | 0,41W | 62,5V | 0,27W |
+| 20V→12,6V | 20V | 51,2V | 0,80W | 63,2V | 0,52W |
+| 25V→6,3V  | 25V | 51,2V | 0,74W | 63,2V | 0,49W |
+| 25V→12,6V | 25V | 51,5V | **1,30W** | 63,5V | **0,76W** |
 
-**Réponse à la question posée (dissipation du SMCJ43A proposé)** : 0,12W
-à 1,29W selon le point, pire cas 25V→12,6V. Marge vs le P_av=5W de la
-série SMCJ (`smcj43a.yaml` / `bourns-smcj-series.pdf` p.1) : **×3,9 au
+**Réponse à la question posée (dissipation du SMCJ43A proposé)** : 0,07W
+à 1,30W selon le point, pire cas 25V→12,6V. Marge vs le P_av=5W de la
+série SMCJ (`smcj43a.yaml` / `bourns-smcj-series.pdf` p.1) : **×3,8 au
 pire cas** — pas un point dur. Et il fait le travail : Vds_Q2 clampé à
-~50-53V partout, marge ×1,9 vs les 100V du MOSFET. Contrairement à
-l'inquiétude initiale (un seuil aussi bas que 47,8V pourrait conduire en
-continu pendant le fonctionnement normal, pas seulement pendant le pic de
-résonance), la dissipation réelle reste modeste — le clamp écrête bien le
-sommet de la résonance mais ne conduit pas assez longtemps par cycle pour
-peser lourd en moyenne.
+~49-51,5V partout, marge ×1,9 vs les 100V du MOSFET. Ces chiffres sont
+quasi inchangés par la correction de fuite (§7 — anciennement 50-53V/
+0,12-1,29W avec l'ancien k=0,99) : contrairement à la tension à vide
+(§7, qui bouge de façon non triviale avec la fuite), **une fois le clamp
+actif il fixe la tension près de son propre seuil quel que soit le
+surplus d'énergie à absorber** — l'énergie en plus se traduit en
+dissipation/durée de conduction, pas en tension plus haute. Contrairement
+à l'inquiétude initiale (un seuil aussi bas que 47,8V pourrait conduire
+en continu pendant le fonctionnement normal, pas seulement pendant le pic
+de résonance), la dissipation réelle reste modeste.
 
-**Où part l'énergie non dissipée dans le SMCJ54A ? Pas dans un autre
-poste de pertes — elle n'est simplement plus tirée de Vin.** Décomposition
+**Où part l'énergie non dissipée dans le SMCJ54A ?** Décomposition
 complète (mêmes 6 points, log LTspice relus en entier, pas juste
 Ploss_D2sec) au pire coin (25V→12,6V) :
 
 | | SMCJ43A | SMCJ54A | Δ |
 |---|---|---|---|
-| Pin_avg | 23,133W | 22,615W | **-0,518W** |
-| Pout_avg | 20,848W | 20,838W | -0,010W (quasi identique) |
-| Ploss_Q1 | 0,712W | 0,718W | +0,006W (identique) |
-| Ploss_DCR1/DCR2/Rshunt/Cout (somme) | 0,152W | 0,150W | -0,002W (identique) |
-| Ploss_D2sec | 1,293W | 0,756W | -0,537W |
+| Pin_avg | 24,001W | 23,239W | **-0,763W** |
+| Pout_avg | 20,483W | 20,654W | +0,171W |
+| Ploss_Q1 | 1,954W | 1,543W | **-0,411W** |
+| Ploss_D1 (clamp primaire) | 1,761W | 1,351W | **-0,409W** |
+| Ploss_DCR1/DCR2/Rshunt/Cout (somme) | 0,150W | 0,148W | -0,002W (quasi identique) |
+| Ploss_D2sec | 1,303W | 0,757W | -0,546W |
 
-Même constat (Pin baisse de ~0,5V, tous les autres postes inchangés,
-seul le clamp lui-même varie) sur les 6 points — le tableau complet est
-dans `results/point18w9_clamp_*.log`. Q1, les DCR, Rshunt, Cout ne
-bougent quasiment pas entre les deux candidats : l'énergie "en moins"
-dans le SMCJ54A **n'est pas redistribuée ailleurs dans le circuit**,
-elle n'est simplement plus allée chercher côté primaire. Le couplage
-K1 L1 L2 relie les deux résonances (primaire et secondaire) : écrêter
-plus bas/plus tôt côté secondaire (SMCJ43A) modifie la dynamique vue par
-le primaire et fait tirer davantage sur Vin pour un Pout quasi identique
-— un vrai surcoût de rendement, pas juste un déplacement de chaleur d'un
-composant à l'autre.
+**Changement de narration par rapport à l'ancienne passe (k=0,99) : avec
+la fuite corrigée, Q1 et D1 (côté primaire) bougent aussi de façon
+notable entre les deux candidats** (-0,41W chacun) — l'ancienne version
+de ce tableau concluait à tort que « Q1, les DCR, Rshunt, Cout ne
+bougent quasiment pas » ; seuls les DCR/Rshunt/Cout (petits postes)
+restent effectivement stables. Le mécanisme qualitatif reste le même
+(le couplage K1 L1 L2 relie les deux résonances, écrêter plus bas/plus
+tôt côté secondaire change la dynamique vue par le primaire) mais
+affecte maintenant un poste primaire supplémentaire (D1), pas seulement
+Pin global — cohérent avec une fuite doublée qui couple plus fortement
+les deux côtés. Le tableau complet par point est dans
+`results/point18w9_clamp_*.log`.
 
 **Conséquence directe sur le rendement système**, même alignement D que
 §7 (donc comparaison directe, un seul paramètre changé = le seuil du
@@ -385,21 +410,26 @@ clamp) :
 
 | Point | η SMCJ43A | η SMCJ54A | Δ |
 |---|---|---|---|
-| 11V→6,3V  | 91,31% | 91,15% | -0,16 pt |
-| 11V→12,6V | 93,42% | 93,73% | +0,31 pt |
-| 20V→6,3V  | 91,85% | 92,55% | +0,70 pt |
-| 20V→12,6V | 92,44% | 93,65% | +1,21 pt |
-| 25V→6,3V  | 90,47% | 90,83% | +0,36 pt |
-| 25V→12,6V | 90,12% | 92,15% | **+2,03 pt** |
+| 11V→6,3V  | 86,11% | 85,93% | -0,18 pt |
+| 11V→12,6V | 89,62% | 89,80% | +0,18 pt |
+| 20V→6,3V  | 87,11% | 87,09% | -0,02 pt |
+| 20V→12,6V | 88,20% | 89,26% | +1,06 pt |
+| 25V→6,3V  | 86,46% | 85,95% | -0,51 pt |
+| 25V→12,6V | 85,34% | 88,88% | **+3,54 pt** |
 
-**Recommandation révisée : SMCJ54A**, pas SMCJ43A. L'argument
-« même référence que D1 » ne pèse pas lourd face à un gain de rendement
-système réel et reproductible sur 5 des 6 points (jusqu'à +2 points au
-pire coin) — et la marge de tension reste confortable (×1,5 vs 100V,
-contre ×1,9 pour le SMCJ43A, les deux largement suffisants). La
-dissipation du composant lui-même n'était de toute façon un point dur
-pour aucun des deux candidats (×3,9 et ×7 de marge vs 5W respectivement)
-— ce n'est donc pas le critère qui doit trancher ; le rendement, oui.
+**Recommandation révisée, inchangée malgré le fix : SMCJ54A**, pas
+SMCJ43A — mais le tableau n'est plus uniformément favorable comme avant
+(5 points sur 6 ; désormais **4 sur 6**, les deux négatifs restant petits
+:  -0,02 et -0,51 pt au coin 6,3V). Le pire coin (25V→12,6V), celui qui
+compte le plus pour le dimensionnement, montre un gain **encore plus
+marqué qu'avant** (+3,54 pt contre +2,03 pt avec l'ancienne fuite) — ce
+coin seul suffit à trancher. La marge de tension reste confortable
+(×1,6 vs 100V, contre ×1,9 pour le SMCJ43A, les deux largement
+suffisants ; marges quasi inchangées par la correction, contre ×1,5/×1,9
+avant). La dissipation du composant lui-même n'était de toute façon un
+point dur pour aucun des deux candidats (×6,6 et ×3,8 de marge vs 5W
+respectivement) — ce n'est donc pas le critère qui doit trancher ; le
+rendement, oui.
 
 **Toujours ouvert avant de construire** : ce modèle clamp est construit
 sur 2 points datasheet comme D1, pas encore vérifié avec les parasites

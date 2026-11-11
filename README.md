@@ -1,17 +1,9 @@
 # KICAD-C2000-float-flyback
 
-- **18.9W** — real-world target power, simulated efficiency up to 94.8%
-- **+5 points** efficiency from synchronous rectification (UCC24612) vs. body-diode
-- **106.8V → 61–65V** — secondary overvoltage, resolved by a TVS clamp sized through simulation (×1.5 margin vs. the 100V MOSFET rating)
+- **18.9W** — real-world target power, simulated efficiency up to 92.1%
+- **+4.6 to +10.7 points** efficiency from synchronous rectification (UCC24612) vs. body-diode, depending on operating point
+- **107.2V → 58.4–63.5V** — secondary overvoltage, resolved by a TVS clamp sized through simulation (×1.6 margin vs. the 100V MOSFET rating)
 - PCB **routed 100% on 4 layers**, DRC clean
-
-⚠ **Pending re-simulation**: the 94.8%/106.8V figures above come from a
-SPICE model using `K1 L1 L2 0.99` coupling (`simulation/gen_asc.py`), i.e.
-≈0.20µH leakage — while the hand clamp-energy calculation in
-[`00-intention-conception.md`](00-intention-conception.md) uses the
-datasheet's 0.40µH leakage for the same transformer. The two disagree by
-×2; the overvoltage and clamp dissipation need rerunning with the
-corrected value before being treated as validated.
 
 Flyback power supply for vacuum-tube filament heating and a low-noise
 preamp stage, designed in KiCad 10, with the control side (C2000)
@@ -79,7 +71,7 @@ Le détail (formules, marges, historique des choix) est dans
 | Primaire | Cin, MOSFET N (TO-252), clamp TVS D1 (boîtier SMC), UCC27517 + ISO7710 (PWM) |
 | Isolation | ISO7710 (PWM primaire) + DPC817 (EN) — plus de canal PWM dédié au secondaire |
 | Secondaire (non isolé du primaire depuis 2026-10-25) | MOSFET N potentiel bas (rectification synchrone), UCC24612 (détection Vds, alimenté direct depuis Vout) + clamp TVS D4, banc Cout, pont bias 2×100kΩ |
-| Couplage | Coilcraft MSD1514, 1:1 (k≈0,99), 10µH par enroulement |
+| Couplage | Coilcraft MSD1514, 1:1 (k≈0,98, fuite 0,40µH typ.), 10µH par enroulement |
 | Limitation de courant (§19) | TSV791 (×10,09) + LMV7219 (comparateur) + 74LVC1G132/74LVC1G74 (blanking/verrou) + ISO7710F, 100% primaire sauf le retour isolé `I_Shunt_ht_comp` — coupe Q1 en ~100ns sur défaut, indépendant du C2000 |
 
 Ce tableau n'a pas suivi toutes les évolutions depuis §13 (U8/U9, feuille
@@ -164,19 +156,20 @@ composant réel) pour chiffrer la perte dans le clamp D1 :
 </p>
 
 Rejoué à la cible réelle (**18,9W**) avec un proxy de redressement
-synchrone : le dépassement empire (dès Vin=20V, jusqu'à 106,8V) —
-indépendant du redresseur, c'est une résonance de l'inductance de fuite.
-Le passage en synchrone (UCC24612) apporte jusqu'à +5 points de
-rendement, mais ne corrige pas la surtension :
+synchrone : le dépassement empire (dès Vin=20V au coin 12,6V ; les deux
+coins dépassent à partir de 25V, jusqu'à 107,2V) — indépendant du
+redresseur, c'est une résonance de l'inductance de fuite. Le passage en
+synchrone (UCC24612) apporte +4,6 à +10,7 points de rendement selon le
+point, mais ne corrige pas la surtension :
 
 <p align="center">
   <img src="simulation/plots/envelope_eta_vds_18w9.png" alt="Rendement et Vds Q2 vs Vin, 18,9W, Schottky vs reel+synchrone" width="100%">
 </p>
 
-D'où le clamp secondaire **D4 (SMCJ54A)**, qui ramène Vds_Q2 à 61-65V
-(marge ×1,5) pour 0,03-0,76W de dissipation (marge ×6,6 vs les 5W du
+D'où le clamp secondaire **D4 (SMCJ54A)**, qui ramène Vds_Q2 à 58,4-63,5V
+(marge ×1,6) pour 0-0,76W de dissipation (marge ×6,6 vs les 5W du
 composant) — comparé au SMCJ43A (même réf. que D1, déjà au BOM) qui tient
-aussi mais coûte jusqu'à 2 points de rendement de plus :
+aussi mais coûte jusqu'à 3,5 points de rendement de plus au pire coin :
 
 <p align="center">
   <img src="simulation/plots/clamp_comparison_18w9.png" alt="Comparaison clamp secondaire SMCJ43A vs SMCJ54A, dissipation et tenue en tension" width="100%">
