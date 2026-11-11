@@ -5,6 +5,14 @@
 - **106.8V → 61–65V** — secondary overvoltage, resolved by a TVS clamp sized through simulation (×1.5 margin vs. the 100V MOSFET rating)
 - PCB **routed 100% on 4 layers**, DRC clean
 
+⚠ **Pending re-simulation**: the 94.8%/106.8V figures above come from a
+SPICE model using `K1 L1 L2 0.99` coupling (`simulation/gen_asc.py`), i.e.
+≈0.20µH leakage — while the hand clamp-energy calculation in
+[`00-intention-conception.md`](00-intention-conception.md) uses the
+datasheet's 0.40µH leakage for the same transformer. The two disagree by
+×2; the overvoltage and clamp dissipation need rerunning with the
+corrected value before being treated as validated.
+
 Flyback power supply for vacuum-tube filament heating and a low-noise
 preamp stage, designed in KiCad 10, with the control side (C2000)
 galvanically isolated from the power stage. **Update 2026-10-25**: the
@@ -51,8 +59,8 @@ nécessaire) ; côté primaire, l'isolation PWM/EN (ISO7710 + UCC27517 + DPC817)
 reste inchangée.
 
 Chaque composant de puissance (MOSFETs, clamp, condensateurs d'entrée et de
-sortie) est sourcé avec sa propre fiche datasheet dans
-[`composants-datasheets/data/carte-flyback/`](../composants-datasheets/data/carte-flyback)
+sortie) est sourcé avec sa propre fiche datasheet dans `composants-datasheets/data/carte-flyback/`
+(dépôt interne, non public — pas de lien)
 — page citée, base (absolue / recommandée / typique / calculée), jamais de
 valeur choisie à l'oeil. Ce sourcing a d'ailleurs fait revenir deux fois sur
 le choix de Cin et Cout : le premier calcul prenait le coin 13V/3A (39W)
@@ -106,7 +114,11 @@ des composants, rotation, déplacement des étiquettes Référence/Valeur), elle
 devient un **fichier de travail permanent** : les générateurs ne sont plus
 rejoués dessus.
 
-ERC sur la hiérarchie complète des 3 feuilles : 0 erreur. Empreintes custom
+ERC sur la hiérarchie complète des 6 feuilles (`alim`, `flyback`,
+`isolation`, `limitation-courant`, `polarisation` + racine) : 1 erreur
+(`U13` broche 2, entrée non pilotée — à vérifier), le reste en
+avertissements `endpoint_off_grid`, de la même famille que le reste de
+l'atelier. Empreintes custom
 (`lib_fp/*.pretty/`) pour l'inductance couplée MSD1514, le MOSFET TO-252 et le
 condensateur KEMET A786MW (V-chip), toutes construites à partir des cotes
 mécaniques des datasheets plutôt que d'une empreinte générique approximative.

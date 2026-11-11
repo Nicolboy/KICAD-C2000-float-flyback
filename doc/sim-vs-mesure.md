@@ -8,6 +8,11 @@ redressement synchrone UCC24612).
 > (IPD050N10N5 Infineon, clamp D1 SMCJ43A). **Prototype non mesuré.** Les
 > colonnes « Mesure » restent vides tant qu'elles n'ont pas été remplies
 > au banc — jamais complétées par des valeurs simulées.
+>
+> Les fichiers `simulation/results/*.csv` cités plus bas ne sont **pas
+> versionnés** (`.gitignore`, trop volumineux) — seuls les graphes PNG le
+> sont. Régénérables localement via les scripts `simulation/run_*.py`
+> correspondants.
 
 ---
 
