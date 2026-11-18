@@ -1,7 +1,7 @@
 # KICAD-C2000-float-flyback
 
 - **18.9W** — real-world target power, simulated efficiency up to 92.1%
-- **+4.6 to +10.7 points** efficiency from synchronous rectification (UCC24612) vs. body-diode, depending on operating point
+- **+4.6 to +10.7 points** (simulated) efficiency from synchronous rectification (UCC24612) vs. body-diode, depending on operating point
 - **107.2V → 58.4–63.5V** — secondary overvoltage, resolved by a TVS clamp sized through simulation (×1.6 margin vs. the 100V MOSFET rating)
 - PCB **routed 100% on 4 layers**, DRC clean
 
