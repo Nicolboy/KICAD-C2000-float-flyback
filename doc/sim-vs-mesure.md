@@ -218,7 +218,8 @@ même puissance dans les deux cas) — pas les 10W de validation initiale
 ci-dessus. §3/§4 du même document avaient déjà fait, à la main (formule
 idéale D/(1-D)=Vout/Vin, sans SPICE), le calcul de marge courant à ce
 point précis : Irms primaire 3,37A / secondaire 4,45A vs limite datasheet
-MSD1514-103ME 7,6A (« one winding »), marges ×2,26/×1,71. Cette passe
+MSD1514-103ME 6,8A (« one winding » — corrigé 2026-11-12, voir note §7
+verdict), marges ×2,02/×1,53. Cette passe
 vérifie ce calcul par SPICE et répond à la question motivant l'UCC24612 :
 **le redressement synchrone règle-t-il, en plus du rendement, le
 dépassement Vds_Q2>100V déjà trouvé à 10W (§2) ?**
@@ -282,9 +283,12 @@ changement — pas un effet de la correction de fuite.)
 **Courant/saturation — pas un facteur limitant, confirme le calcul à la
 main (§3/§4 du document d'intention).** Pire cas réel observé (11V→6,3V) :
 Ipk=6,73A vs Isat 10%-drop=13,4A (marge ×2,0, et toujours sous le
-20%-drop=15,0A) ; Irms=3,35A vs 7,6A one-winding (marge ×2,27) —
-`msd1514.pdf` p.2. Même avec la puissance réellement délivrée dérivant de
-19,7 à 21,6W selon le point, aucune marge courant n'est entamée.
+20%-drop=15,0A) ; Irms=3,35A vs 6,8A one-winding (marge ×2,03) —
+`msd1514.pdf` p.2 (valeur corrigée 2026-11-12 : 7,6A appartenait en
+réalité à la ligne MSD1514-472ME_, pas -103ME_ — relecture directe du
+tableau p.2 sur image rendue, pdftotext -layout décalait les lignes).
+Même avec la puissance réellement délivrée dérivant de 19,7 à 21,6W selon
+le point, aucune marge courant n'est entamée.
 
 **Rendement — l'UCC24612 apporte un gain réel et substantiel à cette
 puissance.** Comparaison aux mêmes D/Vin/Vout (ex. 20V→12,6V) :

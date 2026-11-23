@@ -1417,10 +1417,21 @@ suite : `D8` (TVS directe sur `VIN`, chemin 1 restant) et `R35`–`R37`
   système. Cohérent avec le §2 du plan (« le convertisseur isolé du C2000
   prend `VIN` en amont du fusible de cette carte »). `D8` retiré de la
   liste des ajouts pour ce projet.
-- **Résistances de référence inter-domaines (§3 du plan)** : posées dans
-  `isolation.kicad_sch`, en **chaîne de 3×1 MΩ par barrière** (pas une
-  seule résistance — un seul 0805 n'a que 0,8 mm d'écart cuivre entre ses
-  pastilles, bien en-deçà des 8,5 mm visés) :
+- ~~**Résistances de référence inter-domaines (§3 du plan)** : posées
+  dans `isolation.kicad_sch`, en chaîne de 3×1 MΩ par barrière~~
+  **Retirées par décision (2026-11-14, indication de l'utilisateur,
+  après §26 ci-dessous)** : même en chaîne de 3, la contrainte
+  `barriere_controle` (4 mm) ne se respecte pas avec des pastilles 0805
+  à cette barrière — §26 documente déjà le symptôme (19 violations
+  confirmées réelles le 2026-10-29, dont `R37`/`R38`), sans que la
+  décision de retrait elle-même soit journalisée nulle part avant cette
+  date. Les repères `R35`–`R42`(+`R6`) ont été réemployés pour d'autres
+  fonctions (vérifié par leurs nets PCB réels le 2026-11-14) — aucune
+  chaîne ne survit, pas même partiellement. **Risque évalué par
+  l'utilisateur (2026-11-14) : ni bloquant ni dangereux** — pas de
+  parade retenue avant fabrication, solution à trouver empiriquement
+  sur le prototype une fois construit, pas sur plan. Table ci-dessous
+  conservée à titre historique (intention d'origine) :
   - `R35`/`R6`/`R36` : `GND_CTRL` ↔ `VOUT_N` (barrière contrôle↔secondaire,
     traversée par `U7`).
   - `R37`/`R38`/`R39` : `GND_CTRL` ↔ `GND` (barrière contrôle↔primaire,
@@ -1478,13 +1489,21 @@ architecture à titre historique ; ne pas les prendre pour l'état actuel.
   `barriere_controle` (4 mm) n'est pas affectée par ce changement, elle
   s'applique toujours à `CTRL` contre tout le reste, `SEC` inclus.
 
-**Ce qui n'a pas été vérifié dans cette passe** : la conséquence
-électrique précise du décloisonnement primaire/secondaire (quel nœud
-relie désormais `GND` et `VOUT_N` dans le schéma — tie-point direct,
-composant intermédiaire, ou autre — et l'impact sur `D1`/`D4`/les calculs
-de surtension du §17, établis en supposant un secondaire flottant). À
-vérifier avant de considérer la conception électrique close, pas seulement
-la règle DRC retirée.
+**Trouvé (2026-11-14)**, suite à une indication de l'utilisateur puis
+vérifiée directement dans les fichiers (nets du PCB, valeurs des
+schémas) : pas de tie-point direct, mais un chemin résistif continu via
+le réseau de polarisation déjà existant — `VOUT_N` → `R10` (100k,
+`flyback.kicad_sch`) → `HV_BIAS_OUT` → `R22` (470k,
+`polarisation.kicad_sch`) → `BIAS_SENSE` → `R23` (10k) → `GND`, soit
+580 kΩ série (`VOUT_P` via `R9`, même valeur). C'est le réseau qui
+pilote déjà la boucle de linéarisation (§16) — pas un ajout pour ce
+décloisonnement, une conséquence de son existence préalable.
+
+**Ce qui reste à vérifier** : l'impact de ce chemin à 580 kΩ (une
+référence molle, ni un flottement complet ni une masse franche) sur les
+calculs de surtension de `D1`/`D4` du §17, établis en supposant un
+secondaire flottant sans aucune référence résistive. À vérifier avant de
+considérer la conception électrique close.
 
 Non traité ici, hors périmètre de cette passe : réécriture complète des
 sections historiques (§1, tableaux U4/U7, §16-17) pour refléter la
@@ -1757,7 +1776,11 @@ classification à corriger** :
   leurs deux pastilles reste à ≤3mm de `U3` (`CTRL`) à plusieurs
   endroits. Vrai écart de placement si la fonction de ces résistances
   (tenue de l'isolement renforcé) doit être garantie à l'extérieur du
-  composant aussi, pas seulement dans sa propre tenue diélectrique interne.
+  composant aussi, pas seulement dans sa propre tenue diélectrique
+  interne. **Suite (2026-11-14)** : jamais résolu en l'état — la chaîne
+  entière a fini par être retirée (voir plus haut, mise à jour du point
+  précédent), précisément parce que cet écart ne se referme pas avec un
+  0805 à cette barrière.
 - `VOUT_FBACK_RAW` (classe `SEC`, signal de retour HT avant isolement) à
   moins de 4mm de plusieurs pastilles `CTRL` (`R15`/`C28`/`C24`/`U7`) —
   rapprochement physique réel entre deux domaines différents.

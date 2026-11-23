@@ -3,6 +3,76 @@
 Établi le 2026-10-23, à partir du commit `c535024`, du fichier
 `KICAD-HT.kicad_pcb` et de `00-intention-conception.md`.
 
+> **Révision 4 (2026-11-14) — le corps du document mis en cohérence avec
+> la carte ; la correction du 2026-10-25 n'était qu'un correctif en tête,
+> le §1, le §2, le récapitulatif et le schéma du §4 continuaient de
+> décrire l'ancienne architecture sans annotation.** Corrigé ci-dessous
+> par biffage (même convention que le §3), pas par suppression. Vérifié
+> dans les fichiers réels avant d'écrire, pas supposé :
+>
+> - **§1** : deux domaines galvaniques réels restent, pas trois —
+>   contrôle (`CTRL`) d'une part, primaire + secondaire réunis de l'autre.
+>   La classe de nets `SEC` existe toujours dans `KICAD-HT.kicad_pro`
+>   (organisation/documentation), mais sans contrainte de barrière face à
+>   `PRI` dans `KICAD-HT.kicad_dru` — confirmé en lisant les deux fichiers.
+> - **`barriere_controle` (4 mm)** : confirmé dans `KICAD-HT.kicad_dru`,
+>   sans clause de couche (s'applique donc aussi en interne, pas
+>   seulement `F.Cu`/`B.Cu` comme `HT_distance_90V`). C'est voulu, pas un
+>   oubli — voir §6bis, nouveau, pour la mesure et le raisonnement.
+> - **Tenue enroulement à enroulement du MSD1514 (500 Vrms/1 min)** :
+>   n'est plus une valeur de barrière à vérifier (elle ne l'était que
+>   dans la sous-section primaire↔secondaire, retirée ci-dessous) — reste
+>   une caractéristique du composant, sans conséquence sur une barrière
+>   réelle de cette carte. Retirée des « Points ouverts ».
+> - **Nomenclature du §8** : des 7 composants listés, vérifiés présents
+>   (schéma **et** PCB, pas l'un sans l'autre) : `F1`, `D2` (ex-`D6`),
+>   `D7`. `D8` (TVS directe sur `VIN`) reste une décision assumée de ne
+>   pas la poser ici, pas un oubli — déjà noté au §20 de
+>   `00-intention-conception.md`.
+> - **Chaînes de résistances de référence inter-domaines : retirées par
+>   décision, pas incomplètes par oubli — correction du point précédent
+>   (indication de l'utilisateur, 2026-11-14).** Une première relecture
+>   de cette révision avait trouvé `R35`/`R36`/`R37`/`R40`/`R41`/`R42`
+>   présents et `R6`/`R38`/`R39` absents, et conclu à « 2 chaînes sur 3
+>   incomplètes, 1 complète ». **C'est faux** : aucune des trois chaînes
+>   n'existe — vérifié par les nets PCB réels des six repères survivants,
+>   tous câblés sur des fonctions sans rapport (mesure de courant, pont
+>   `3V3_ISO`, pull-down `PWM_EN`...). Les repères `R35`–`R42`(+`R6`) ont
+>   été réemployés ailleurs, pas complétés. **Raison, donnée par
+>   l'utilisateur** : la règle `barriere_controle` (4 mm) est
+>   impossible à respecter avec les pastilles d'une résistance 0805 à
+>   cette barrière — la chaîne de 3×1 MΩ décrite au §3 (pensée pour
+>   répartir la distance sur 3 maillons plutôt qu'un seul 0805 à 0,8 mm,
+>   voir `regles-pcb-V2/06-haute-tension.md` HT-09) ne suffit pas non
+>   plus en pratique, et la mitigation entière a été abandonnée. **Reste
+>   ouvert, à ce jour sans parade** : le problème du §3 (aucune référence
+>   de potentiel continu entre `GND_CTRL` et `{GND,VOUT_N}` — le
+>   mode commun de barrière traverse les isolateurs eux-mêmes faute de
+>   chemin de retour défini) n'est donc pas résolu pour la barrière
+>   `CTRL`↔{`PRI`,`SEC`}. Le réseau `R9`/`R10`/`R22`/`R23` (polarisation,
+>   voir « Points ouverts » plus bas) fournit bien une référence
+>   `GND`↔`VOUT_N`/`VOUT_P`, mais ne touche pas `GND_CTRL` — il ne
+>   referme pas cette barrière-là.
+> - **Valeurs de `F1`/`D2`/`D7`, deuxième relecture (2026-11-14) : trois
+>   écarts non vus à la première passe de cette révision.** Lu
+>   directement dans `alim.kicad_sch` (propriété `Value`, pas supposé) :
+>   `F1` = **`2A-T`**, pas `3A` comme écrit plus bas (et au §20 de
+>   `00-intention-conception.md`) ; `D2` = **`SMBJ9`**, pas `SMCJ10A` ;
+>   `D7` = **`SMBJ05`**, pas `SMCJ04A`. Les trois composants existent
+>   bien, au bon endroit, sur le bon net — seule la valeur écrite dans ce
+>   document (et dans `00-intention-conception.md` §20) ne correspond
+>   plus à ce qui est réellement posé. Cause non déterminée dans cette
+>   passe (valeur changée depuis la rédaction du §20, ou lecture
+>   d'origine jamais vérifiée contre le fichier) — à trancher par
+>   l'utilisateur, pas par une relecture de plus.
+> - **Classes de nets (§6)** : la table ci-dessous liste 5 classes
+>   (`CTRL`/`PRI`/`PRI_PWR`/`SEC`/`SEC_PWR`). `KICAD-HT.kicad_pro` n'en
+>   définit que 4 (`CTRL`/`PRI`/`SEC`/`Default`) — `PRI_PWR` et `SEC_PWR`
+>   n'existent pas comme classes séparées. Signalé ici, pas corrigé dans
+>   la table historique du §6 (elle documente l'intention d'origine) ;
+>   conséquence sur les largeurs de piste réellement posées non vérifiée
+>   dans cette passe (hors périmètre documentation).
+
 > **Correction majeure 2026-10-25 — la barrière primaire↔secondaire est
 > retirée.** Décision utilisateur : dans le montage final, le secondaire
 > de puissance ne sera plus flottant ni isolé galvaniquement du primaire.
@@ -32,13 +102,15 @@
 > `R35`. Deux ajouts déjà faits, avec des repères différents de ceux
 > proposés ici :
 > - **Chemin 2, premier étage (RAIL_8V25)** : fait — `D2` (`Device:D_TVS`,
->   SMCJ10A) entre `RAIL_8V25` et `GND`, dans `alim.kicad_sch`.
-> - **Chemin 1 (fusible `VIN`)** : fait — `F1` (`Device:Fuse`, **3 A**) en
+>   ~~SMCJ10A~~ **`SMBJ9` au 2026-11-14, voir tête de document**) entre
+>   `RAIL_8V25` et `GND`, dans `alim.kicad_sch`.
+> - **Chemin 1 (fusible `VIN`)** : fait — `F1` (`Device:Fuse`, ~~**3 A**~~
+>   **`2A-T` au 2026-11-14, voir tête de document**) en
 >   série entre J1 et le net `VIN`, dans `alim.kicad_sch`. Type
 >   temporisé/rapide et tension de service encore à préciser.
 > - **Chemin 2, second étage (RAIL_3V3_PRI)** : déjà fait *avant* ce plan —
->   `D7` (`Device:D_TVS`, SMCJ04A) entre `RAIL_3V3_PRI` et `GND`, présent
->   dès `c535024`.
+>   `D7` (`Device:D_TVS`, ~~SMCJ04A~~ **`SMBJ05` au 2026-11-14, voir tête
+>   de document**) entre `RAIL_3V3_PRI` et `GND`, présent dès `c535024`.
 > - **TVS directe sur `VIN`** : ne sera **pas** posée sur `KICAD-HT` —
 >   déjà présente sur `KICAD-C2000-powershield`, en amont au niveau
 >   système (cohérent avec le §2 ci-dessous). Repère `D5`/`D8` abandonné.
@@ -72,7 +144,14 @@
 
 ## 1. L'architecture réelle
 
-### Trois domaines, vérifiés au fichier
+### ~~Trois domaines~~ Deux côtés d'une barrière, vérifiés au fichier
+
+**Révision 4 (2026-11-14).** Depuis le retrait de la barrière
+primaire↔secondaire (§20bis, 2026-10-25), il ne reste que **deux côtés
+galvaniquement séparés** : contrôle (`CTRL`) d'un côté, primaire et
+secondaire réunis de l'autre. Le tableau des isolateurs ci-dessous reste
+exact (l'orientation de chaque isolateur n'a pas changé) ; seul le
+nombre de domaines qu'ils séparent passe de trois à deux.
 
 Le domaine contrôle est **intégralement alimenté depuis le C2000** : J2
 amène `3V3_ISO` (broche 1) et `GND_CTRL` (dix broches). Aucun régulateur de
@@ -97,13 +176,22 @@ Même net, deux noms — à unifier.*
 |---|---|---|
 | `GND` | `Vin`, et par `Vin` la **carte 500 V** | référence basse d'un système 500 V, flottante au banc |
 | `GND_CTRL` | C2000, via le DC/DC isolé 3 pF | **la terre**, par la sonde JTAG ou l'oscilloscope |
-| `VOUT_N` | secondaire flottant, polarisé 0–78 V par `HV_BIAS` | 100 V au-dessus de `GND` (écrêté par D3) |
+| `VOUT_N` | ~~secondaire flottant~~ relié au primaire depuis le 2026-10-25 (§20bis) — nœud exact de la liaison non revérifié électriquement dans cette passe, polarisé 0–78 V par `HV_BIAS` | 100 V au-dessus de `GND` (écrêté par D3) |
 
 ---
 
-## 2. Les trois distances
+## 2. ~~Les trois distances~~ La distance restante
 
-### Contrôle ↔ primaire, et contrôle ↔ secondaire : **8,5 mm**
+**Révision 4 (2026-11-14)** : il ne reste qu'**une seule** barrière
+réelle sur cette carte — contrôle ↔ {primaire+secondaire}, retenue à
+**4 mm** (pas 8,5 — voir §6 pour la correction d'origine du 2026-10-23,
+et §6bis pour l'enregistrement complet de la valeur retenue et sa
+justification). Les deux sous-sections ci-dessous (contrôle↔{primaire,
+secondaire} à 8,5 mm, primaire↔secondaire à 2,5 mm) et le récapitulatif
+qui suit décrivent l'état d'avant le 2026-10-25 — lus comme journal de
+conception, pas comme l'état actuel.
+
+### ~~Contrôle ↔ primaire, et contrôle ↔ secondaire : 8,5 mm~~ (historique)
 
 C'est le renversement par rapport à la révision 1.
 
@@ -125,7 +213,12 @@ niveau système. Ne le défais pas au niveau carte.
 8,5 mm de ligne de fuite. Une fente ne sert que lorsque la place manque, et
 ici elle ne manque pas.
 
-### Primaire ↔ secondaire : **2,5 mm**
+### ~~Primaire ↔ secondaire : 2,5 mm~~ — retirée le 2026-10-25 (§20bis)
+
+**Toute cette sous-section est caduque depuis le 2026-10-25** : le
+secondaire n'étant plus isolé du primaire, il n'y a plus de barrière à
+dimensionner entre les deux. Conservée ci-dessous à titre historique
+(pourquoi 2,5 mm avait été calculée), pas comme état actuel.
 
 | Critère | Valeur | Source |
 |---|---|---|
@@ -133,24 +226,34 @@ ici elle ne manque pas.
 | Distance dans l'air, IPC-2221 B2 | 0,6 mm | table 51–100 V |
 | Distance dans l'air, IPC-9592B | 1,1 mm | 0,1 + 0,01 × 100 |
 | Ligne de fuite, IEC 60664-1, pollution 2 | 0,16 mm | table 100 V |
-| **Retenu** | **2,5 mm** | marge ×2 sur la plus exigeante |
+| **Retenu (historique)** | **2,5 mm** | marge ×2 sur la plus exigeante |
 
-Cette barrière n'est traversée par **aucun composant** : seul le
-transformateur la franchit, magnétiquement. Il n'y a donc aucune
-certification de boîtier à honorer, et 2,5 mm suffisent largement.
+Cette barrière n'était traversée par **aucun composant** : seul le
+transformateur la franchissait, magnétiquement.
 
-**Point à vérifier** : le MSD1514 est une inductance couplée, pas un
+~~**Point à vérifier** : le MSD1514 est une inductance couplée, pas un
 transformateur d'isolement. Sa tenue enroulement à enroulement est à lire
-dans sa fiche. À 100 V de service elle est probablement confortable, mais
-c'est une valeur lue, pas supposée.
+dans sa fiche.~~ **Devenu sans objet (2026-11-14)** : sans barrière
+primaire↔secondaire, la tenue enroulement à enroulement du MSD1514
+(500 Vrms/1 min, essai diélectrique de type — pas une tension de
+service, voir « Chemin 3 » plus bas) n'est plus une valeur à vérifier
+contre quoi que ce soit ; c'est une caractéristique du composant parmi
+d'autres, sans conséquence sur une barrière réelle de cette carte.
+Retirée des « Points ouverts ».
 
-### Récapitulatif
+### ~~Récapitulatif~~ (état avant le 2026-10-25, historique)
 
 | Barrière | Distance | Ce qui la traverse |
 |---|---|---|
-| contrôle ↔ primaire | **8,5 mm** | U3, U5, U8, U9, U10, U11 |
-| contrôle ↔ secondaire | **8,5 mm** | U7 |
-| primaire ↔ secondaire | **2,5 mm** | T1 seul, magnétiquement |
+| contrôle ↔ primaire | ~~8,5 mm~~ 4 mm (voir §6bis) | U3, U5, U8, U9, U10, U11 |
+| contrôle ↔ secondaire | ~~8,5 mm~~ 4 mm (voir §6bis) | U7 |
+| ~~primaire ↔ secondaire~~ | ~~2,5 mm~~ *(retirée 2026-10-25)* | ~~T1 seul, magnétiquement~~ |
+
+**État actuel, une seule ligne** :
+
+| Barrière | Distance | Ce qui la traverse |
+|---|---|---|
+| contrôle ↔ {primaire + secondaire} | **4 mm** | U3, U5, U7, U8, U9, U10, U11 |
 
 ---
 
@@ -183,24 +286,39 @@ que 0,8 mm entre ses deux pastilles (mesuré directement dans le
 `.kicad_mod`) — une seule résistance, où qu'elle soit posée, re-court-
 circuite la barrière à 0,8 mm au lieu des 8,5 mm visés ; elle n'hérite en
 rien de la distance interne certifiée de l'isolateur. Solution retenue :
-une **chaîne de 3×1 MΩ physiquement espacée sur toute la largeur de la
+~~une **chaîne de 3×1 MΩ physiquement espacée sur toute la largeur de la
 barrière** (pas sous un seul composant), de façon que le chemin
 cuivre-à-cuivre cumulé atteigne bien les 8,5 mm, et que les deux nœuds
 intermédiaires ne soient approchés par aucune autre piste/via/
-remplissage. Détail et repères réels au §20 de
-`00-intention-conception.md`.
+remplissage.~~ **Retiré par décision (2026-11-14, indication de
+l'utilisateur)** : même en chaîne de 3, la contrainte `barriere_controle`
+(4 mm, révisée depuis 8,5 — §6bis) ne se respecte pas avec des pastilles
+0805 à cette barrière. La mitigation de ce §3 est abandonnée, pas
+seulement incomplète — voir « Points ouverts » pour ce que ça laisse
+ouvert côté `GND_CTRL`. Repères historiques (jamais menés à terme) au
+§20 de `00-intention-conception.md`.
 
 ---
 
 ## 4. Forme du placement
 
-### Ce que la topologie impose
+**Révision 4 (2026-11-14) — toute cette section décrit la disposition
+envisagée avant le 2026-10-25**, avec T1 à cheval sur une barrière
+primaire↔secondaire de 2,5 mm qui n'existe plus. Le placement et le
+routage réels sont **terminés** depuis (§29 de
+`00-intention-conception.md`, DRC 0 violation) sur une disposition qui a
+pu diverger de celle décrite ici — ce document ne reflète pas
+nécessairement le placement final. Conservée à titre de méthode
+(pourquoi grouper par boucle chaude, pourquoi T1 ne doit pas être
+écartelé) plutôt que de plan d'exécution.
+
+### Ce que la topologie imposait (historique)
 
 | Barrière | Traversées |
 |---|---|
 | contrôle ↔ primaire | 6 isolateurs |
 | contrôle ↔ secondaire | 1 isolateur (U7) |
-| primaire ↔ secondaire | **0 composant** — T1 seul |
+| ~~primaire ↔ secondaire~~ | ~~**0 composant** — T1 seul~~ *(barrière retirée)* |
 
 Un alignement `PRIMAIRE | CONTRÔLE | SECONDAIRE` placerait les deux
 enroulements du MSD1514 aux extrémités opposées. À proscrire.
@@ -362,29 +480,140 @@ tenterait de descendre plus bas.
 
 ---
 
+## 6bis. Valeur retenue, enregistrée (2026-11-14)
+
+**4 mm**, `barriere_controle`, confirmé directement dans
+`KICAD-HT.kicad_dru`. Deux justifications, pas une seule :
+
+1. **Composant réellement monté** (déjà établie ci-dessus, 2026-10-23) :
+   `ISO7710`/`ISO7710F` en boîtier D-8 sont classés *Basic Insulation*
+   par la datasheet, `CLR`/`CPG` = 4 mm. Le renforcé (8,5 mm) n'existe
+   que sur la variante DW-16, non montée.
+2. **Isolement fonctionnel assumé, pas une revendication renforcée** :
+   la barrière ne vise plus une certification de sécurité galvanique
+   complète, seulement une séparation fonctionnelle suffisante pour
+   l'écart de potentiel réellement rencontré (voir §1, `GND_CTRL` à la
+   terre par une sonde, pas à 500 V). Vérifié contre les deux tables déjà
+   citées au §2 historique, **pas supposé** :
+   - IPC-2221 B2 (table déjà utilisée dans ce document) : la tranche
+     301–500 V ne demande que 2,5 mm — 4 mm la couvre avec marge, y
+     compris pour un défaut à pleine tension système (500 V).
+   - IPC-9592B (`regles-pcb-V2/06-haute-tension.md`, HT-02) : la formule
+     n'est **pas** `0,1 + 0,01 × V` partout — seulement de 30 à 100 V.
+     Au-dessus de 100 V (le régime pertinent ici, l'écart visé étant la
+     pleine tension système) : `0,6 + 0,005 × V`, continue avec l'autre
+     tronçon à V=100 (1,1 mm des deux côtés), et qui redonne bien les
+     3,1 mm à 500 V déjà cités au §2 historique. Résoudre `0,6+0,005×V=4`
+     pour `V` donne **680 V**, pas 390. (Une première version de cette
+     note avait appliqué le tronçon 30–100 V hors de son domaine de
+     validité et concluait l'inverse — **erreur trouvée et corrigée le
+     2026-11-14, deuxième relecture**, cf. l'avertissement du fichier
+     source : « ne reproduit pas les normes elles-mêmes ».) **4 mm
+     couvre donc cette formule-ci jusqu'à ~680 V**, avec une marge même
+     plus confortable qu'IPC-2221 B2 (~800 V, même méthode : 2,5 mm à
+     500 V + 0,005 mm/V au-delà) sur le même écart — les deux tables
+     s'accordent, aucune n'est le point faible.
+
+**Conséquence assumée** : cette barrière protège maintenant contre un
+défaut/une configuration de banc à l'écart de potentiel réel attendu
+(une sonde à la terre, pas un système entier à 500 V appliqué
+directement à travers elle), pas contre la pleine excursion 500 V avec
+la marge d'une isolation renforcée certifiée. Cohérent avec le composant
+réellement monté (raison 1) — les deux raisons convergent, elles ne se
+contredisent pas.
+
+**Pas de clause de couche (`F.Cu`/`B.Cu` uniquement), contrairement à
+`HT_distance_90V` — et c'est voulu, pas un oubli.** Les deux règles ne
+protègent pas la même chose : `HT_distance_90V` encode une ligne de
+fuite dans l'air, sans objet sur du cuivre enterré (d'où sa clause
+externe uniquement, déjà commentée dans le `.kicad_dru`). `barriere_controle`
+encode une séparation **galvanique** de région, qui doit tenir sur les
+quatre couches à la fois — un plan interne continu qui passerait sous la
+barrière l'annulerait par en dessous (déjà le raisonnement du §5,
+« Deux règles qui tuent les cartes isolées »). Ajouter une clause de
+couche ici supprimerait une protection réelle, pas un coût superflu.
+
+**Mesuré directement sur les polygones remplis du `.kicad_pcb`
+(`filled_polygon`, pas la silhouette de zone déclarée), pas estimé** —
+l'écart réel entre régions `CTRL` et non-`CTRL` sur les couches
+internes :
+
+| Couche | Paire de zones | Écart mesuré (centre de trace) |
+|---|---|---|
+| `In1.Cu` | `GND_CTRL` ↔ `GND` | **4,25 mm** |
+| `In2.Cu` | `3V3_ISO` ↔ `RAIL_3V3_PRI` | **4,29 mm** |
+
+Dans les deux cas, l'écart réel dépasse le minimum de seulement
+0,25–0,29 mm : la contrainte est déjà appliquée **au plus juste** en
+interne, pas comme sous-produit accidentel d'une règle trop large. Le
+gain d'une clause de couche serait de cet ordre (un quart de mm), sur
+deux paires de zones seulement — marginal, et il irait à l'encontre du
+raisonnement du §5. **Recommandation : ne pas ajouter de clause de
+couche à `barriere_controle`.**
+
+---
+
 ## 7. Ordre des opérations
 
-1. Créer les cinq classes de nets et le `.kicad_dru`. **Avant** de placer.
-2. Ajouter les trois résistances de référence inter-domaines (§3).
-3. Poser T1 sur la barrière primaire↔secondaire, puis les deux boucles
-   chaudes autour.
-4. Poser le bandeau de contrôle, 8,5 mm de tout, et aligner les sept
-   isolateurs sur ses arêtes.
-5. Rentrer J2 dans le contour — il est actuellement à 11,4 mm à l'extérieur.
-6. Ajuster le contour au placement, puis router.
-7. `kicad-cli pcb drc`, et vérifier à l'œil que les découpes des quatre
-   couches se superposent et que les régions ne se recouvrent pas.
+**État vérifié au 2026-11-14 (schéma, PCB, `kicad-cli`), pas supposé :**
+
+1. **Fait, partiellement.** Classes de nets et `.kicad_dru` créés et
+   présents. Mais 4 classes (`CTRL`/`PRI`/`SEC`/`Default`), pas cinq —
+   `PRI_PWR`/`SEC_PWR` n'existent pas séparément (voir révision 4 en
+   tête de §6).
+2. **Retiré par décision, pas fait.** Les trois chaînes de référence
+   inter-domaines n'existent pas — la règle `barriere_controle` (4 mm)
+   ne se respecte pas avec les pastilles d'une résistance 0805 à cette
+   barrière, même en chaîne de 3 (détail à la nomenclature, plus bas).
+3. **Sans objet / fait selon la partie.** La barrière primaire↔secondaire
+   n'existe plus (rien à poser T1 « sur » elle) ; T1 et les deux boucles
+   chaudes sont posés, le placement est terminé (§29 de
+   `00-intention-conception.md`).
+4. **Fait, à 4 mm** (pas 8,5 — §6bis), sept isolateurs alignés — confirmé
+   par le DRC propre (0 violation de clearance, voir plus bas).
+5. **Fait.** `J2` à (102,0 ; 93,7)mm, largement à l'intérieur du contour
+   85×70mm (96–181 ; 47–117) — vérifié sur les coordonnées réelles, plus
+   question d'être « à 11,4 mm à l'extérieur ».
+6. **Fait.** Contour 85×70mm (mesuré sur `Edge.Cuts`, cohérent avec le
+   85×70mm annoncé au §29), routé à 100%.
+7. **Fait.** `kicad-cli pcb drc` relancé le 2026-11-14 : **3 violations**,
+   toutes `lib_footprint_mismatch` (désynchronisation empreinte/librairie
+   sur `In1`, `J2`, `Out1` — sans rapport avec le dégagement ou les
+   barrières). 0 violation de `clearance`/`creepage`. Écart avec le « 0
+   violation » du §29 (2026-10-29) non expliqué dans cette passe — les
+   trois empreintes ont pu être retouchées depuis sans mise à jour de la
+   copie embarquée (mécanisme déjà documenté au §27 de
+   `00-intention-conception.md`), à vérifier si l'occasion se présente.
 
 ---
 
 ## Points ouverts
 
-- **Tenue enroulement à enroulement du MSD1514**, à lire dans sa fiche
-  Coilcraft. C'est une inductance couplée, pas un transformateur
-  d'isolement.
-- **Valeur des résistances de référence** (§3) : 1 à 10 MΩ est la plage
-  usuelle, le choix exact dépend du courant de fuite acceptable sur les
-  entrées des AMC03x.
+- ~~Tenue enroulement à enroulement du MSD1514, à lire dans sa fiche
+  Coilcraft.~~ **Retiré (2026-11-14)** : n'est plus une valeur à
+  vérifier contre une barrière, celle-ci ayant disparu (§2). Reste une
+  caractéristique de composant parmi d'autres, sans conséquence sur
+  l'isolement de cette carte.
+- **Référence de potentiel continu `CTRL`↔{`PRI`,`SEC`} absente, par
+  décision — pas un oubli (corrigé 2026-11-14, indication de
+  l'utilisateur).** Les trois chaînes de référence inter-domaines
+  (§3) ont été **retirées** : la règle `barriere_controle` (4 mm) ne se
+  respecte pas avec les pastilles d'une résistance 0805 à cette
+  barrière, même répartie en 3 maillons. `R35`–`R42`(+`R6`) ont été
+  réemployés pour d'autres fonctions (mesure de courant, pont
+  `3V3_ISO`...), vérifié par leurs nets PCB réels, pas de chaîne
+  survivante même partielle. Le problème électrique du §3 (`GND_CTRL`
+  sans référence continue vis-à-vis du reste de la carte — mode commun
+  de barrière sans chemin de retour défini, traverse les isolateurs
+  eux-mêmes) **reste donc entier pour cette barrière**, sans parade à ce
+  jour. À distinguer du réseau `R9`/`R10`/`R22`/`R23` (polarisation,
+  voir plus bas) : celui-ci référence bien `VOUT_N`/`VOUT_P` à `GND`,
+  mais ne touche pas `GND_CTRL`. **Risque évalué par l'utilisateur
+  (2026-11-14) : ni bloquant ni dangereux** — pas de parade retenue
+  avant fabrication, solution à trouver empiriquement sur le prototype
+  une fois construit (mesure réelle du potentiel flottant, pas une
+  présomption de danger a priori). Décision assumée de différer, pas un
+  point laissé par défaut.
 - **`3V3_CTRL` (document) contre `3V3_ISO` (schéma)** : deux noms pour un
   net, à unifier.
 - **La spec affiche 90 V alors que la source en délivre 78 utiles** (§11,
@@ -392,6 +621,25 @@ tenterait de descendre plus bas.
   clamp.
 - **η = 0,85 non sourcé**, et les largeurs de piste de puissance en
   dépendent.
+- ~~**Conséquence électrique du décloisonnement primaire↔secondaire non
+  vérifiée** — quel nœud relie exactement `GND` et `VOUT_N`~~ **Trouvé
+  (2026-11-14), confirmé par indication de l'utilisateur puis vérifié
+  directement dans les fichiers (pas pris au mot)** : pas de liaison
+  directe, mais un chemin résistif continu à travers le réseau de
+  polarisation déjà documenté au §1/§3 — `VOUT_N` → `R10` (100k) →
+  `HV_BIAS_OUT` → `R22` (470k) → `BIAS_SENSE` → `R23` (10k) → `GND`,
+  soit **580 kΩ** série (`VOUT_P` a le même chemin via `R9`, valeur
+  identique). `R9`/`R10`/`R22`/`R23` lus dans `flyback.kicad_sch`/
+  `polarisation.kicad_sch`, continuité des nets vérifiée dans
+  `KICAD-HT.kicad_pcb`. C'est le même réseau que celui qui pilote déjà
+  la boucle de linéarisation (`polarisation.kicad_sch`, §16 de
+  `00-intention-conception.md`) — pas un composant ajouté pour ce
+  décloisonnement, une conséquence de son existence préalable. **Reste
+  ouvert, non vérifié dans cette passe** : l'impact de ce chemin à 580kΩ
+  (pas un flottement complet, mais pas une masse franche non plus) sur
+  les calculs de surtension de `D1`/`D4` du §17, établis en supposant un
+  secondaire flottant sans aucune référence résistive — conception
+  électrique, pas rédaction, hors périmètre d'une passe documentation.
 
 ---
 
@@ -592,25 +840,31 @@ parenthèses.
 
 | Repère | Fonction | Valeur | État |
 |---|---|---|---|
-| F1 (**fait**, même repère) | fusible d'entrée, en série avec In1 | provisoire, calibre 3–4 A à confirmer | posé dans `alim.kicad_sch` |
-| D5 → **D8** | TVS sur `VIN`, en aval de F1 | SMCJ28A ou SMCJ30A | pas encore posé |
-| D6 → **D2** (fait, repère différent) | TVS sur `RAIL_8V25` | SMCJ10A (10 V, dans la plage visée) | posé dans `alim.kicad_sch` |
-| D7 (déjà fait avant ce plan, même repère par coïncidence) | TVS sur `RAIL_3V3_PRI` | SMCJ04A | posé depuis `c535024` |
-| R30–R32 → **R35–R37** | référence inter-domaines (§3) | 1–10 MΩ, une par barrière | pas encore posé |
+| F1 (**fait**, même repère) | fusible d'entrée, en série avec In1 | **`2A-T`, lu dans `alim.kicad_sch` (2026-11-14) — pas `3A`** comme écrit ici et au §20 de `00-intention-conception.md` avant cette relecture | posé dans `alim.kicad_sch` |
+| D5 → D8 | TVS sur `VIN`, en aval de F1 | SMCJ28A ou SMCJ30A | **décidé absent** — protection prise au niveau système sur `KICAD-C2000-powershield`, pas un oubli (voir §20 de `00-intention-conception.md`). `D8` existe bien dans le projet mais sur `polarisation.kicad_sch`, sans rapport (`SMBJ100`, autre fonction) |
+| D6 → **D2** (fait, repère différent) | TVS sur `RAIL_8V25` | **`SMBJ9`, lu dans `alim.kicad_sch` (2026-11-14) — pas `SMCJ10A`** comme écrit ici avant cette relecture | posé dans `alim.kicad_sch` |
+| D7 (déjà fait avant ce plan, même repère par coïncidence) | TVS sur `RAIL_3V3_PRI` | **`SMBJ05`, lu dans `alim.kicad_sch` (2026-11-14) — pas `SMCJ04A`** comme écrit ici avant cette relecture | posé depuis `c535024` |
+| R30–R32 → *(aucun — voir ci-dessous)* | référence inter-domaines (§3), en 3 chaînes de 3×1 MΩ | 1 MΩ | **retiré par décision, pas incomplet (corrigé 2026-11-14, indication de l'utilisateur)** — impossible de respecter `barriere_controle` (4 mm) avec des pastilles 0805 à cette barrière, même en chaîne de 3. `R35`–`R42`(+`R6`) réemployés pour d'autres fonctions, vérifié par leurs nets PCB réels — aucune chaîne survivante |
 
-Sept composants visés, trois posés (`F1`, `D2`, `D7`). Aucun n'est critique
-en précision, tous se placent en périphérie, et ensemble ils ferment les
-deux chemins par lesquels ton C2000 meurt aujourd'hui.
+Sept composants visés à l'origine ; aujourd'hui, vérifié schéma + PCB :
+`F1`, `D2`, `D7` posés, `D8` délibérément absent (protection système),
+et les résistances de référence inter-domaines **retirées par décision**
+(contrainte géométrique 0805 vs 4 mm), pas simplement incomplètes — la
+référence `GND_CTRL`↔{`GND`,`VOUT_N`} reste donc sans parade.
 
 ---
 
 ## Ce que ça change pour le placement
 
-- **F1, D5 au ras de In1**, avant toute dérivation. Le fusible est le premier
-  composant que `VIN` rencontre.
+- **F1 au ras de In1**, avant toute dérivation. Le fusible est le premier
+  composant que `VIN` rencontre. ~~D5~~ sans objet, `D8` n'est pas posé
+  sur cette carte (décision système, voir nomenclature ci-dessus).
 - **D6 au ras de Reg1, D7 au ras de Reg2**, dans la région primaire.
-- **R30–R32 sous le corps de leur isolateur**, pour ne pas entamer les
-  8,5 mm ailleurs qu'au seul endroit déjà franchi.
+- ~~**R30–R32** sous le corps de leur isolateur~~ **sans objet
+  (2026-11-14)** : la chaîne de référence inter-domaines a été retirée
+  par décision (impossible à respecter 4 mm avec des pastilles 0805 à
+  cette barrière, voir nomenclature ci-dessus) — plus rien à placer ici
+  tant qu'une autre parade n'est pas trouvée pour `GND_CTRL`.
 
 Aucun de ces ajouts ne touche aux boucles chaudes ni aux barrières. Ils se
 logent dans la périphérie que la disposition en bandeau libère naturellement.
