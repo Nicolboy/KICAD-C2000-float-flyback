@@ -588,6 +588,62 @@
         "pattern": "GND_CTRL"
       },
       {
+        "netclass": "PRI",
+        "pattern": "SRC_Q1"
+      },
+      {
+        "netclass": "PRI",
+        "pattern": "VIN_T1"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "INA_B_OUT"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "INA_FB_B"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "INA_FB_A"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "INA_A_OUT"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "VDD_ACS_POST"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "VDD_ACS_PRE"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "VREF_POST"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "VOUT_POST"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "VREF_PRE"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "VOUT_PRE"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "ACS_VREF"
+      },
+      {
+        "netclass": "CTRL",
+        "pattern": "ACS_VOUT"
+      },
+      {
         "netclass": "CTRL",
         "pattern": "3V3_ISO"
       },
@@ -609,7 +665,7 @@
       },
       {
         "netclass": "CTRL",
-        "pattern": "I_Shunt_ht_comp"
+        "pattern": "I_ACS"
       },
       {
         "netclass": "CTRL",
@@ -641,15 +697,7 @@
       },
       {
         "netclass": "CTRL",
-        "pattern": "Net-(Q8-D)"
-      },
-      {
-        "netclass": "CTRL",
         "pattern": "VOUT_FBACK_RAW"
-      },
-      {
-        "netclass": "CTRL",
-        "pattern": "Net-(R3-Pad2)"
       },
       {
         "netclass": "CTRL",
@@ -686,14 +734,6 @@
       {
         "netclass": "PRI",
         "pattern": "GATE_Q1"
-      },
-      {
-        "netclass": "PRI",
-        "pattern": "EN_PRI_OUT"
-      },
-      {
-        "netclass": "PRI",
-        "pattern": "~{EN_PRI_GATED}"
       },
       {
         "netclass": "PRI",

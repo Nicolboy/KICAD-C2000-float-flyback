@@ -4141,13 +4141,7 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "747b552a-6649-44f5-9e40-6952a7846ae6")
-	)
-	(junction
-		(at 45.72 59.182)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "789e479e-9eda-431f-b0d5-0b88f63a455a")
-	)
+	)
 	(junction
 		(at 237.744 95.25)
 		(diameter 0)
@@ -4195,13 +4189,7 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c5f17178-009f-4c09-9477-f4b595ffc2e6")
-	)
-	(junction
-		(at 90.17 41.91)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "c9b16f33-a0af-49f1-8e7d-b936434e845e")
-	)
+	)
 	(junction
 		(at 193.04 220.98)
 		(diameter 0)
@@ -4507,17 +4495,7 @@
 			(type default)
 		)
 		(uuid "21756e67-46f1-4ee4-bd4a-eacae0200c45")
-	)
-	(wire
-		(pts
-			(xy 55.372 46.99) (xy 55.372 54.102)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "248ae0ae-5ba0-41fa-a4aa-d216ea948b28")
-	)
+	)
 	(wire
 		(pts
 			(xy 240.538 95.25) (xy 237.744 95.25)
@@ -4547,17 +4525,7 @@
 			(type default)
 		)
 		(uuid "29801251-4b90-4a5b-8030-97c62d71a70c")
-	)
-	(wire
-		(pts
-			(xy 90.17 33.02) (xy 90.17 41.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2a603709-c061-4c57-b14a-76c088d39afb")
-	)
+	)
 	(wire
 		(pts
 			(xy 217.424 80.01) (xy 217.424 101.6)
@@ -4717,17 +4685,7 @@
 			(type default)
 		)
 		(uuid "445da52a-6766-4b2c-841a-813ac8512a67")
-	)
-	(wire
-		(pts
-			(xy 90.17 41.91) (xy 87.63 41.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "44859958-8f18-4c28-a286-dee9e0d6baa3")
-	)
+	)
 	(wire
 		(pts
 			(xy 382.016 212.09) (xy 368.808 212.09)
@@ -4847,17 +4805,7 @@
 			(type default)
 		)
 		(uuid "4c03ac08-0476-4a26-a355-ba37bd579c10")
-	)
-	(wire
-		(pts
-			(xy 45.72 59.182) (xy 47.752 59.182)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4d76a7a3-1b0a-4272-b5c8-2f8c2432dadc")
-	)
+	)
 	(wire
 		(pts
 			(xy 161.29 97.79) (xy 178.054 97.79)
@@ -5087,17 +5035,7 @@
 			(type default)
 		)
 		(uuid "6cae3dcb-08b4-467f-9d4e-c3a56fbd6b5e")
-	)
-	(wire
-		(pts
-			(xy 99.06 33.02) (xy 101.6 33.02)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6e63fa4d-409b-4dfd-8116-ecddcf046e16")
-	)
+	)
 	(wire
 		(pts
 			(xy 108.204 233.68) (xy 108.204 220.98)
@@ -5287,17 +5225,7 @@
 			(type default)
 		)
 		(uuid "8a7e1d9d-2ba9-4ea5-8d77-24bc8a351c25")
-	)
-	(wire
-		(pts
-			(xy 64.77 41.91) (xy 72.39 41.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8b7891d9-d4a6-452e-9400-24b8083e1717")
-	)
+	)
 	(wire
 		(pts
 			(xy 62.484 228.854) (xy 62.484 233.68)
@@ -5367,17 +5295,7 @@
 			(type default)
 		)
 		(uuid "96c2e858-d7d1-4802-95be-630de3cde9f1")
-	)
-	(wire
-		(pts
-			(xy 95.25 41.91) (xy 90.17 41.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "96f7b9a9-2a4b-4406-a601-4b7fec6db27b")
-	)
+	)
 	(wire
 		(pts
 			(xy 67.564 115.57) (xy 67.564 107.95)
@@ -5477,17 +5395,7 @@
 			(type default)
 		)
 		(uuid "a7cc1b75-7686-40ae-9922-af1b557f88d6")
-	)
-	(wire
-		(pts
-			(xy 72.39 46.99) (xy 55.372 46.99)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a843bbc1-1e10-4486-839c-a466c0770002")
-	)
+	)
 	(wire
 		(pts
 			(xy 368.808 212.09) (xy 368.808 213.36)
@@ -5627,17 +5535,7 @@
 			(type default)
 		)
 		(uuid "c9a8a8c9-12c5-4b51-9b57-82202549d8ae")
-	)
-	(wire
-		(pts
-			(xy 91.44 33.02) (xy 90.17 33.02)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "cd21cdf2-39bc-4187-9c37-13b9f15fa113")
-	)
+	)
 	(wire
 		(pts
 			(xy 185.928 35.56) (xy 195.58 35.56)
@@ -5977,31 +5875,7 @@
 				)
 			)
 		)
-	)
-	(global_label "GND_CTRL"
-		(shape bidirectional)
-		(at 55.372 64.262 270)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "0bc7c3c9-63b6-43b2-a7cd-533da105da25")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 55.372 77.7323 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-	)
+	)
 	(global_label "GND_CTRL"
 		(shape bidirectional)
 		(at 237.49 251.46 270)
@@ -6071,30 +5945,7 @@
 				)
 			)
 		)
-	)
-	(global_label "3V3_ISO"
-		(shape bidirectional)
-		(at 57.15 41.91 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "11d70c75-13fb-4e73-b1df-5f8f52276baf")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 57.15 41.91 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
+	)
 	(global_label "GND_CTRL"
 		(shape bidirectional)
 		(at 211.074 87.63 0)
@@ -6702,31 +6553,7 @@
 				)
 			)
 		)
-	)
-	(global_label "RAIL_3V3_PRI"
-		(shape bidirectional)
-		(at 101.6 33.02 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "6fc25cdc-7460-46fd-b6b8-6b77b2c7d537")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 118.2756 33.02 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-	)
+	)
 	(global_label "GND_CTRL"
 		(shape bidirectional)
 		(at 129.794 235.204 270)
@@ -7498,30 +7325,7 @@
 				(justify left)
 			)
 		)
-	)
-	(global_label "GND"
-		(shape bidirectional)
-		(at 87.63 46.99 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "df5e5ee4-ee05-478c-88a0-3e731e9a381a")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 87.63 46.99 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
+	)
 	(global_label "ISNS_P"
 		(shape bidirectional)
 		(at 43.18 222.758 180)
@@ -7545,30 +7349,7 @@
 				(justify right)
 			)
 		)
-	)
-	(global_label "EN_PRI_OUT"
-		(shape bidirectional)
-		(at 95.25 41.91 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "e3531246-41cb-4d04-aa2f-c5d048a7eccf")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 95.25 41.91 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
+	)
 	(global_label "3V3_ISO"
 		(shape bidirectional)
 		(at 110.49 216.916 0)
@@ -7592,7 +7373,7 @@
 			)
 		)
 	)
-	(global_label "I_Shunt_ht_comp"
+	(global_label "I_ACS"
 		(shape bidirectional)
 		(at 366.014 208.28 180)
 		(fields_autoplaced yes)
@@ -7755,7 +7536,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "I_Shunt_ht_comp"
+		(property "Value" "I_ACS"
 			(at 383.54 204.9779 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7810,84 +7591,7 @@
 				)
 			)
 		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 95.25 33.02 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "074d2ae7-17e2-436e-83db-90a39d66182c")
-		(property "Reference" "R4"
-			(at 95.25 27.178 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "10k"
-			(at 95.25 29.972 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 95.25 33.02 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 95.25 33.02 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 95.25 33.02 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "6893f2bb-66cb-4230-9791-266fb78eae3d")
-		)
-		(pin "2"
-			(uuid "bdc7ffce-8bd4-40fb-8ea5-54cbb52a4317")
-		)
-		(instances
-			(project "KICAD-HT"
-				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
-					(reference "R4")
-					(unit 1)
-				)
-			)
-		)
-	)
+	)
 	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 382.016 186.436 0)
@@ -8857,90 +8561,7 @@
 				)
 			)
 		)
-	)
-	(symbol
-		(lib_id "Isolator:PC817")
-		(at 80.01 44.45 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "460f4137-3034-486d-8d77-82c89a981ba5")
-		(property "Reference" "U5"
-			(at 80.01 35.56 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "DPC817"
-			(at 78.74 46.99 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Package_DIP:SMDIP-4_W7.62mm"
-			(at 80.01 44.45 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 80.01 44.45 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 80.01 44.45 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "f83321fb-d52d-4fc7-a33e-026df1490d97")
-		)
-		(pin "2"
-			(uuid "706c74a0-a2af-4e29-aad6-728ee531b0b8")
-		)
-		(pin "3"
-			(uuid "fa84054e-ed2e-4883-8afc-184a039d4118")
-		)
-		(pin "4"
-			(uuid "5881aa50-c752-4c88-9970-0388e2794e03")
-		)
-		(instances
-			(project "KICAD-HT"
-				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
-					(reference "U5")
-					(unit 1)
-				)
-			)
-		)
-	)
+	)
 	(symbol
 		(lib_id "Device:R")
 		(at 181.61 223.52 90)
@@ -10261,87 +9882,7 @@
 				)
 			)
 		)
-	)
-	(symbol
-		(lib_id "Transistor_FET:Q_NMOS_GSD")
-		(at 52.832 59.182 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "aea4bf5a-b6cb-4b7f-bc17-e68a23d2db5a")
-		(property "Reference" "Q8"
-			(at 48.514 54.102 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "MMBF170"
-			(at 45.72 51.308 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
-			(at 52.832 59.182 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 52.832 59.182 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 52.832 59.182 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "c40cc84e-24f7-4b3b-ba6c-038f8832e6f0")
-		)
-		(pin "2"
-			(uuid "fee574e7-b03a-4ffe-9393-620b5ba369a6")
-		)
-		(pin "3"
-			(uuid "1c6b7311-2468-40af-b88b-d249c6284904")
-		)
-		(instances
-			(project "KICAD-HT"
-				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
-					(reference "Q8")
-					(unit 1)
-				)
-			)
-		)
-	)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 193.04 248.92 0)
@@ -11115,84 +10656,7 @@
 				)
 			)
 		)
-	)
-	(symbol
-		(lib_id "Device:R")
-		(at 60.96 41.91 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "ddac80eb-47ed-43e0-91e4-0ff96cf51dc3")
-		(property "Reference" "R3"
-			(at 60.706 37.338 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "470"
-			(at 60.706 39.37 90)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
-			(at 60.96 41.91 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 60.96 41.91 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 60.96 41.91 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "23b0a2fa-5b8c-47c6-addb-b580cfa0e224")
-		)
-		(pin "2"
-			(uuid "79b9d56d-a5d2-4112-b912-0e8f8fd5cd83")
-		)
-		(instances
-			(project "KICAD-HT"
-				(path "/c8449ac7-87b3-4a93-889f-06dd686c5aff/2c364a36-1706-47ba-a3af-9fe08e477799"
-					(reference "R3")
-					(unit 1)
-				)
-			)
-		)
-	)
+	)
 	(symbol
 		(lib_id "Device:C")
 		(at 189.992 98.552 0)

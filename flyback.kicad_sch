@@ -3379,15 +3379,29 @@
 		)
 		(uuid "7f7f0267-a59e-43d4-8002-5e9643a8ca45")
 	)
-	(wire
-		(pts
-			(xy 48.26 86.36) (xy 48.26 92.71)
+	(global_label "SRC_Q1"
+		(shape bidirectional)
+		(at 48.26 86.36 270)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
 		)
-		(stroke
-			(width 0)
-			(type default)
+		(uuid "eaa235c0-0542-4046-ab2d-96d82f9bb2eb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 48.26 86.36 270)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
 		)
-		(uuid "816e8d15-5ea3-43d6-9594-f8ea0fff9e95")
 	)
 	(wire
 		(pts
@@ -4612,7 +4626,7 @@
 			)
 		)
 	)
-	(global_label "VIN"
+	(global_label "VIN_T1"
 		(shape bidirectional)
 		(at 33.02 22.86 180)
 		(fields_autoplaced yes)

@@ -1,7 +1,7 @@
 # Proposition : carte d'étude de deux boucles de courant crête par le CMPSS
 
-> **Statut : proposition à valider (2026-11-24), branche `etude-regulation`.**
-> Rien n'est câblé. Les valeurs marquées **POSÉ** sont des points de départ
+> **Statut : schéma appliqué le 2026-11-24, branche `etude-regulation`
+> (§16).** PCB non commencé ; empreinte du boîtier LZ en attente. Les valeurs marquées **POSÉ** sont des points de départ
 > à confirmer en simulation. Celles marquées **à vérifier** n'ont pas été
 > relues dans la fiche du composant.
 
@@ -209,8 +209,9 @@ $$\Large Q1_{ON} = PWM \cdot \overline{Q_{TRIP}}$$
 | **JP3** : VDD du capteur PRE | peuplé | non peuplé |
 | **JP4** : VDD du capteur POST | non peuplé | peuplé |
 
-- JP1 et JP2 sont des 0 Ω 0402 à deux positions sur une pastille commune.
-  Ils se changent toujours ensemble.
+- JP1 et JP2 sont réalisés par **quatre 0 Ω 0805**, un par capteur et
+  par signal (repères au §16). Ils se changent toujours par paire, et les
+  deux d'un même signal ne sont jamais peuplés ensemble.
 - JP3 et JP4 n'alimentent que le capteur utilisé : 30 mA max sur
   `3V3_ISO` au lieu de 60.
 - Le capteur non alimenté reste dans la maille : son conducteur passe le
@@ -258,7 +259,7 @@ $$\Large \Delta I = \frac{V_{in}}{L}\, t_d \approx 0{,}29 \dots 0{,}65\ \mathrm{
 | Ampli d'instrumentation | 2 × TSV791 + 2 × 100 nF | `tsv791.pdf` | existe |
 | Résistances de gain | 2 × 1 k, 2 × 3,9 k (0,1 %) | — | — |
 | Filtre et sortie | Cf 8,2 pF, 47 Ω | — | — |
-| Configuration | JP1, JP2 (0 Ω 0402 à deux positions), JP3, JP4 (0 Ω) | — | — |
+| Configuration | 6 × 0 Ω 0805 : JP1 et JP2 en 4 résistances, JP3, JP4 | — | — |
 
 **Budget `3V3_ISO`** : +30 mA max pour le capteur actif, plus les deux
 TSV791 ; −4,5 mA environ pour l'opto retiré. Le budget du LDO `3V3_ISO`
@@ -449,3 +450,53 @@ consigne ce qui a été vérifié pour ce changement.
     perdu, ou il faudrait réaffecter GPIO0.
   - Non vérifié : que le front de haute résolution de l'HRPWM traverse
     tel quel cette position 15 du multiplexeur.
+
+## 16. Mise en œuvre au schéma (2026-11-24)
+
+Choix arrêtés avec le concepteur le 2026-11-24 : capteur POST **côté
+source** ; nouvelle sous-feuille ; JP1 et JP2 en **quatre 0 Ω 0805** ;
+empreinte du boîtier LZ **en attente** des documents du fabricant (champ
+Footprint vide sur U23 et U24).
+
+**Nouvelle feuille `mesure-courant-acs.kicad_sch`** (page 7,
+« Mesure_Courant_ACS »), reliée par labels globaux :
+
+| Repère | Rôle | Nets |
+|---|---|---|
+| U23 | ACS37030 PRE | IP+ `VIN`, IP− `VIN_T1`, VDD `VDD_ACS_PRE`, VOUT `VOUT_PRE`, VREF `VREF_PRE`, GND `GND_CTRL` |
+| U24 | ACS37030 POST | IP+ `SRC_Q1`, IP− `ISENSE_P`, VDD `VDD_ACS_POST`, VOUT `VOUT_POST`, VREF `VREF_POST` |
+| R55 / R56 | JP3 / JP4 : `3V3_ISO` → VDD du capteur PRE / POST | |
+| C69 / C70 | découplage 100 nF de U23 / U24 | |
+| R57 / R58 | JP1 : `VOUT_PRE` / `VOUT_POST` → `ACS_VOUT` | |
+| R59 / R60 | JP2 : `VREF_PRE` / `VREF_POST` → `ACS_VREF` | |
+| U25 | TSV791 U_A : IN+ `ACS_VREF`, sortie `INA_A_OUT` | R61 1,00 k (sortie → IN−), R62 3,90 k (IN− → `GND_CTRL`), C71 100 nF |
+| U26 | TSV791 U_B : IN+ `ACS_VOUT`, sortie `INA_B_OUT` | R63 1,00 k (`INA_A_OUT` → IN−), R64 3,90 k ∥ C73 8,2 pF (IN− → sortie), C72 100 nF |
+| R65 | 47 Ω, `INA_B_OUT` → `I_ACS` | |
+| #FLGACS01/02 | PWR_FLAG sur `VDD_ACS_PRE` / `VDD_ACS_POST` (alimentés à travers un 0 Ω) | |
+
+**Configuration livrée : PRE.** R56, R58 et R60 sont marqués DNP.
+
+**Retouches des feuilles existantes :**
+
+- `flyback` : `T1.1` passe de `VIN` à `VIN_T1` ; le fil de `Q1.3` est
+  retiré et remplacé par le label `SRC_Q1`. `R19.2` et TP8 restent sur
+  `ISENSE_P`.
+- `isolation` : U5, Q8, R3 et R4 retirés avec leurs fils et labels. `J2.17`
+  et TP18 passent de `I_Shunt_ht_comp` à `I_ACS`. R37 reste sur `PWM_EN`.
+- `limitation-courant` : U13 et son découplage C46 retirés (C46 est à
+  2,85 mm de U13 sur le PCB). `U1.4` passe à `Q_TRIP`. `U19.6` passe de
+  `I_Shunt_ht_comp` à `PWM_EN` (`J2.5`).
+- Classes de nets : `I_ACS` et les nets du conditionnement en CTRL,
+  `VIN_T1` et `SRC_Q1` en PRI ; motifs des nets disparus retirés.
+
+**Vérifications :**
+
+- ERC : aucune violation nouvelle (367 contre 372 sur `main`, toutes
+  antérieures).
+- Netlist comparée avant/après : seuls les nets ci-dessus changent.
+- Rotation et justification des labels contrôlées par
+  `check_schematic_labels.py`.
+
+**Reste à faire :** empreinte LZ (U23, U24) et relevé de leur brochage
+(R15) ; mise à jour du PCB depuis le schéma ; placement selon l'option
+retenue au §5.
