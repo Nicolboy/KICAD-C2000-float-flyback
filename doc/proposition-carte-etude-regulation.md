@@ -27,6 +27,12 @@ Elles ne diffèrent que par la position du capteur, et une seule est active
 Point de départ : `main` au commit `0bc3a07` (chaîne de limitation
 corrigée, symbole de U18 corrigé).
 
+**Microcontrôleur** : TMS320F28P550SJ9PM (150 MHz, NPU, 2 tuiles CLB),
+monté sur `devkit_C_F28P550` du dépôt KICAD-C2000-devkit (commit
+`7e4ea86`, copie de devkit_B où seul le MCU change). Sauf mention
+contraire, les références « DS » renvoient à sa fiche SPRSP85D
+(`composants-datasheets/datasheets/microc/tms320f28p550sj.pdf`).
+
 ## 2. Architecture
 
 ```
@@ -219,8 +225,8 @@ $$\Large Q1_{ON} = PWM \cdot \overline{Q_{TRIP}}$$
 | ACS37030, tRESP | 40 ns typ, pas de max | p.6 |
 | Ampli d'instrumentation avec Cf | ≈ 55 ns | **POSÉ** (§6) |
 | Trio `J21.17` (22 Ω, 100 pF) | 2 ns | decisions #26 du shield |
-| CMPSS, réponse à un échelon | 60 ns max | F28P551SG DS p.153 (document de piste §4.1) |
-| Trip de l'ePWM | 25 ns max | F28P551SG DS p.168 (idem) |
+| CMPSS, réponse à un échelon | 60 ns max (21 typ) | F28P550SJ DS p.158 ; même valeur sur le F28P551SG |
+| Trip de l'ePWM | 25 ns | F28P550SJ DS p.173, td(TZ-PWM) ; idem F28P551SG |
 | GPIO et piste | 5 ns | **POSÉ** |
 | Trio de `PWM_ht` (100 Ω, 100 pF) | 10 ns | decisions du shield |
 | ISO7710F U3 | 18,5 ns max | `iso7710.pdf` p.14 |
@@ -283,7 +289,9 @@ thermique de Reg2 disparaît.
 
 ## 12. Modifications hors carte HT
 
-- **Devkit** : aucune.
+- **Devkit** : `devkit_C_F28P550` (TMS320F28P550SJ9PM) au lieu de
+  devkit_B. Même brochage, même routage ; aucune modification de câblage
+  côté HT.
 - **Powershield** : aucune modification matérielle. Documentation à
   mettre à jour : `J21.17` (`I_Shunt_ht_comp`) devient une voie analogique,
   `J21.5` (`PWM_EN`) devient un retour de défaut vers le C2000. `PWM_EN`
@@ -324,17 +332,21 @@ le comparer. Pistes d'essai, par ordre de faisabilité.
 
 ### 15.1 Ce que permet l'ADC
 
-Fiche F28P551SG (`composants-datasheets/datasheets/microc/tms320f28p551sg.pdf`) :
-- cinq ADC 12 bits à 3,9 MSPS (p.1) ; 4,1 MSPS avec SYSCLK = 160 MHz
-  (tableau des caractéristiques ADC, p.134) ;
+Fiche F28P550SJ (SPRSP85D) :
+- cinq ADC 12 bits à 3,9 MSPS avec SYSCLK = 150 MHz (p.1 ; tableau des
+  caractéristiques ADC, p.138) ;
+- ADCCLK de 75 MHz au plus (p.138) ; conversion en 14 cycles d'ADCCLK,
+  soit 187 ns (p.139) ;
 - fenêtre d'échantillonnage minimale de 67 ns pour une source de 50 Ω ou
-  moins (p.134). Ici la source vaut 47 Ω + 22 Ω : fenêtre à allonger
-  légèrement, à calculer avec le modèle d'entrée (p.142) ;
-- conversion en 14 cycles d'ADCCLK à 80 MHz, soit 175 ns (p.135) ;
-- la broche `ADC_8` (broche 15) est reliée aux ADC A, B et C (A0, B15,
-  C15, `brochage-devkit.csv` du shield). Deux ADC différents peuvent
-  donc l'échantillonner à deux instants rapprochés, sans attendre la
-  conversion du premier.
+  moins (p.138). Ici la source vaut 47 Ω + 22 Ω : fenêtre à allonger
+  légèrement, à calculer avec le modèle d'entrée (p.145) ;
+- la broche `ADC_8` (broche 15 du boîtier PM) est reliée aux ADC A, B et
+  C (A0, B15, C15, p.13 et Table 5-2 p.41–42). Deux ADC différents
+  peuvent donc l'échantillonner à deux instants rapprochés, sans
+  attendre la conversion du premier ;
+- cette broche est l'entrée de CMP3 par HPMXSEL = 2 et LPMXSEL = 2
+  (p.132). Sur le F28P550 elle porte aussi **DACA_OUT** (p.13) : le
+  DAC A doit rester désactivé, sinon il pilote la voie de mesure.
 
 Deux échantillons dans une conduction de 0,5 µs sont donc possibles, avec
 des déclenchements de l'ePWM.
@@ -360,19 +372,24 @@ $$\Large m_1 = \frac{\Delta I}{\Delta t} \;\Rightarrow\; V_{in} = L\, m_1 \qquad
    la conduction donne le courant moyen. Le C2000 peut combiner courant
    crête et courant moyen, ou détecter le passage entre conduction
    continue et discontinue.
-5. **Logique dans le CLB.** Le F28P551SG a 4 CLB (schéma bloc p.5). Ils
-   peuvent gérer en matériel la conduction minimale, le mode rafale ou
-   une validation cycle par cycle, sans charger le CPU. Une tuile n'agit
-   directement que sur l'ePWM de même numéro (vérifié pour le F28P550SJ,
-   §15.4) : agir sur EPWM3, qui génère `PWM_ht`, suppose la tuile 3,
-   absente du F28P550SJ.
+5. **Logique dans le CLB.** Le F28P550SJ9 a 2 tuiles CLB (Table 4-1,
+   p.7). Elles peuvent gérer en matériel la conduction minimale, le mode
+   rafale ou une validation cycle par cycle, sans charger le CPU. Une
+   tuile n'agit directement que sur l'ePWM de même numéro : aucune
+   n'atteint EPWM3, qui génère `PWM_ht`. Deux contournements au §15.4.
+6. **Inférence sur le NPU.** Le NPU TinyEngine du F28P550SJ9 annonce
+   600 MOPS sur 8 bits, 1200 MOPS en poids 4 bits / données 8 bits
+   (p.2), avec des modèles fournis pour la détection d'arc et de défaut
+   moteur (p.3). Piste : classer la forme du courant (échantillons ADC
+   du §15.1) pour détecter une saturation, un arc côté filament ou un
+   défaut de l'étage, sans seuil réglé à la main. Rien n'est évalué.
 
 ### 15.3 Limites vérifiées
 
-- **Pas de NPU sur le F28P551SG.** La fiche ne mentionne ni NPU ni réseau
-  de neurones (recherche dans tout le texte, 2026-11-24). La détection
-  d'anomalies par apprentissage n'est donc pas une option matérielle sur
-  ce composant.
+- **NPU : présent sur le F28P550SJ9 seulement.** Le F28P551SG du
+  devkit_B n'en a pas (aucune mention dans sa fiche, recherche du
+  2026-11-24) ; c'est la raison du passage au devkit_C. Le NPU n'existe
+  que sur les variantes SJ9/SG9 du F28P55x (Table 4-1, p.7).
 - **Commutation au creux de tension : marginale, pas impossible.** En
   conduction discontinue, après la démagnétisation, l'inductance
   magnétisante oscille avec la capacité du nœud `SW_PRI`. Le courant
@@ -392,10 +409,11 @@ $$\Large m_1 = \frac{\Delta I}{\Delta t} \;\Rightarrow\; V_{in} = L\, m_1 \qquad
     l'instant du creux **prédit** pour la commutation suivante. À évaluer
     en simulation puis au banc.
 
-### 15.4 Variante de MCU : F28P550SJ9 (NPU, 2 CLB)
+### 15.4 MCU : F28P550SJ9 (NPU, 2 CLB)
 
-Le passage du devkit au TMS320F28P550SJ9PM est envisagé pour disposer du
-NPU. Rien n'est tranché : ce paragraphe consigne ce qui est vérifié.
+Le TMS320F28P550SJ9PM est retenu pour disposer du NPU ; il est monté sur
+`devkit_C_F28P550` (KICAD-C2000-devkit, 2026-11-24). Ce paragraphe
+consigne ce qui a été vérifié pour ce changement.
 
 - **Compatibilité du devkit.** Brochage 64PM identique à celui du
   F28P551SG, à l'étiquetage des DAC près. Multiplexage des GPIO identique
