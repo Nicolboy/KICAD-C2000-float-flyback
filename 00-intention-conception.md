@@ -1087,6 +1087,7 @@ cette passe (`flyback.kicad_sch`).
 | R31 / R32 | 1k / 10k | **5,6k / 3,3k** : V_TH = 2,5 × 3,3/8,9 = 0,927 V |
 | R33 | 1k | **5,6k** : τ = 560 ns, blanking 153 à 243 ns pour VT+ = 0,79 à 1,16 V |
 | C47 broche 2 | `ISNS_AMP_FB` (entre les deux entrées du TSV791) | **`ISNS_KN`** : filtre R27/C47 de 22 ns référencé au shunt |
+| Symbole `custom_parts:SN74LVC1G74` (U18) | broche 3 nommée `Q`, broche 5 nommée `nQ` | **numéros permutés** : `Q` = broche 5, `nQ` = broche 3 (`sn74lvc1g74.pdf` SCES794G p.4, Pin Functions et vue DCU). Dessin et labels inchangés : `~{Q_TRIP}` arrive désormais sur la broche 3 (Q̄ réel), `Q_TRIP` sur la broche 5 (Q réel). Corrigé le 2026-11-24, après le commit b52b2b2 qui reposait sur le symbole erroné (Q1 ne pouvait jamais s'allumer). Pinmap de `composants-datasheets/data/carte-flyback/sn74lvc1g74.yaml` **non corrigé**, à reprendre selon R15 |
 
 Logique obtenue :
 
