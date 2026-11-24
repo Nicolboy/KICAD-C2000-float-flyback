@@ -1,7 +1,7 @@
 # Proposition : carte d'étude de deux boucles de courant crête par le CMPSS
 
 > **Statut : schéma appliqué le 2026-11-24, branche `etude-regulation`
-> (§16).** PCB non commencé ; empreinte du boîtier LZ en attente. Les valeurs marquées **POSÉ** sont des points de départ
+> (§16).** PCB non commencé. Les valeurs marquées **POSÉ** sont des points de départ
 > à confirmer en simulation. Celles marquées **à vérifier** n'ont pas été
 > relues dans la fiche du composant.
 
@@ -455,8 +455,7 @@ consigne ce qui a été vérifié pour ce changement.
 
 Choix arrêtés avec le concepteur le 2026-11-24 : capteur POST **côté
 source** ; nouvelle sous-feuille ; JP1 et JP2 en **quatre 0 Ω 0805** ;
-empreinte du boîtier LZ **en attente** des documents du fabricant (champ
-Footprint vide sur U23 et U24).
+empreinte du boîtier LZ créée d'après le plan du fabricant (§16.1).
 
 **Nouvelle feuille `mesure-courant-acs.kicad_sch`** (page 7,
 « Mesure_Courant_ACS »), reliée par labels globaux :
@@ -497,6 +496,43 @@ Footprint vide sur U23 et U24).
 - Rotation et justification des labels contrôlées par
   `check_schematic_labels.py`.
 
-**Reste à faire :** empreinte LZ (U23, U24) et relevé de leur brochage
-(R15) ; mise à jour du PCB depuis le schéma ; placement selon l'option
-retenue au §5.
+### 16.1 Empreinte du boîtier LZ
+
+`lib_fp_commun/ACS37030_LZ.pretty/ACS37030_LZ.kicad_mod`, enregistrée
+dans le `fp-lib-table` du projet, affectée au symbole et à U23, U24.
+
+- Pastilles d'après la « PCB Layout Reference View » de la fiche (p.27) :
+  - IP : 1,92 × 1,58 mm au pas de 2,54 ;
+  - signal : 0,65 × 1,58 mm au pas de 1,27 ;
+  - 5,78 mm entre les axes des rangées, soit **4,20 mm entre les bords
+    des pastilles IP et signal**, au-dessus des 4 mm de la règle
+    `barriere_controle`.
+- Orientation de la Figure 2 (p.4, vue de dessus), vérifiée sur un rendu
+  `kicad-cli` de l'empreinte : IP+ (1) en haut à gauche, repère de broche
+  1 par un point de sérigraphie, IP− (2) en dessous ; VDD (6), VOUT (5),
+  VREF (4), GND (3) à droite de haut en bas.
+- Corps 3,90 × 4,89 mm centré entre les rangées : hypothèse, le plan ne
+  cote pas la position des pastilles par rapport au corps.
+- Le plan est marqué **PRELIMINARY** : empreinte à reprendre à la version
+  définitive.
+
+### 16.2 Pourquoi pas l'ACS37032
+
+Même boîtier et même brochage, mais la broche 4 porte une sortie de
+défaut FAULT à drain ouvert au lieu de VREF.
+
+- **Seuil fixe à la pleine échelle.** Le seuil de défaut vaut 100 % de
+  IPR (p.10), soit 20 A ± 2 A pour la version ±20 A, la plus petite en
+  boîtier LZ (p.2). La protection locale coupe à 8,43 A : la sortie FAULT
+  ne la remplace pas. Réponse 150 ns typ (p.6), hystérésis 1,2 A (p.10).
+- **Plus de VREF.** L'ampli d'instrumentation soustrait VREF à VOUT. Sans
+  VREF, il faudrait une référence de 1,65 V externe, qui ne suit pas le
+  zéro interne du capteur.
+- Une ACS37032 ne servirait donc qu'en butée ultime à 20 A, au prix de
+  la référence de soustraction. L'empreinte LZ lui convient telle quelle
+  si le besoin apparaît.
+
+**Reste à faire :** mise à jour du PCB depuis le schéma ; placement selon
+l'option retenue au §5 ; puis relevé du brochage de U23 et U24 sur
+capture de l'empreinte posée (R15), fiche de couche carte
+`data/carte-flyback/acs37030.yaml` (dossier des fiches de KICAD-HT, comme `sn74lvc1g74.yaml`).

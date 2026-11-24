@@ -9,4 +9,5 @@
 	(lib (name "Graphic") (type "KiCad") (uri "${KIPRJMOD}/../lib_fp_commun/Graphic.pretty") (options "") (descr "Convertie depuis la bibliotheque standard KiCad Graphic.kicad_sym (symboles danger/graphiques), toutes primitives sur F.SilkS -- partagee entre projets, voir ../KICAD.md"))
 	(lib (name "WSK1206") (type "KiCad") (uri "${KIPRJMOD}/../lib_fp_commun/WSK1206.pretty") (options "") (descr "Empreinte custom WSK1206R0100FEA (Yageo, shunt Kelvin 10mOhm 1206 4 broches) -- partagee entre projets, voir ../KICAD.md"))
 	(lib (name "VODA1275") (type "KiCad") (uri "${KIPRJMOD}/../lib_fp_commun/VODA1275.pretty") (options "") (descr "Empreinte custom VODA1275 (Vishay, driver MOSFET photovoltaique) -- partagee entre projets, voir ../KICAD.md"))
+	(lib (name "ACS37030_LZ") (type "KiCad") (uri "${KIPRJMOD}/../lib_fp_commun/ACS37030_LZ.pretty") (options "") (descr "Empreinte custom Allegro ACS37030/32 boitier LZ (SOIC-6 a broches IP fusionnees), plan preliminaire ACS37030-DS Rev.7 p.27 -- partagee entre projets, voir ../KICAD.md"))
 )

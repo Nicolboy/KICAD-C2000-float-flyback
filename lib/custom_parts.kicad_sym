@@ -1657,9 +1657,9 @@
 		(exclude_from_sim no) (in_bom yes) (on_board yes)
 		(property "Reference" "U" (at 0 10.16 0) (effects (font (size 1.27 1.27))))
 		(property "Value" "ACS37030LLZATR-020B3" (at 0 -10.16 0) (effects (font (size 1.27 1.27))))
-		(property "Footprint" "" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Footprint" "ACS37030_LZ:ACS37030_LZ" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/isolation/acs37030-32.pdf" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
-		(property "Description" "Capteur de courant isole Hall + bobine, +-20 A, 66 mV/A, 5 MHz, boitier LZ (SOIC-6 a broches fusionnees). Brochage ACS37030-DS Rev.7 p.4 : 1=IP+, 2=IP-, 3=GND, 4=VREF, 5=VOUT, 6=VDD. Empreinte en attente (plan LZ preliminaire p.27)." (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
+		(property "Description" "Capteur de courant isole Hall + bobine, +-20 A, 66 mV/A, 5 MHz, boitier LZ (SOIC-6 a broches fusionnees). Brochage ACS37030-DS Rev.7 p.4 : 1=IP+, 2=IP-, 3=GND, 4=VREF, 5=VOUT, 6=VDD. Empreinte ACS37030_LZ:ACS37030_LZ (lib_fp_commun), d apres la PCB Layout Reference View p.27, plan PRELIMINARY." (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(property "ki_keywords" "current sensor hall isolated ACS37030" (at 0 0 0) (hide yes) (effects (font (size 1.27 1.27))))
 		(symbol "ACS37030_0_1"
 			(rectangle
