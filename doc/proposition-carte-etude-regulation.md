@@ -511,8 +511,13 @@ dans le `fp-lib-table` du projet, affectée au symbole et à U23, U24.
   `kicad-cli` de l'empreinte : IP+ (1) en haut à gauche, repère de broche
   1 par un point de sérigraphie, IP− (2) en dessous ; VDD (6), VOUT (5),
   VREF (4), GND (3) à droite de haut en bas.
-- Corps 3,90 × 4,89 mm centré entre les rangées : hypothèse, le plan ne
-  cote pas la position des pastilles par rapport au corps.
+- Corps 3,90 × 4,89 mm centré entre les rangées. Le plan ne le cote pas,
+  mais l'empreinte du fournisseur (`telechargement/LIB_ACS37030LLZATR-020B3`)
+  a la même géométrie à une rotation de 90° près, corps centré compris.
+- Modèle 3D : STEP du fournisseur (même boîtier LZ), rotation −90/0/90 et
+  décalage vertical de 0,89 mm, vérifiés par un rendu `kicad-cli` : pattes
+  IP sur les pastilles 1 et 2, repère de broche 1 du boîtier côté
+  pastille 1.
 - Le plan est marqué **PRELIMINARY** : empreinte à reprendre à la version
   définitive.
 
