@@ -8377,7 +8377,7 @@
 				)
 			)
 		)
-		(property "Value" "ISO7710"
+		(property "Value" "ISO7710F"
 			(at 85.09 115.57 0)
 			(show_name no)
 			(do_not_autoplace no)

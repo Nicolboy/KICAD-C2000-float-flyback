@@ -1056,6 +1056,65 @@ En parallèle, R19 passe de 7,5mΩ/1210/2 broches à **10mΩ, Yageo
 `WSK1206R0100FEA`, 1206, 4 broches Kelvin** — changement physique intégré à
 cette passe (`flyback.kicad_sch`).
 
+### Correction 2026-11-23 — chaîne rendue opérationnelle
+
+**Constat** (analyse des netlists, datasheets citées) : la chaîne posée le
+2026-10-21 ne pouvait pas fonctionner.
+
+1. **Polarité inversée.** Avec `PWM_PRI_OUT` sur `IN−` de U1
+   (`OUT = IN+ · NOT(IN−)`, `ucc27517.pdf` p.16 tbl 3), Q1 conduit quand
+   le PWM est **bas**. Or le verrou U18 est remis à zéro par
+   `nCLR = PWM_PRI_OUT` bas : il était maintenu à zéro pendant toute la
+   conduction, et le blanking (`PWM_LEB`, front montant retardé) n'armait
+   le NAND que pendant le blocage. La protection ne pouvait jamais
+   déclencher. De plus, un PWM arrêté à l'état bas allumait Q1 en continu.
+2. **Seuil trop haut.** Avec les valeurs du commit 8fa313c (R29 = 10k,
+   R31 = 1k, R32 = 10k), G = 11 et V_TH ≈ 2,27 V, soit un déclenchement
+   vers 20,7 A, au-dessus de l'Isat de 13,4 A du MSD1514.
+3. **Blanking trop court.** R33 = 1k et C52 = 100p donnent environ 27 à
+   43 ns, au lieu des ~150 ns visés.
+
+**Modifications appliquées** (`limitation-courant.kicad_sch`,
+`isolation.kicad_sch`, motif de netclasse dans `KICAD-HT.kicad_pro`) :
+
+| Élément | Avant | Après |
+|---|---|---|
+| U1.3 (IN+) | `EN_PRI_GATED` | `PWM_PRI_OUT` |
+| U1.4 (IN−) | `PWM_PRI_OUT` | `~{EN_PRI_GATED}` |
+| U13 | SN74LVC1G08 (AND) | **SN74LVC1G132** (NAND à entrées de Schmitt, même pièce que U17, même SOT-23-5, même brochage A=1/B=2/GND=3/Y=4/VCC=5). Symbole `custom_parts:74LVC1G132` : dessin de `74xGxx:74LVC1G00` avec le logo d'hystérésis de `74xx:74LS132`, KiCad 10 n'ayant pas de NAND de Schmitt à une porte. Déplacé en périphérie de la feuille, placement définitif à faire à la main |
+| U13.4 (Y) | `EN_PRI_GATED` | `~{EN_PRI_GATED}` = NAND(`EN_PRI_OUT`, `~{Q_TRIP}`) |
+| U3 | ISO7710 | **ISO7710F** (défaut bas, `iso7710.pdf` p.20) |
+| R31 / R32 | 1k / 10k | **5,6k / 3,3k** : V_TH = 2,5 × 3,3/8,9 = 0,927 V |
+| R33 | 1k | **5,6k** : τ = 560 ns, blanking 153 à 243 ns pour VT+ = 0,79 à 1,16 V |
+| C47 broche 2 | `ISNS_AMP_FB` (entre les deux entrées du TSV791) | **`ISNS_KN`** : filtre R27/C47 de 22 ns référencé au shunt |
+
+Logique obtenue :
+
+$$\Large Q1_{ON} = PWM \cdot EN \cdot \overline{Q_{TRIP}} \qquad I_{trip} = \frac{0.927}{11 \times 0.010} \approx 8.43\ \mathrm{A}$$
+
+| `PWM_PRI_OUT` | `EN_PRI_OUT` | Verrou U18 | `~{EN_PRI_GATED}` (IN−) | Q1 |
+|---|---|---|---|---|
+| bas ou absent (ISO7710F) | x | remis à zéro (`nCLR` bas) | x | **coupé** (IN+ = 0) |
+| haut | bas (coupure opto) | x | haut | **coupé** |
+| haut, blanking en cours | haut | Q = 0 | bas | conduit |
+| haut, blanking écoulé, I < seuil | haut | Q = 0 | bas | conduit |
+| haut, blanking écoulé, I ≥ seuil | haut | **Q = 1**, verrouillé jusqu'au PWM bas | haut | **coupé** |
+
+- Au front descendant du PWM, `nPRE` et `nCLR` peuvent être bas en même
+  temps (`PWM_LEB` retombe avec retard). Le 1G74 sort alors Q = nQ = H
+  (`sn74lvc1g74.pdf` p.10), sans effet puisque IN+ est déjà bas.
+- `PWM_LEB` doit retomber sous VT− avant le cycle suivant : environ
+  1,25 µs, donc D < 0,75 (D = 0,364 au point dimensionnant).
+- ATL431 : avec R30 = 1k, environ 0,8 mA, dont 0,28 mA dans le pont,
+  soit ≈ 0,52 mA de cathode, bien au-dessus de Ika,min = 35 µA.
+- **Firmware : le PWM du C2000 doit être actif haut** (Q1 conduit quand
+  `PWM_ht` est haut).
+- **Non vérifié** : dépassement du courant crête dû au retard de
+  propagation, stabilité du TSV791 avec C47 recâblé. Les points 1 et 2
+  ci-dessous, la table de vérité du verrou et les valeurs de seuil et de
+  blanking plus bas sont conservés à titre historique et remplacés par
+  cette correction.
+
 ### Trois écarts corrigés par rapport au prompt d'origine
 
 Le prompt de départ décrivait un circuit supposé, pas le circuit réel.

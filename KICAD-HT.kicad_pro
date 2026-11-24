@@ -693,7 +693,7 @@
       },
       {
         "netclass": "PRI",
-        "pattern": "EN_PRI_GATED"
+        "pattern": "~{EN_PRI_GATED}"
       },
       {
         "netclass": "PRI",

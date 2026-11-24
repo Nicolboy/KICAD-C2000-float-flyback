@@ -686,6 +686,231 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "custom_parts:74LVC1G132"
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -5.08 7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SN74LVC1G132"
+				(at 7.62 -7.62 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/logic/sn74lvc1g132.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Single 2-input NAND gate, Schmitt-trigger inputs, SOT23-5 (DBV) -- dessin 74LVC1G00 + logo hysteresis"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "NAND Schmitt trigger SN74LVC1G132"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "SOT?23* Texas?R-PDSO-G5?DCK* Texas?R-PDSO-N5?DRL* Texas?X2SON*0.8x0.8mm*P0.48mm*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "74LVC1G132_0_1"
+				(polyline
+					(pts
+						(xy -5.08 -1.27) (xy -3.175 -1.27) (xy -3.175 1.27) (xy -2.54 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -4.445 -1.27) (xy -4.445 1.27) (xy -3.175 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 0 5.08)
+					(mid 5.0579 0)
+					(end 0 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -5.08) (xy -7.62 -5.08) (xy -7.62 5.08) (xy 0 5.08)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "74LVC1G132_1_1"
+				(pin input line
+					(at -15.24 2.54 0)
+					(length 7.62)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -15.24 -2.54 0)
+					(length 7.62)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -10.16 90)
+					(length 5.08)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output inverted
+					(at 12.7 0 180)
+					(length 7.62)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 10.16 270)
+					(length 5.08)
+					(name "VCC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "custom_parts:BAT54S"
 			(exclude_from_sim no)
 			(in_bom yes)
@@ -1230,183 +1455,6 @@
 					(at 0 7.62 270)
 					(length 2.54)
 					(name "V+"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "custom_parts:SN74LVC1G08"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "U"
-				(at 0 11.43 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "SN74LVC1G08"
-				(at 0 -11.43 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/logic/sn74lvc1g08.pdf"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Description" "Single 2-input AND gate, SOT23-5 (DBV) -- meme brochage que SN74LVC1G132 (A1/B2/GND3/Y4/VCC5). Gating de IN+ de U1 : Y=EN_PRI_OUT AND NOT(Q_TRIP), car IN- de U1 est deja occupe par PWM_PRI_OUT (pas disponible pour le verrou comme suppose initialement)."
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "AND gate SN74LVC1G08"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(symbol "SN74LVC1G08_0_1"
-				(rectangle
-					(start -7.62 5.08)
-					(end 7.62 -5.08)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-			)
-			(symbol "SN74LVC1G08_1_1"
-				(pin input line
-					(at -10.16 2.54 0)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin input line
-					(at -10.16 -2.54 0)
-					(length 2.54)
-					(name "B"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 0 -7.62 90)
-					(length 2.54)
-					(name "GND"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin output line
-					(at 10.16 0 180)
-					(length 2.54)
-					(name "Y"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_in line
-					(at 0 7.62 270)
-					(length 2.54)
-					(name "VCC"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2207,7 +2255,7 @@
 		)
 		(uuid "63424af8-f03b-46c0-a75a-839b179c7797")
 	)
-	(text "AND"
+	(text "NAND"
 		(exclude_from_sim no)
 		(at 382.27 -72.39 0)
 		(effects
@@ -2317,7 +2365,7 @@
 		)
 		(uuid "6a681bc8-d474-4bf7-b491-5c3590506848")
 	)
-	(text_box "logiqe securité locale/microcontrôleur"
+	(text_box "logique securité locale/microcontrôleur"
 		(exclude_from_sim no)
 		(at 350.52 -121.92 0)
 		(size 77.47 54.61)
@@ -2700,7 +2748,7 @@
 			)
 		)
 	)
-	(global_label "PWM_PRI_OUT"
+	(global_label "~{EN_PRI_GATED}"
 		(shape bidirectional)
 		(at 486.41 -86.36 180)
 		(fields_autoplaced yes)
@@ -2838,9 +2886,9 @@
 			)
 		)
 	)
-	(global_label "EN_PRI_GATED"
+	(global_label "~{EN_PRI_GATED}"
 		(shape bidirectional)
-		(at 392.43 -93.98 0)
+		(at 396.24 -92.71 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -2850,7 +2898,7 @@
 		)
 		(uuid "23083728-b014-4f16-bd8d-a2cd2ae7c59d")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 392.43 -93.98 0)
+			(at 396.24 -92.71 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3354,7 +3402,7 @@
 			)
 		)
 	)
-	(global_label "ISNS_AMP_FB"
+	(global_label "ISNS_KN"
 		(shape bidirectional)
 		(at 43.434 -68.326 270)
 		(fields_autoplaced yes)
@@ -3635,7 +3683,7 @@
 	)
 	(global_label "~{Q_TRIP}"
 		(shape bidirectional)
-		(at 372.11 -91.44 180)
+		(at 368.3 -90.17 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3645,7 +3693,7 @@
 		)
 		(uuid "990e1771-6557-4b7f-b139-a136f5c747ee")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 372.11 -91.44 0)
+			(at 368.3 -90.17 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3679,7 +3727,7 @@
 			)
 		)
 	)
-	(global_label "EN_PRI_GATED"
+	(global_label "PWM_PRI_OUT"
 		(shape bidirectional)
 		(at 486.41 -91.44 180)
 		(fields_autoplaced yes)
@@ -3982,7 +4030,7 @@
 	)
 	(global_label "GND"
 		(shape bidirectional)
-		(at 382.27 -86.36 270)
+		(at 383.54 -82.55 270)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -3992,7 +4040,7 @@
 		)
 		(uuid "c4948fb6-4e6e-4678-95ad-190bd9332cb8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 382.27 -86.36 0)
+			(at 383.54 -82.55 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4332,7 +4380,7 @@
 	)
 	(global_label "RAIL_3V3_PRI"
 		(shape bidirectional)
-		(at 382.27 -101.6 90)
+		(at 383.54 -102.87 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4342,7 +4390,7 @@
 		)
 		(uuid "ec79647f-79f3-446c-b7ae-ad7b5a1af443")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 382.27 -101.6 0)
+			(at 383.54 -102.87 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4424,7 +4472,7 @@
 	)
 	(global_label "EN_PRI_OUT"
 		(shape bidirectional)
-		(at 372.11 -96.52 180)
+		(at 368.3 -95.25 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4434,7 +4482,7 @@
 		)
 		(uuid "f59b8034-aad7-4925-9d9a-c5bf7cb18c6a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 372.11 -96.52 0)
+			(at 368.3 -95.25 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5580,8 +5628,8 @@
 		)
 	)
 	(symbol
-		(lib_id "custom_parts:SN74LVC1G08")
-		(at 382.27 -93.98 0)
+		(lib_id "custom_parts:74LVC1G132")
+		(at 383.54 -92.71 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -5591,7 +5639,7 @@
 		(dnp no)
 		(uuid "983e9249-dbc2-4752-8bd0-8c5b2f5534c2")
 		(property "Reference" "U13"
-			(at 376.174 -102.362 0)
+			(at 377.444 -101.092 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5600,8 +5648,8 @@
 				)
 			)
 		)
-		(property "Value" "SN74LVC1G08"
-			(at 392.176 -102.616 0)
+		(property "Value" "SN74LVC1G132"
+			(at 393.446 -101.346 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5611,7 +5659,7 @@
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5"
-			(at 382.27 -93.98 0)
+			(at 383.54 -92.71 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5621,8 +5669,9 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
-			(at 382.27 -93.98 0)
+		(property "Datasheet" "${KIPRJMOD}/../composants-datasheets/datasheets/logic/sn74lvc1g132.pdf"
+			(at 425.45 -85.09 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5632,7 +5681,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 382.27 -93.98 0)
+			(at 383.54 -92.71 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -6080,7 +6129,7 @@
 				)
 			)
 		)
-		(property "Value" "1k"
+		(property "Value" "5.6k"
 			(at 176.276 -46.482 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6330,7 +6379,7 @@
 				)
 			)
 		)
-		(property "Value" "1k"
+		(property "Value" "5.6k"
 			(at 220.472 -114.554 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6969,7 +7018,7 @@
 				)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "3.3k"
 			(at 176.784 -34.544 0)
 			(show_name no)
 			(do_not_autoplace no)
