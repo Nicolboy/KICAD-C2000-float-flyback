@@ -118,8 +118,8 @@ deux fois, par des composants qui le font déjà :
 Les valeurs reprennent le chapitre 6 de `LTSPICE-boost`
 (`06-mesure-courant/calcul_isole.py`, `resultats_isole.md` §9.3), où la
 fiche a été relue. La fiche est dans
-`composants-datasheets/telechargement/ACS37100-Datasheet.pdf` ; **aucune
-fiche YAML n'existe encore** pour ce composant.
+`composants-datasheets/datasheets/isolation/acs37100.pdf` ; fiche YAML
+`data/components/acs37100.yaml` (2026-11-24).
 
 ### 3.2 Position : côté `VIN` de l'enroulement plutôt qu'à la source
 
@@ -418,7 +418,7 @@ chaînes sont peuplées en permanence.
 
 | Fonction | Pièce | Fiche locale | YAML |
 |---|---|---|---|
-| Capteur isolé | ACS37100-025B3 | `telechargement/ACS37100-Datasheet.pdf` | à produire |
+| Capteur isolé | ACS37100-025B3 | `isolation/acs37100.pdf` | existe (composant) |
 | Tampon du capteur | TSV791 + 4 R + Vb | `tsv791.pdf` | existe |
 | Comparateur de régulation | LMV7219 | `lmv7219.pdf` | existe |
 | NAND du comparateur de régulation | SN74LVC1G132 | `sn74lvc1g132.pdf` | existe |
